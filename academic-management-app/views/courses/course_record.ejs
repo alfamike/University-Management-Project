@@ -1,0 +1,138 @@
+<%- include('base', { title: 'Course Detail' }) %>
+
+<div class="course-detail-container">
+    <!-- Header Section -->
+    <div class="course-header">
+        <h1 class="page-title"><%= course.name %></h1>
+    </div>
+
+    <!-- Details Section -->
+    <div class="course-details">
+        <div class="details-card">
+            <h2 class="details-title">Course Information
+                <button id="edit-course-btn" class="btn">Edit</button>
+                <button id="delete-course-btn" class="btn">Delete</button>
+            </h2>
+            <div class="details-content">
+                <div class="detail-item">
+                    <span class="detail-label">Name:</span>
+                    <span class="detail-value"><%= course.name %></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Description:</span>
+                    <span class="detail-value"><%= course.description %></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Start Date:</span>
+                    <span class="detail-value"><%= course.start_date %></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">End Date:</span>
+                    <span class="detail-value"><%= course.end_date %></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Activities Section -->
+    <div class="related-activities">
+        <h2 class="details-title">Related Activities
+            <button id="add-activity-btn" class="btn">Add Activity</button>
+            <button id="modify-activity-btn" class="btn">Modify Activity</button>
+            <button id="delete-activity-btn" class="btn">Remove Activity</button>
+        </h2>
+        <% if (activities && activities.length > 0) { %>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Select</th>
+                <th>Activity Name</th>
+                <th>Description</th>
+                <th>Due Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% activities.forEach((activity) => { %>
+            <tr>
+                <td><input type="checkbox" class="activity-checkbox" value="<%= activity.id %>"></td>
+                <td><%= activity.name %></td>
+                <td><%= activity.description %></td>
+                <td><%= activity.due_date %></td>
+            </tr>
+            <% }); %>
+            </tbody>
+        </table>
+        <div class="cards">
+            <% activities.forEach((activity) => { %>
+            <div class="card">
+                <h3><%= activity.name %></h3>
+                <p><%= activity.description %></p>
+                <p><strong>Due Date:</strong> <%= activity.due_date %></p>
+            </div>
+            <% }); %>
+        </div>
+        <% } else { %>
+        <p class="no-activities">This course has not got any activity.</p>
+        <% } %>
+    </div>
+</div>
+
+<!-- Pop-up for adding an activity -->
+<div id="add-activity-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h3>Add Activity to Course</h3>
+        <form id="add-activity-form">
+            <label for="activity-name">Name:</label>
+            <input type="text" id="activity-name" name="activity-name">
+            <label for="activity-description">Description:</label>
+            <input type="text" id="activity-description" name="activity-description">
+            <label for="activity-due-date">Due Date:</label>
+            <input type="date" id="activity-due-date" name="activity-due-date">
+            <button type="submit" class="btn">Add</button>
+        </form>
+    </div>
+</div>
+
+<!-- Pop-up for modifying an activity -->
+<div id="modify-activity-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h3>Modify Activity</h3>
+        <form id="modify-activity-form">
+            <input type="hidden" id="modify-activity-id" name="activity-id">
+            <label for="modify-activity-name">Name:</label>
+            <input type="text" id="modify-activity-name" name="activity-name">
+            <label for="modify-activity-description">Description:</label>
+            <input type="text" id="modify-activity-description" name="activity-description">
+            <label for="modify-activity-due-date">Due Date:</label>
+            <input type="date" id="modify-activity-due-date" name="activity-due-date">
+            <button type="submit" class="btn">Modify</button>
+        </form>
+    </div>
+</div>
+
+<!-- Pop-up for editing a course -->
+<div id="edit-course-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h3>Edit Course</h3>
+        <form id="edit-course-form">
+            <label for="edit-course-name">Name:</label>
+            <input type="text" id="edit-course-name" name="course-name" value="<%= course.name %>">
+            <label for="edit-course-description">Description:</label>
+            <input type="text" id="edit-course-description" name="course-description" value="<%= course.description %>">
+            <label for="edit-course-start-date">Start Date:</label>
+            <input type="date" id="edit-course-start-date" name="course-start-date" value="<%= course.start_date %>">
+            <label for="edit-course-end-date">End Date:</label>
+            <input type="date" id="edit-course-end-date" name="course-end-date" value="<%= course.end_date %>">
+            <button type="submit" class="btn">Save</button>
+        </form>
+    </div>
+</div>
+
+<% // Include extra CSS for this page %>
+<%- include('partials/extra_css', { additionalCSS: '../public/stylesheets/course_record.css' }) %>
+
+<% // Include extra JS for this page %>
+<%- include('partials/extra_js', { additionalJS: '../public/javascripts/course_record.js' }) %>

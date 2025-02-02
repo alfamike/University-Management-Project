@@ -1,0 +1,102 @@
+<%- include('base', { title: 'Course List' }) %>
+
+<h1 class="page-title">Courses List</h1>
+
+<!-- Filters Section -->
+<div class="filters-container">
+    <form class="filters-form" id="filter-form">
+        <div class="filter">
+            <label for="title">Title:</label>
+            <select class="filter-dropdown" id="title" name="title">
+                <!-- Dropdown options for titles -->
+                <% titles.forEach((title) => { %>
+                <option value="<%= title.id %>">
+                <%= title.name %>
+                </option>
+                <% }); %>
+            </select>
+        </div>
+
+        <div class="filter">
+            <label for="year">Year:</label>
+            <select class="filter-dropdown" id="year" name="year">
+                <option value="">All Years</option>
+                <% years.forEach((year) => { %>
+                <option value="<%= year %>">
+                <%= year %>
+                </option>
+                <% }); %>
+            </select>
+        </div>
+
+        <button class="btn-filter" type="submit">Filter</button>
+    </form>
+</div>
+
+<!-- Table of Courses -->
+<div class="course-list">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+        </tr>
+        </thead>
+        <tbody id="course-list">
+        <% if (page_obj && page_obj.length > 0) { %>
+        <% page_obj.forEach((course) => { %>
+        <tr>
+            <td><a href="/course/<%= course.id %>"><%= course.name %></a></td>
+            <td><%= course.description %></td>
+            <td><%= course.start_date %></td>
+            <td><%= course.end_date %></td>
+        </tr>
+        <% }); %>
+        <% } else { %>
+        <tr>
+            <td colspan="4">No courses found.</td>
+        </tr>
+        <% } %>
+        </tbody>
+    </table>
+
+    <!-- Cards for Mobile View -->
+    <div class="card-list">
+        <% if (page_obj && page_obj.length > 0) { %>
+        <% page_obj.forEach((course) => { %>
+        <div class="card">
+            <div class="card-content">
+                <h3 class="card-title"><a href="/course/<%= course.id %>"><%= course.name %></a></h3>
+                <p class="card-description"><%= course.description %></p>
+            </div>
+        </div>
+        <% }); %>
+        <% } else { %>
+        <p class="no-records">No courses found.</p>
+        <% } %>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="pagination-container">
+    <div class="pagination">
+        <% if (page_obj.has_previous) { %>
+        <a class="btn-page" href="?page=1">First</a>
+        <a class="btn-page" href="?page=<%= page_obj.previous_page_number %>">Previous</a>
+        <% } %>
+
+        <span class="current-page">
+            Page <%= page_obj.number %> of <%= page_obj.paginator.num_pages %>
+        </span>
+
+        <% if (page_obj.has_next) { %>
+        <a class="btn-page" href="?page=<%= page_obj.next_page_number %>">Next</a>
+        <a class="btn-page" href="?page=<%= page_obj.paginator.num_pages %>">Last</a>
+        <% } %>
+    </div>
+</div>
+
+<% // Include extra JS for this page %>
+<%- include('partials/extra_js', { additionalJS: '../public/javascripts/course_list.js' }) %>

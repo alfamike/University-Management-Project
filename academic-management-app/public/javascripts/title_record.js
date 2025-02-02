@@ -12,7 +12,7 @@ document.getElementById('edit-title-popup').querySelector('.close-btn').addEvent
 });
 
 window.addEventListener('click', function(event) {
-    if (event.target == document.getElementById('edit-title-popup')) {
+    if (event.target === document.getElementById('edit-title-popup')) {
         document.getElementById('edit-title-popup').style.display = 'none';
     }
 });

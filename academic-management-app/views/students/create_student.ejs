@@ -1,0 +1,48 @@
+<%- include('base', { title: 'Create Student' }) %>
+
+<h1>Create Student</h1>
+<p>Fill out the form below to register a new student in the system.</p>
+
+<div class="form-container">
+    <form class="modern-form" id="create-student-form" action="/students/create" method="POST">
+        <div class="form-group">
+            <label for="student_first_name">First name:</label>
+            <input
+                    type="text"
+                    id="student_first_name"
+                    name="student_first_name"
+                    required
+                    class="form-control">
+            <small class="form-hint">Enter the student's first name.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="student_last_name">Last name:</label>
+            <input
+                    type="text"
+                    id="student_last_name"
+                    name="student_last_name"
+                    required
+                    class="form-control">
+            <small class="form-hint">Enter the student's last name.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="student_email">Email:</label>
+            <input
+                    type="email"
+                    id="student_email"
+                    name="student_email"
+                    required
+                    class="form-control">
+            <small class="form-hint">Provide a valid email address for the student.</small>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Create Student</button>
+        </div>
+    </form>
+</div>
+
+<% // Include extra JS for this page %>
+<%- include('partials/extra_js', { additionalJS: '../public/javascripts/create_student.js' }) %>

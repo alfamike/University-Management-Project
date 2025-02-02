@@ -1,0 +1,104 @@
+<%- include('base', { title: 'Students List' }) %>
+
+<h1 class="page-title">Students List</h1>
+
+<!-- Filters Section -->
+<div class="filters-container">
+    <form id="filter-form" class="filters-form" method="GET" action="/students">
+        <div class="filter">
+            <label for="title">Title:</label>
+            <select id="title" name="title" class="filter-dropdown">
+                <option value="">All Titles</option>
+                <% if (titles && titles.length > 0) { %>
+                <% titles.forEach(title => { %>
+                <option value="<%= title.id %>" <%= (titleFilter === title.id.toString()) ? 'selected' : '' %>>
+                <%= title.name %>
+                </option>
+                <% }); %>
+                <% } %>
+            </select>
+        </div>
+
+        <div class="filter">
+            <label for="course">Course:</label>
+            <label for="course">Choose a Course:</label>
+            <select id="course" name="course" class="filter-dropdown">
+                <option value="" disabled selected>All Courses</option>
+                <% if (Array.isArray(courses) && courses.length > 0) { %>
+                <% courses.forEach(course => { %>
+                <option value="<%= course.id %>" ><%= course.name %>
+                </option>
+                <% }) %>
+                <% } %>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-filter">Filter</button>
+    </form>
+</div>
+
+<!-- Table of Students -->
+<div class="students-list">
+    <!-- Table for Desktop View -->
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+        </tr>
+        </thead>
+        <tbody id="student-list">
+        <% if (students && students.length > 0) { %>
+        <% students.forEach(student => { %>
+        <tr>
+            <td><a href="/students/<%= student.id %>"><%= student.first_name %> <%= student.last_name %></a></td>
+            <td><%= student.email %></td>
+        </tr>
+        <% }); %>
+        <% } else { %>
+        <tr>
+            <td colspan="2">No students found.</td>
+        </tr>
+        <% } %>
+        </tbody>
+    </table>
+
+    <!-- Cards for Mobile View -->
+    <div class="card-list">
+        <% if (students && students.length > 0) { %>
+        <% students.forEach(student => { %>
+        <div class="card">
+            <div class="card-content">
+                <h3 class="card-title">
+                    <a href="/students/<%= student.id %>"><%= student.first_name %> <%= student.last_name %></a>
+                </h3>
+                <p class="card-email"><%= student.email %></p>
+            </div>
+        </div>
+        <% }); %>
+        <% } else { %>
+        <p class="no-records">No students found.</p>
+        <% } %>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="pagination-container">
+    <div class="pagination">
+        <% if (page.hasPrevious) { %>
+        <a href="?page=1&title=<%= titleFilter %>&course=<%= courseFilter %>" class="btn-page">First</a>
+        <a href="?page=<%= page.previous %>&title=<%= titleFilter %>&course=<%= courseFilter %>" class="btn-page">Previous</a>
+        <% } %>
+
+        <span class="current-page">
+            Page <%= page.number %> of <%= page.totalPages %>
+        </span>
+
+        <% if (page.hasNext) { %>
+        <a href="?page=<%= page.next %>&title=<%= titleFilter %>&course=<%= courseFilter %>" class="btn-page">Next</a>
+        <a href="?page=<%= page.totalPages %>&title=<%= titleFilter %>&course=<%= courseFilter %>" class="btn-page">Last</a>
+        <% } %>
+    </div>
+</div>
+
+<%- include('partials/extra_js', { additionalJS: '../public/javascripts/student_list.js' }); %>

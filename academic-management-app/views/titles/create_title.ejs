@@ -1,0 +1,28 @@
+<%- include('base', { title: 'Create Title' }) %>
+
+<% // Content block override %>
+<h1>Create Title</h1>
+<p>Fill out the form below to register a new title in the system.</p>
+
+<div class="form-container">
+    <form class="modern-form" id="create-title-form" method="POST">
+        <div class="form-group">
+            <label for="title_name">Title:</label>
+            <input type="text" id="title_name" name="title_name" required class="form-control">
+            <small class="form-hint">Enter the title name.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="title_description">Description:</label>
+            <textarea id="title_description" name="title_description" class="form-control"></textarea>
+            <small class="form-hint">Enter the title's description.</small>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Create Title</button>
+        </div>
+    </form>
+</div>
+
+<% // Include extra JS for this page %>
+<%- include('partials/extra_js', { additionalJS: '../public/javascripts/create_title.js' }) %>

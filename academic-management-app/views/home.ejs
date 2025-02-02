@@ -1,0 +1,22 @@
+<%- include('base', { title: 'Home' }) %>
+
+<% // Override the content block %>
+<h1>Welcome to the University Management System</h1>
+<p>This is the dashboard where you can manage university data.</p>
+
+<!-- Chatbot UI -->
+<div class="chatbox">
+    <div aria-live="polite" class="chat-container" id="chat-container">
+        <!-- Chat messages will appear here -->
+    </div>
+    <div class="chat-input-container">
+        <label for="user-input"></label><textarea id="user-input" onkeypress="handleKeyPress(event)" placeholder="Type a message..."></textarea>
+        <span class="send-icon" onclick="sendMessage()">&#x27A4;</span>
+    </div>
+</div>
+
+<% // Include extra CSS for this page %>
+<%- include('partials/extra_css', { additionalCSS: '../public/stylesheets/home.css' }) %>
+
+<% // Include extra JS for this page %>
+<%- include('partials/extra_js', { additionalJS: '../public/javascripts/home.js' }) %>

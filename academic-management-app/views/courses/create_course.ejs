@@ -1,0 +1,45 @@
+<%- include('base', { title: 'Create Course' }) %>
+
+<h1>Create Course</h1>
+<p>Fill out the form below to register a new course in the system.</p>
+
+<div class="form-container">
+    <form class="modern-form" id="create-course-form" action="" method="POST">
+        <div class="form-group">
+            <label for="titles-dropdown">Title:</label>
+            <select class="filter-dropdown" id="titles-dropdown" name="title" required></select>
+            <small class="form-hint">Select the title</small>
+        </div>
+
+        <div class="form-group">
+            <label for="course_name">Course:</label>
+            <input type="text" id="course_name" name="course_name" required class="form-control">
+            <small class="form-hint">Enter the course name.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="course_description">Description:</label>
+            <textarea id="course_description" name="course_description" class="form-control"></textarea>
+            <small class="form-hint">Enter the course's description.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="course_start_date">Start Date:</label>
+            <input type="date" id="course_start_date" name="course_start_date" required class="form-control">
+            <small class="form-hint">Enter the course's start date.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="course_end_date">Start Date:</label>
+            <input type="date" id="course_end_date" name="course_end_date" required class="form-control">
+            <small class="form-hint">Enter the course's end date.</small>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Create Course</button>
+        </div>
+    </form>
+</div>
+
+<% // Include extra JS for this page %>
+<%- include('partials/extra_js', { additionalJS: '../public/javascripts/create_course.js' }) %>

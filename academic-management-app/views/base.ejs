@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="../public/stylesheets/base.css">
+    <%- include('partials/extra_css') %> <!-- Include extra CSS if needed -->
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title><%= title %></title> <!-- Dynamic Title -->
+</head>
+<body>
+<!-- Button to open/close the menu in small screens -->
+<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+<!-- Side menu -->
+<nav class="sidebar">
+    <h2>University Management</h2>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li onclick="toggleSubmenu(event)">
+            Students
+            <ul class="submenu">
+                <li><a href="/students">List Students</a></li>
+                <li><a href="/students/create">Create Student</a></li>
+            </ul>
+        </li>
+        <li onclick="toggleSubmenu(event)">
+            Courses
+            <ul class="submenu">
+                <li><a href="/courses">List Courses</a></li>
+                <li><a href="/courses/create">Create Course</a></li>
+            </ul>
+        </li>
+        <li onclick="toggleSubmenu(event)">
+            Titles
+            <ul class="submenu">
+                <li><a href="/titles">List Titles</a></li>
+                <li><a href="/titles/create">Create Title</a></li>
+            </ul>
+        </li>
+        <li><a href="/settings">Settings</a></li>
+        <li class="logout-btn">
+            <form action="/logout" id="logout-form" method="post" style="display: inline;">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"> <!-- CSRF Token -->
+                <button style="background: none; border: none; padding: 0; color: inherit; font: inherit; cursor: pointer;"
+                        type="submit">
+                    Logout
+                </button>
+            </form>
+        </li>
+    </ul>
+</nav>
+
+<!-- Main Content -->
+<div class="main-container">
+    <div class="content">
+        <%- body %> <!-- Page-specific content -->
+        <%- include('partials/extra_js') %> <!-- Include extra JS if needed -->
+    </div>
+</div>
+
+<script>
+    // Function to change the side menu in mobile devices
+    function toggleMenu() {
+        document.querySelector('.sidebar').classList.toggle('open');
+    }
+
+    // Function to change the submenu visualization
+    function toggleSubmenu(event) {
+        event.currentTarget.classList.toggle('active');
+    }
+</script>
+</body>
+</html>
