@@ -120,13 +120,13 @@
 <!--        "courses": <%- "JSON.stringify(courses)" %>,-->
 <!--        "titles": <%- "JSON.stringify(titles)" %>,-->
 <!--        "activities": <%- "JSON.stringify(activities)" %>,-->
-<!--        "course_grades": <%"-" "JSON.stringify(course_grades)" %>,-->
+<!--        "course_grades": <% "JSON.stringify(course_grades)" %>,-->
 <!--        "activity_grades": <%- "JSON.stringify(activity_grades)" %>-->
 <!--    }-->
 <!--</script>-->
 
 <% // Include extra CSS for this page %>
-<%- include('partials/extra_css', { additionalCSS: '../public/stylesheets/student_record.css' }) %>
+<%- include('partials/extra_css', { additionalCSS: '../public/css/student_record.css' }) %>
 
 <% // Include extra JS for this page %>
-<%- include('partials/extra_js', { additionalJS: '../public/javascripts/student_record.js' }) %>
+<%- include('partials/extra_js', { additionalJS: '../public/js/student_record.js' }) %>

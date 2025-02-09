@@ -1,18 +1,30 @@
 require('dotenv').config();
+
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
-
-const indexRouter = require('./routes/index');
-
+const {join} = require("path");
+const session = require("express-session");
+const expressLayouts = require('express-ejs-layouts');
 const app = express();
 
+// Router
+const loginRouter = require('./routes/login');
+const indexRouter = require('./routes/index');
+const generalViewsRouter = require('./routes/general_views');
+const titleViewsRouter = require('./routes/title_views');
+const courseViewsRouter = require('./routes/course_views');
+const studentViewsRouter = require('./routes/student_views');
+const activityViewsRouter = require('./routes/activity_views');
+
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs');
+//app.use(expressLayouts);
+//.set('layout', 'base');
 
 app.use(cors());
 app.use(logger('dev'));
@@ -21,10 +33,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+// Session middleware
+app.use(session({
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Set to true if using HTTPS
+}));
 
-const KALEIDO_API_URL = process.env.KALEIDO_API_URL;
-const KALEIDO_AUTH = { auth: { username: process.env.KALEIDO_USERNAME, password: process.env.KALEIDO_PASSWORD } };
+app.use('/', indexRouter);
+app.use('/', loginRouter);
+app.use('/', generalViewsRouter);
+app.use('/', titleViewsRouter);
+app.use('/', courseViewsRouter);
+app.use('/', studentViewsRouter);
+app.use('/', activityViewsRouter);
 
 // Handle 404 errors
 const handle404Error = (req, res, next) => {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href="../public/stylesheets/base.css">
+    <link rel="stylesheet" type="text/css" href="/css/base.css">
     <%- include('partials/extra_css') %> <!-- Include extra CSS if needed -->
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -15,7 +15,7 @@
 <nav class="sidebar">
     <h2>University Management</h2>
     <ul>
-        <li><a href="/">Home</a></li>
+        <li><a href="/home">Home</a></li>
         <li onclick="toggleSubmenu(event)">
             Students
             <ul class="submenu">
@@ -40,7 +40,6 @@
         <li><a href="/settings">Settings</a></li>
         <li class="logout-btn">
             <form action="/logout" id="logout-form" method="post" style="display: inline;">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>"> <!-- CSRF Token -->
                 <button style="background: none; border: none; padding: 0; color: inherit; font: inherit; cursor: pointer;"
                         type="submit">
                     Logout
@@ -53,7 +52,6 @@
 <!-- Main Content -->
 <div class="main-container">
     <div class="content">
-        <%- body %> <!-- Page-specific content -->
         <%- include('partials/extra_js') %> <!-- Include extra JS if needed -->
     </div>
 </div>

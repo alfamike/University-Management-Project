@@ -1,2 +1,36 @@
-# Ignore .env files
+# Node modules
+node_modules/
+
+# npm logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# dotenv environment variables file
 .env
+
+# Logs
+logs/
+*.log
+logs/**/*.log
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# IDE/editor files
+.idea/
+.vscode/
+
+# MacOS specific files
+*.swp
+
+# Coverage directory for code coverage reports
+coverage/
+
+# Build and distribution files (if applicable)
+dist/
+build/
+
+# Miscellaneous
+*.tgz
