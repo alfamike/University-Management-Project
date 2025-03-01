@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-const { isAuthenticated } = require("./auth");
 
 router.get('/logout', (req, res) => {
     req.session.destroy(() => {

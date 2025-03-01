@@ -14,6 +14,13 @@
     <div class="login-container">
         <h1>University Management</h1>
 
+        <!-- Error Toast -->
+        <% if (error) { %>
+            <div class="toast error-toast">
+                <p><%= error %></p>
+            </div>
+        <% } %>
+
         <form id="login-form" action="/login" method="POST" class="modern-form">
             <div class="form-group">
                 <label for="username">Username</label>
@@ -36,7 +43,6 @@
     </footer>
 </div>
 <!-- External Scripts -->
-<!--<script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>-->
-<!--<script src="/js/login.js"></script>-->
+<script src="/js/login.js"></script>
 </body>
 </html>

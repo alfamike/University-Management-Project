@@ -12,7 +12,7 @@ const expressLayouts = require('express-ejs-layouts');
 const app = express();
 
 // Router
-const loginRouter = require('./routes/login');
+const loginRouter = require('./routes/login_views');
 const indexRouter = require('./routes/index');
 const generalViewsRouter = require('./routes/general_views');
 const titleViewsRouter = require('./routes/title_views');
