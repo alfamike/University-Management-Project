@@ -1,21 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-
-router.get('/logout', (req, res) => {
-    req.session.destroy(() => {
-        res.redirect('/');
-    });
-});
+const {isAuthenticated} = require("./auth");
 
 // Render home page
-router.get("/home", (req, res) => {
+router.get("/home", isAuthenticated, (req, res, next) => {
     res.render("home");
 });
-
-// router.get("/home", isAuthenticated, (req, res) => {
-//     res.render("home");
-// });
 
 // Chat message processing endpoint
 router.post("/chat", async (req, res) => {

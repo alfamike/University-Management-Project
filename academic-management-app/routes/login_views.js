@@ -30,4 +30,16 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.log(err);
+            return res.redirect('/home'); // Redirect to home if there's an error
+        }
+
+        res.clearCookie('connect.sid');
+        res.redirect('/');
+    });
+});
+
 module.exports = router;

@@ -23,8 +23,6 @@ const activityViewsRouter = require('./routes/activity_views');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs');
-//app.use(expressLayouts);
-//.set('layout', 'base');
 
 app.use(cors());
 app.use(logger('dev'));
@@ -38,7 +36,7 @@ app.use(session({
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false } // Set to true if using HTTPS
+  cookie: { secure: process.env.NODE_ENV === 'production', maxAge: null }
 }));
 
 app.use('/', indexRouter);
