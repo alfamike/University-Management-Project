@@ -56,12 +56,8 @@ class KaleidoClient {
             for (let network of result.data) {
                 console.log(`\t[${i++}] id: ${network._id}, name: ${network.name}`);
             }
-            if (process.env.KALEIDO_CONSORTIUM) {
-                consortium = process.env.KALEIDO_CONSORTIUM;
-            } else {
-                const consortiumId = prompt('Select target consortium: ');
-                consortium = result.data[consortiumId]._id;
-            }
+            const consortiumId = prompt('Select target consortium: ');
+            consortium = result.data[consortiumId]._id;
         } else {
             console.log(
                 `Found business network "${result.data[0].name}" (${result.data[0]._id})`
@@ -88,14 +84,12 @@ class KaleidoClient {
             for (let member of result.data) {
                 console.log(`\t[${i++}] id: ${member._id}, name: ${member.org_name}`);
             }
-            if (process.env.KALEIDO_MEMBERSHIP) {
-                membership = process.env.KALEIDO_MEMBERSHIP;
-            } else {
-                const membershipId = prompt(
-                    "Select membership to use to submit transactions: "
-                );
-                membership = result.data[membershipId]._id;
-            }
+
+            const membershipId = prompt(
+                "Select membership to use to submit transactions: "
+            );
+            membership = result.data[membershipId]._id;
+
         } else {
             console.log(
                 `Found membership "${result.data[0].org_name}" (${result.data[0]._id})`
@@ -125,12 +119,10 @@ class KaleidoClient {
             for (let network of result.data) {
                 console.log(`\t[${i++}] id: ${network._id}, name: ${network.name}`);
             }
-            if (process.env.KALEIDO_ENVIRONMENT) {
-                env = process.env.KALEIDO_ENVIRONMENT;
-            } else {
-                const environmentId = prompt('Select target environment: ');
-                env = result.data[environmentId]._id;
-            }
+
+            const environmentId = prompt('Select target environment: ');
+            env = result.data[environmentId]._id;
+
         } else {
             console.log(
                 `Found environment "${result.data[0].name}" (${result.data[0]._id})`
@@ -159,10 +151,10 @@ class KaleidoClient {
                 console.log(`\t[${i++}] name: ${channel.name}`);
             }
             if (process.env.KALEIDO_CHANNEL) {
-                ret = process.env.KALEIDO_CHANNEL;
+                ret = channels.find(channel => channel._id === process.env.KALEIDO_CHANNEL);
             } else{
-                const channelId = prompt('Select target channel: ');
-                ret = channels[channelId];
+                const channelOrder = prompt('Select target channel: ');
+                ret = channels[channelOrder];
             }
         } else if (result.data.length === 1) {
             ret = result.data[0];
@@ -171,6 +163,7 @@ class KaleidoClient {
     }
 
     async locateFabricCAs(consortiumId, envId) {
+        this.cas = {};
         let result = await axios.get(
             `${this.kaleidoUrl}/c/${consortiumId}/e/${envId}/s`,
             this.apiAuth
@@ -185,14 +178,14 @@ class KaleidoClient {
                 process.exit(1);
             } else {
                 console.log(`Found Fabric CAs:`);
-                this.cas = {};
                 for (let ca of fabcas) {
                     console.log(`\tid: ${ca._id}, membership: ${ca.membership_id}`);
-                    const cert = await this.getCACert();
+                    const cert = await this.getCACert(ca._id);
                     this.cas[ca.membership_id] = {
                         url: ca.urls.http,
                         id: ca._id,
                         caCertPEM: cert,
+                        name: ca.name
                     };
                 }
             }
@@ -204,7 +197,6 @@ class KaleidoClient {
             `${this.kaleidoUrl}/c/${consortiumId}/e/${envId}/n`,
             this.apiAuth
         );
-        let orderers = {};
         if (result.data.length === 0) {
             console.error(`No orderers found in the environment ${envId}`);
             throw new Error(`No orderers found in the environment ${envId}`);
@@ -220,7 +212,7 @@ class KaleidoClient {
                     hostname: `${orderer.urls.orderer.slice("https://".length)}`,
                     id: orderer._id,
                     membershipId: orderer.membership_id,
-                    caCertPEM,
+                    caCertPEM: caCertPEM,
                 };
             });
         }
@@ -231,7 +223,7 @@ class KaleidoClient {
             `${this.kaleidoUrl}/c/${consortiumId}/e/${envId}/n`,
             this.apiAuth
         );
-        let peer;
+
         if (result.data.length === 0) {
             console.error(`No peers found in the environment ${envId}`);
             process.exit(1);
@@ -247,39 +239,39 @@ class KaleidoClient {
                     hostname: `${peer.urls.peer.slice("https://".length)}`,
                     id: peer._id,
                     membershipId: peer.membership_id,
-                    caCertPEM,
+                    caCertPEM: caCertPEM,
                 };
             });
         }
     }
 
-    async getCACert() {
+    async getCACert(ca_id) {
         const result = await axios.get(
-            `${this.kaleidoUrl}/fabric-ca/${this.cas[this.myMembership].id}/cacert`,
+            `${this.kaleidoUrl}/fabric-ca/${ca_id}/cacert`,
             this.apiAuth
         );
         return result.data.cert;
     }
 
-    async registerNewUser() {
-        let result = await axios.post(
-            `${this.kaleidoUrl}/fabric-ca/${this.cas[this.myMembership].id}/register`,
-            {
-                registrations: [
-                    {
-                        enrollmentID: this.userId,
-                        role: "client",
-                    },
-                ],
-            },
-            this.apiAuth
-        );
-        if (result.data.errors && result.data.errors.length > 0) {
-            console.log(`Failed to register user ${this.userId}`, result.data.errors);
-            process.exit(1);
-        }
-        return result.data.registrations[0].enrollmentSecret;
-    }
+    // async registerNewUser() {
+    //     let result = await axios.post(
+    //         `${this.kaleidoUrl}/fabric-ca/${this.cas[this.myMembership].id}/register`,
+    //         {
+    //             registrations: [
+    //                 {
+    //                     enrollmentID: this.userId,
+    //                     role: "client",
+    //                 },
+    //             ],
+    //         },
+    //         this.apiAuth
+    //     );
+    //     if (result.data.errors && result.data.errors.length > 0) {
+    //         console.log(`Failed to register user ${this.userId}`, result.data.errors);
+    //         process.exit(1);
+    //     }
+    //     return result.data.registrations[0].enrollmentSecret;
+    // }
 
     async getCertFile(membershipId) {
         if (!this.config.organizations[membershipId]?.certificateAuthorities) {
@@ -373,35 +365,9 @@ class KaleidoClient {
             };
         }
 
-        // this.addCertificateAuthority(config, membershipId);
-
-
         console.log(JSON.stringify(config, null, 2));
         return config;
     }
-
-    // addCertificateAuthority(config, membershipId) {
-    //     if (!this.cas[membershipId]) {
-    //         console.warn(`CA not found for membership ID: ${membershipId}`);
-    //         return;
-    //     }
-    //
-    //     const caCertPEM = this.cas[membershipId].caCertPEM || ""; // Ensure PEM exists
-    //     if (!caCertPEM) {
-    //         console.warn(`Missing caCertPEM for membership ID: ${membershipId}`);
-    //     }
-    //
-    //     config.certificateAuthorities[this.cas[membershipId].id] = {
-    //         url: this.cas[membershipId].url,
-    //         caName: this.cas[membershipId].name || "default-ca-name", // Add a default name
-    //         tlsCACerts: {
-    //             pem: [caCertPEM],
-    //         },
-    //         httpOptions: {
-    //             verify: false,
-    //         },
-    //     };
-    // }
 }
 
 module.exports = KaleidoClient;
