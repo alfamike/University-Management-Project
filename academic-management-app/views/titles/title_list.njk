@@ -1,5 +1,6 @@
 {% extends "base.njk" %}
 {% block content %}
+<input type="hidden" id="csrfToken" name="_csrf" value="{{ csrfToken }}">
 <h1 class="page-title">Titles List</h1>
 
 <!-- Table of Titles -->

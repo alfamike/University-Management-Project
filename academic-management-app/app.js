@@ -9,6 +9,7 @@ const cors = require('cors');
 const {join} = require("path");
 const session = require("express-session");
 const nunjucks = require('nunjucks');
+const csurf = require('csurf');
 const app = express();
 
 // Router
@@ -27,12 +28,21 @@ nunjucks.configure('views', {
 });
 app.set('view engine', 'njk');
 
+// CORS
 app.use(cors());
+// Logger
 app.use(logger('dev'));
+
+// Parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
+
+// CSRF middleware
+app.use(csurf({ cookie: true }));
 
 // Session middleware
 app.use(session({
@@ -41,6 +51,12 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: process.env.NODE_ENV === 'production', maxAge: null }
 }));
+
+// Pass CSRF token to views
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 app.use('/', indexRouter);
 app.use('/', loginRouter);

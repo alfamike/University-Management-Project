@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Get the URL for the next/previous page
             const url = event.target.href;
             // Get CSRF token
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const csrfToken = document.getElementById('csrfToken').value;
 
             fetch(url, {
                 method: 'GET',
