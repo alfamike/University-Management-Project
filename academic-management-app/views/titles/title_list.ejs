@@ -1,6 +1,3 @@
-<%- include('base', { title: 'Titles List' }) %>
-
-<% // Content block override %>
 <h1 class="page-title">Titles List</h1>
 
 <!-- Table of Titles -->
@@ -14,16 +11,16 @@
         </thead>
         <tbody id="title-list">
         <% if (titles && titles.length > 0) { %>
-        <% titles.forEach(title => { %>
-        <tr>
-            <td><a href="/titles/<%= title.id %>"><%= title.name %></a></td>
-            <td><%= title.description %></td>
-        </tr>
-        <% }) %>
+            <% titles.forEach(title => { %>
+                <tr>
+                    <td><a href="/titles/<%= title.id %>"><%= title.name %></a></td>
+                    <td><%= title.description %></td>
+                </tr>
+            <% }) %>
         <% } else { %>
-        <tr>
-            <td colspan="2">No titles found.</td>
-        </tr>
+            <tr>
+                <td colspan="2">No titles found.</td>
+            </tr>
         <% } %>
         </tbody>
     </table>
@@ -31,16 +28,16 @@
     <!-- Cards for Mobile View -->
     <div class="card-list">
         <% if (titles && titles.length > 0) { %>
-        <% titles.forEach(title => { %>
-        <div class="card">
-            <div class="card-content">
-                <h3 class="card-title"><a href="/titles/<%= title.id %>"><%= title.name %></a></h3>
-                <p class="card-description"><%= title.description %></p>
-            </div>
-        </div>
-        <% }) %>
+            <% titles.forEach(title => { %>
+                <div class="card">
+                    <div class="card-content">
+                        <h3 class="card-title"><a href="/titles/<%= title.id %>"><%= title.name %></a></h3>
+                        <p class="card-description"><%= title.description %></p>
+                    </div>
+                </div>
+            <% }) %>
         <% } else { %>
-        <p class="no-records">No titles found.</p>
+            <p class="no-records">No titles found.</p>
         <% } %>
     </div>
 </div>
@@ -49,17 +46,17 @@
 <div class="pagination-container">
     <div class="pagination">
         <% if (page.hasPrevious) { %>
-        <a href="?page=1" class="btn-page">First</a>
-        <a href="?page=<%= page.previous %>" class="btn-page">Previous</a>
+            <a href="?page=1" class="btn-page">First</a>
+            <a href="?page=<%= page.previous %>" class="btn-page">Previous</a>
         <% } %>
 
         <span class="current-page">
-            Page <%= page.number %> of <%= page.totalPages %>
-        </span>
+                    Page <%= page.number %> of <%= page.totalPages %>
+                </span>
 
         <% if (page.hasNext) { %>
-        <a href="?page=<%= page.next %>" class="btn-page">Next</a>
-        <a href="?page=<%= page.totalPages %>" class="btn-page">Last</a>
+            <a href="?page=<%= page.next %>" class="btn-page">Next</a>
+            <a href="?page=<%= page.totalPages %>" class="btn-page">Last</a>
         <% } %>
     </div>
 </div>

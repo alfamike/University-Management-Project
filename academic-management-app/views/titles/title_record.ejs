@@ -1,6 +1,4 @@
-<%- include('base', { title: 'Title Detail' }) %>
 
-<% // Content block override %>
 <div class="title-detail-container">
     <!-- Header Section -->
     <div class="title-header">
@@ -33,38 +31,38 @@
         <h2 class="details-title">Related Courses</h2>
 
         <% if (courses && courses.length > 0) { %>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% courses.forEach(course => { %>
-            <tr>
-                <td><a href="/courses/<%= course.id %>"><%= course.name %></a></td>
-                <td><%= course.description %></td>
-                <td><%= course.start_date %></td>
-                <td><%= course.end_date %></td>
-            </tr>
-            <% }) %>
-            </tbody>
-        </table>
-        <div class="cards">
-            <% courses.forEach(course => { %>
-            <div class="card">
-                <h3><a href="/courses/<%= course.id %>"><%= course.name %></a></h3>
-                <p><%= course.description %></p>
-                <p><%= course.start_date %></p>
-                <p><%= course.end_date %></p>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% courses.forEach(course => { %>
+                    <tr>
+                        <td><a href="/courses/<%= course.id %>"><%= course.name %></a></td>
+                        <td><%= course.description %></td>
+                        <td><%= course.start_date %></td>
+                        <td><%= course.end_date %></td>
+                    </tr>
+                <% }) %>
+                </tbody>
+            </table>
+            <div class="cards">
+                <% courses.forEach(course => { %>
+                    <div class="card">
+                        <h3><a href="/courses/<%= course.id %>"><%= course.name %></a></h3>
+                        <p><%= course.description %></p>
+                        <p><%= course.start_date %></p>
+                        <p><%= course.end_date %></p>
+                    </div>
+                <% }) %>
             </div>
-            <% }) %>
-        </div>
         <% } else { %>
-        <p class="no-courses">No related courses found.</p>
+            <p class="no-courses">No related courses found.</p>
         <% } %>
     </div>
 </div>

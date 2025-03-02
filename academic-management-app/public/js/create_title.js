@@ -1,7 +1,6 @@
 document.getElementById('create-title-form').addEventListener('submit', async function (event) {
     event.preventDefault();
 
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const name = document.getElementById('title_name').value;
     const description = document.getElementById('title_description').value;
 
@@ -10,7 +9,6 @@ document.getElementById('create-title-form').addEventListener('submit', async fu
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
             },
             body: JSON.stringify({ name, description })
         });

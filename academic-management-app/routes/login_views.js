@@ -10,7 +10,8 @@ router.post('/login', async (req, res) => {
         const identity = await auth(username);
 
         if (identity == null) {
-            return res.render('registration/login', { error: 'Invalid username. Please try again.' });
+            res.redirect('/');
+            res.render('registration/login', { error: 'Invalid username. Please try again.' });
         } else{
             // Save user session
             req.session.user = {
@@ -22,7 +23,7 @@ router.post('/login', async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        return res.render('registration/login', { error: 'Invalid username. Please try again.' });
+        res.render('registration/login', { error: 'Invalid username. Please try again.' });
     }
 
 });

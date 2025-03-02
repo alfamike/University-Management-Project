@@ -23,6 +23,8 @@ const activityViewsRouter = require('./routes/activity_views');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs');
+app.use(expressLayouts);
+app.set('layout', 'base'); // default layout
 
 app.use(cors());
 app.use(logger('dev'));
