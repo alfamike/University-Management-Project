@@ -21,6 +21,7 @@
     "fs-extra": "^11.3.0",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
+    "nunjucks": "^3.2.4",
     "prompt-sync": "^4.2.0"
   }
 }

@@ -1,8 +1,10 @@
+{% extends "base.njk" %}
+{% block content %}
 <h1>Create Title</h1>
 <p>Fill out the form below to register a new title in the system.</p>
 
 <div class="form-container">
-    <form class="modern-form" id="create-title-form" method="POST">
+    <form class="modern-form" id="create-title-form" method="POST" action="/titles">
         <div class="form-group">
             <label for="title_name">Title:</label>
             <input type="text" id="title_name" name="title_name" required class="form-control">
@@ -20,6 +22,4 @@
         </div>
     </form>
 </div>
-
-<% // Include extra JS for this page %>
-<%- include('partials/extra_js', { additionalJS: '../public/js/create_title.js' }) %>
+{% endblock %}

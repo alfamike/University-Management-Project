@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const axios = require("axios");
+const fabConnectService = require("../kaleido/fabConnectService");
 
 const KALEIDO_API_URL = process.env.KALEIDO_API_URL;
 const KALEIDO_AUTH = { auth: { username: process.env.KALEIDO_USERNAME, password: process.env.KALEIDO_PASSWORD } };
@@ -23,16 +24,32 @@ router.post("/students", async (req, res) => {
 
 // Get all students
 router.get("/students", async (req, res) => {
+    let queryData;
     try {
-        const response = await axios.post(`${KALEIDO_API_URL}/query`, {
-            chaincode: "studentContract",
-            method: "getAllStudents",
-            args: []
-        }, KALEIDO_AUTH);
+        queryData = {
+            "headers": {
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL,
+                "chaincode": "StudentContract"
+            },
+            "func": "getAllStudents",
+            "args": [],
+            "strongread": true
+        }
+        const response = await fabConnectService.queryChaincode(queryData);
 
-        res.json(JSON.parse(response.data.result));
+        let students;
+        try {
+            students = JSON.parse(response.data.result);
+        } catch (parseError) {
+            console.error('Error parsing response data:', parseError.message);
+            students = [];
+        }
+
+        res.render('students/student_list', { page_title: 'Students List', students: students });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.render('students/student_list', { page_title: 'Students List', students: [] });
+        console.error(err.message);
     }
 });
 

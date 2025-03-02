@@ -5,7 +5,7 @@ const {isAuthenticated} = require("./auth");
 
 // Render home page
 router.get("/home", isAuthenticated, (req, res, next) => {
-    res.render("home", { title: 'Home' });
+    res.render("home", { page_title: 'Home' });
 });
 
 // Chat message processing endpoint

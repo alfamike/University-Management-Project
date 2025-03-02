@@ -8,7 +8,7 @@ const logger = require('morgan');
 const cors = require('cors');
 const {join} = require("path");
 const session = require("express-session");
-const expressLayouts = require('express-ejs-layouts');
+const nunjucks = require('nunjucks');
 const app = express();
 
 // Router
@@ -21,15 +21,16 @@ const studentViewsRouter = require('./routes/student_views');
 const activityViewsRouter = require('./routes/activity_views');
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'))
-app.set('view engine', 'ejs');
-app.use(expressLayouts);
-app.set('layout', 'base'); // default layout
+nunjucks.configure('views', {
+  autoescape: true,
+  express: app
+});
+app.set('view engine', 'njk');
 
 app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

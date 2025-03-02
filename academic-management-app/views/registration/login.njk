@@ -15,11 +15,11 @@
         <h1>University Management</h1>
 
         <!-- Error Toast -->
-        <% if (error) { %>
+        {% if error %}
             <div class="toast error-toast">
-                <p><%= error %></p>
+                <p>{{ error }}</p>
             </div>
-        <% } %>
+        {% endif %}
 
         <form id="login-form" action="/login" method="POST" class="modern-form">
             <div class="form-group">

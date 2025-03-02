@@ -1,3 +1,5 @@
+{% extends "base.njk" %}
+{% block content %}
 <h1>Welcome to the University Management System</h1>
 <p>This is the dashboard where you can manage university data.</p>
 
@@ -11,10 +13,12 @@
         <span class="send-icon" onclick="sendMessage()">&#x27A4;</span>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="/css/home.css">
+{% endblock %}
 
-<% // Include extra CSS for this page %>
-<%- include('partials/extra_css', { additionalCSS: '/css/home.css' }) %>
-
-<% // Include extra JS for this page %>
-<%- include('partials/extra_js', { additionalJS: '/js/home.js' }) %>
+{% block extra_js %}
+<script src="/js/home.js"></script>
+{% endblock %}

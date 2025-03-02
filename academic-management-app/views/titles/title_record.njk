@@ -1,8 +1,9 @@
-
+{% extends "base.njk" %}
+{% block content %}
 <div class="title-detail-container">
     <!-- Header Section -->
     <div class="title-header">
-        <h1 class="page-title"><%= title.name %></h1>
+        <h1 class="page-title">{{ title.name }}</h1>
     </div>
 
     <!-- Details Section -->
@@ -16,11 +17,11 @@
             <div class="details-content">
                 <div class="detail-item">
                     <span class="detail-label">Name:</span>
-                    <span class="detail-value"><%= title.name %></span>
+                    <span class="detail-value">{{ title.name }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Description:</span>
-                    <span class="detail-value"><%= title.description %></span>
+                    <span class="detail-value">{{ title.description }}</span>
                 </div>
             </div>
         </div>
@@ -30,7 +31,7 @@
     <div class="related-courses">
         <h2 class="details-title">Related Courses</h2>
 
-        <% if (courses && courses.length > 0) { %>
+        {% if courses and courses.length > 0 %}
             <table class="table">
                 <thead>
                 <tr>
@@ -41,29 +42,29 @@
                 </tr>
                 </thead>
                 <tbody>
-                <% courses.forEach(course => { %>
+                {% for course in courses %}
                     <tr>
-                        <td><a href="/courses/<%= course.id %>"><%= course.name %></a></td>
-                        <td><%= course.description %></td>
-                        <td><%= course.start_date %></td>
-                        <td><%= course.end_date %></td>
+                        <td><a href="/courses/{{ course.id }}">{{ course.name }}</a></td>
+                        <td>{{ course.description }}</td>
+                        <td>{{ course.start_date }}</td>
+                        <td>{{ course.end_date }}</td>
                     </tr>
-                <% }) %>
+                {% endfor %}
                 </tbody>
             </table>
             <div class="cards">
-                <% courses.forEach(course => { %>
+                {% for course in courses %}
                     <div class="card">
-                        <h3><a href="/courses/<%= course.id %>"><%= course.name %></a></h3>
-                        <p><%= course.description %></p>
-                        <p><%= course.start_date %></p>
-                        <p><%= course.end_date %></p>
+                        <h3><a href="/courses/{{ course.id }}">{{ course.name }}</a></h3>
+                        <p>{{ course.description }}</p>
+                        <p>{{ course.start_date }}</p>
+                        <p>{{ course.end_date }}</p>
                     </div>
-                <% }) %>
+                {% endfor %}
             </div>
-        <% } else { %>
+        {% else %}
             <p class="no-courses">No related courses found.</p>
-        <% } %>
+        {% endif %}
     </div>
 </div>
 
@@ -74,22 +75,21 @@
         <h3>Edit Title</h3>
         <form id="edit-title-form">
             <label for="edit-title-name">Name:</label>
-            <input type="text" id="edit-title-name" name="title-name" value="<%= title.name %>">
+            <input type="text" id="edit-title-name" name="title-name" value="{{ title.name }}">
             <label for="edit-title-description">Description:</label>
-            <input type="text" id="edit-title-description" name="title-description" value="<%= title.description %>">
+            <input type="text" id="edit-title-description" name="title-description" value="{{ title.description }}">
             <label for="edit-title-publication-date">Publication Date:</label>
-            <input type="date" id="edit-title-publication-date" name="title-publication-date" value="<%= title.publication_date %>">
+            <input type="date" id="edit-title-publication-date" name="title-publication-date" value="{{ title.publication_date }}">
             <button type="submit" class="btn">Save</button>
         </form>
     </div>
 </div>
+{% endblock %}
 
-<script id="data" type="application/json">
-    "<%= title.id %>"
-</script>
+{% block extra_css %}
+<link rel="stylesheet" href="/css/title_record.css">
+{% endblock %}
 
-<% // Include extra CSS for this page %>
-<%- include('partials/extra_css', { additionalCSS: '../public/css/title_record.css' }) %>
-
-<% // Include extra JS for this page %>
-<%- include('partials/extra_js', { additionalJS: '../public/js/title_record.js' }) %>
+{% block extra_js %}
+<script src="/js/title_record.js"></script>
+{% endblock %}

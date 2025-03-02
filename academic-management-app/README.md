@@ -18,7 +18,17 @@ Kaleido simplifies the deployment and management of blockchain networks, offerin
 
 Ensure you have the following set up:
 
-- Kaleido Account
+1. Kaleido Account
+2. Postman
+   2.1. Kaleido API Console
+   2.2. Kaleido REST API GATEWAY
+
+1. Create consortia and environment in Kaleido via API with Postman
+2. Create orderer and peer nodes in Kaleido via interface
+3. Create an app credential in Kaleido via interface
+4. Create a channel in Kaleido via API with Postman
+5. Create an identity in Kaleido via API with Postman and enroll the identity
+5. Deploy chaincodes in Kaleido via interface
 - Environment variables configured in a `.env` file:
 
 ```
@@ -34,7 +44,7 @@ KALEIDO_NODE_PASSWORD : Kaleido APP CREDENTIAL Password
 PORT : Choose a port number (e.g. 3000)
 NODE_ENV : Set the environment mode (e.g. development)
 SECRET : Set a secret key for the session token (e.g. mysecret)
-KALEIDO_NODE_URL : Go to Kaleido Console -> Select a node -> Node Overview -> Connect your node -> Copy the Rest API Gateway URL
+KALEIDO_NODE_URL : Go to Kaleido Console -> Select a node -> Node Overview -> Connect your node -> Copy the Rest API Gateway URL without the last '/'
 KALEIDO_NODE_CREDENTIAL_ID : Go to Kaleido Console -> Security -> App Creds -> New App Cred -> Copy the App Cred ID
 KALEIDO_NODE_PASSWORD : After an app credential is created -> Copy the password
 ```

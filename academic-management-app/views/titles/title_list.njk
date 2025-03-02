@@ -1,0 +1,69 @@
+{% extends "base.njk" %}
+{% block content %}
+<h1 class="page-title">Titles List</h1>
+
+<!-- Table of Titles -->
+<div class="titles-list">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody id="title-list">
+        {% if titles and titles.length > 0 %}
+            {% for title in titles %}
+                <tr>
+                    <td><a href="/titles/{{ title.id }}">{{ title.name }}</a></td>
+                    <td>{{ title.description }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="2">No titles found.</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+    <!-- Cards for Mobile View -->
+    <div class="card-list">
+        {% if titles and titles.length > 0 %}
+            {% for title in titles %}
+                <div class="card">
+                    <div class="card-content">
+                        <h3 class="card-title"><a href="/titles/{{ title.id }}">{{ title.name }}</a></h3>
+                        <p class="card-description">{{ title.description }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-records">No titles found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="pagination-container">
+    <div class="pagination">
+        {% if page.hasPrevious %}
+            <a href="?page=1" class="btn-page">First</a>
+            <a href="?page={{ page.previous }}" class="btn-page">Previous</a>
+        {% endif %}
+
+        <span class="current-page">
+            Page {{ page.number }} of {{ page.totalPages }}
+        </span>
+
+        {% if page.hasNext %}
+            <a href="?page={{ page.next }}" class="btn-page">Next</a>
+            <a href="?page={{ page.totalPages }}" class="btn-page">Last</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/js/title_list.js"></script>
+{% endblock %}
