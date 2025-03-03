@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const fabConnectService = require('../kaleido/fabConnectService');
+const paginate = require('pagination');
 
 router.get('/titles/create', (req, res) => {
     res.render('titles/create_title', { page_title: 'Create Title' });
@@ -29,16 +30,17 @@ router.post("/titles", async (req, res) => {
 
         res.redirect('/titles');
     } catch (err) {
-        res.status(500).json({error: err.message});
+        console.error('Error creating title:', err.message);
+        res.redirect('/titles');
     }
 });
 
 // Get a single title
-router.get("/titles/:id", async (req, res) => {
-    let transactionData;
+router.get("/titles/${id}", async (req, res) => {
+    let queryDataTitle;
     try {
         const {id} = req.params;
-        transactionData = {
+        queryDataTitle = {
             "headers": {
                 "type": "SendTransaction",
                 "signer": req.session.user.username,
@@ -49,81 +51,43 @@ router.get("/titles/:id", async (req, res) => {
             "args": [
                 id
             ],
-            "init": false
-        }
-
-        const response = await fabConnectService.submitTransaction(transactionData);
-
-        res.json(response.data);
-    } catch (err) {
-        res.status(500).json({error: err.message});
-    }
-});
-
-// Get all titles
-router.get("/titles", async (req, res) => {
-    try {
-        // Query Kaleido for all titles
-        const queryData = {
-            "headers": {
-                "signer": req.session.user?.username,
-                "channel": process.env.KALEIDO_CHANNEL_NAME,
-                "chaincode": "title_contract"
-            },
-            "func": "getAllTitles",
-            "args": [],
             "strongread": true
-        };
-
-        const response = await fabConnectService.queryChaincode(queryData);
-        const titles = response?.result ?? [];
-
-        // Pagination setup
-        const page = parseInt(req.query.page) || 1; // Default to page 1
-        const pageSize = 10; // Titles per page
-        const totalTitles = titles.length;
-        const totalPages = Math.ceil(totalTitles / pageSize);
-
-        // Slice titles for current page
-        const paginatedTitles = titles.slice((page - 1) * pageSize, page * pageSize);
-
-        // AJAX check (for partial updates, if needed)
-        const isAjax = req.headers['x-requested-with'] === 'XMLHttpRequest';
-
-        if (isAjax) {
-            return res.json({
-                titles: paginatedTitles,
-                has_next: page < totalPages,
-                next_page: page < totalPages ? page + 1 : null,
-                has_previous: page > 1,
-                previous_page: page > 1 ? page - 1 : null,
-                current_page: page,
-                total_pages: totalPages,
-            });
         }
 
-        // Render full page if not AJAX
-        res.render('titles/title_list', {
-            page_title: 'Title List',
-            titles: paginatedTitles,
-            current_page: page,
-            total_pages: totalPages,
-            has_next: page < totalPages,
-            has_previous: page > 1,
-        });
+        const responseTitle = await fabConnectService.queryChaincode(queryDataTitle);
 
+        let queryDataCourses;
+        queryDataCourses = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "course_contract"
+            },
+            "func": "getTitle",
+            "args": [
+                id
+            ],
+            "strongread": true
+        }
+        const responseCourses = await fabConnectService.queryChaincode(queryDataCourses);
+
+        res.render('titles/create_title', {
+            page_title: 'Title',
+            title: responseTitle?.result ?? null,
+            courses: responseCourses?.result ?? null
+        });
     } catch (err) {
-        console.error('Error fetching titles:', err.message);
-        res.render('titles/title_list', { page_title: 'Title List', titles: [] });
+        console.error('Error fetching title:', err.message);
+        res.redirect('/titles');
     }
 });
-
 
 // Update a title
 router.put("/titles/:id", async (req, res) => {
     let transactionData;
     try {
-        const { name, description } = req.body;
+        const { title_name, title_description } = req.body;
         const { id } = req.params;
         transactionData = {
             "headers": {
@@ -134,21 +98,22 @@ router.put("/titles/:id", async (req, res) => {
             },
             "func": "updateTitle",
             "args": [
-                id, name, description
+                id, title_name, title_description
             ],
             "init": false
         }
 
         const response = await fabConnectService.submitTransaction(transactionData);
 
-        res.json(response.data);
+        res.redirect("/titles/${id}");
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error updating title:', err.message);
+        res.redirect("/titles/${id}");
     }
 });
 
 // Delete a title
-router.delete("/titles/:id", async (req, res) => {
+router.delete("/titles/${id}", async (req, res) => {
     let transactionData;
     try {
         const {id} = req.params;
@@ -168,9 +133,83 @@ router.delete("/titles/:id", async (req, res) => {
 
         const response = await fabConnectService.submitTransaction(transactionData);
 
-        res.json(response.data);
+        res.redirect('/titles');
     } catch (err) {
-        res.status(500).json({error: err.message});
+        console.error('Error deleting title:', err.message);
+        res.redirect('/titles');
+    }
+});
+
+// Get all titles
+router.get("/titles", async (req, res) => {
+    try {
+        const queryData = {
+            "headers": {
+                "signer": req.session.user?.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "title_contract"
+            },
+            "func": "getAllTitles",
+            "args": [],
+            "strongread": true
+        };
+
+        const response = await fabConnectService.queryChaincode(queryData);
+        const titles = response?.result ?? [];
+
+        // Pagination setup
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = 5;
+        const totalTitles = titles.length;
+        const totalPages = Math.ceil(totalTitles / pageSize);
+
+        // Use pagination library
+        const paginator = new paginate.SearchPaginator({
+            prelink: '/titles',
+            current: page,
+            rowsPerPage: pageSize,
+            totalResult: totalTitles
+        });
+
+        const fromIndex = (page - 1) * pageSize;
+        const toIndex = Math.min(fromIndex + pageSize, totalTitles);
+
+        const paginatedTitles = titles.slice(fromIndex, toIndex);
+
+        // AJAX check
+        const isAjax = req.headers['x-requested-with'] === 'XMLHttpRequest';
+
+        if (isAjax) {
+            return res.json({
+                titles: paginatedTitles,
+                pagination: {
+                    current_page: page,
+                    total_pages: totalPages,
+                    has_next: page < totalPages,
+                    next_page: page < totalPages ? page + 1 : null,
+                    has_previous: page > 1,
+                    previous_page: page > 1 ? page - 1 : null
+                }
+            });
+        }
+
+        // Render page
+        res.render('titles/title_list', {
+            page_title: 'Title List',
+            titles: paginatedTitles,
+            pagination: {
+                current_page: page,
+                total_pages: totalPages,
+                has_next: page < totalPages,
+                next_page: page < totalPages ? page + 1 : null,
+                has_previous: page > 1,
+                previous_page: page > 1 ? page - 1 : null
+            }
+        });
+
+    } catch (err) {
+        console.error('Error fetching titles:', err.message);
+        res.render('titles/title_list', { page_title: 'Title List', titles: [] });
     }
 });
 

@@ -48,21 +48,24 @@
 <!-- Pagination -->
 <div class="pagination-container">
     <div class="pagination">
-        {% if page.hasPrevious %}
+        {% if pagination and pagination.current_page > 1 %}
             <a href="?page=1" class="btn-page">First</a>
-            <a href="?page={{ page.previous }}" class="btn-page">Previous</a>
+            <a href="?page={{ pagination.previous_page }}" class="btn-page">Previous</a>
         {% endif %}
 
-        <span class="current-page">
-            Page {{ page.number }} of {{ page.totalPages }}
-        </span>
+        {% if pagination %}
+            <span class="current-page">
+                Page {{ pagination.current_page }} of {{ pagination.total_pages }}
+            </span>
+        {% endif %}
 
-        {% if page.hasNext %}
-            <a href="?page={{ page.next }}" class="btn-page">Next</a>
-            <a href="?page={{ page.totalPages }}" class="btn-page">Last</a>
+        {% if pagination and pagination.has_next %}
+            <a href="?page={{ pagination.next_page }}" class="btn-page">Next</a>
+            <a href="?page={{ pagination.total_pages }}" class="btn-page">Last</a>
         {% endif %}
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}

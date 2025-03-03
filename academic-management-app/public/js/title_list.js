@@ -1,84 +1,54 @@
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelector('.pagination-container').addEventListener('click', function (event) {
-        if (event.target.classList.contains('btn-page')) {
-            event.preventDefault();
-
-            // Get the URL for the next/previous page
-            const url = event.target.href;
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.btn-page').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('href').split('=')[1];
             // Get CSRF token
             const csrfToken = document.getElementById('csrfToken').value;
-
-            fetch(url, {
-                method: 'GET',
+            fetch(`/titles?page=${page}`, {
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
+                    'x-requested-with': 'XMLHttpRequest',
                     'X-CSRFToken': csrfToken
                 }
             })
                 .then(response => response.json())
                 .then(data => {
                     const titleList = document.getElementById('title-list');
-                    titleList.innerHTML = ''; // Clear the current table rows
+                    titleList.innerHTML = '';
 
-                    // Populate the table with new data
-                    data.titles.forEach(title => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${title.name}</td>
-                            <td>${title.description}</td>
+                    if (data.titles.length > 0) {
+                        data.titles.forEach(title => {
+                            titleList.innerHTML += `
+                                <tr>
+                                    <td><a href="/titles/${title.id}">${title.name}</a></td>
+                                    <td>${title.description}</td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        titleList.innerHTML = `
+                            <tr>
+                                <td colspan="2">No titles found.</td>
+                            </tr>
                         `;
-                        titleList.appendChild(row);
-                    });
-
-                    // Update pagination buttons
-                    const paginationContainer = document.querySelector('.pagination-container');
-                    paginationContainer.innerHTML = ''; // Clear current pagination
-
-                    // Build pagination buttons dynamically
-                    const pagination = document.createElement('div');
-                    pagination.classList.add('pagination');
-
-                    // Add 'First' and 'Previous' buttons if applicable
-                    if (data.has_previous) {
-                        const firstButton = document.createElement('a');
-                        firstButton.href = '?page=1';
-                        firstButton.textContent = 'First';
-                        firstButton.classList.add('btn-page');
-                        pagination.appendChild(firstButton);
-
-                        const prevButton = document.createElement('a');
-                        prevButton.href = `?page=${data.previous_page}`;
-                        prevButton.textContent = 'Previous';
-                        prevButton.classList.add('btn-page');
-                        pagination.appendChild(prevButton);
                     }
 
-                    // Add current page info
-                    const currentPage = document.createElement('span');
-                    currentPage.textContent = `Page ${data.current_page} of ${data.total_pages}`;
-                    currentPage.classList.add('current-page');
-                    pagination.appendChild(currentPage);
-
-                    // Add 'Next' and 'Last' buttons if applicable
-                    if (data.has_next) {
-                        const nextButton = document.createElement('a');
-                        nextButton.href = `?page=${data.next_page}`;
-                        nextButton.textContent = 'Next';
-                        nextButton.classList.add('btn-page');
-                        pagination.appendChild(nextButton);
-
-                        const lastButton = document.createElement('a');
-                        lastButton.href = `?page=${data.total_pages}`;
-                        lastButton.textContent = 'Last';
-                        lastButton.classList.add('btn-page');
-                        pagination.appendChild(lastButton);
-                    }
-
-                    paginationContainer.appendChild(pagination);
+                    // Update pagination
+                    document.querySelector('.pagination').innerHTML = `
+                        ${data.pagination.current_page > 1 ? `
+                            <a href="?page=1" class="btn-page">First</a>
+                            <a href="?page=${data.pagination.previous_page}" class="btn-page">Previous</a>
+                        ` : ''}
+                        <span class="current-page">
+                            Page ${data.pagination.current_page} of ${data.pagination.total_pages}
+                        </span>
+                        ${data.pagination.has_next ? `
+                            <a href="?page=${data.pagination.next_page}" class="btn-page">Next</a>
+                            <a href="?page=${data.pagination.total_pages}" class="btn-page">Last</a>
+                        ` : ''}
+                    `;
                 })
-                .catch(error => {
-                    console.error('Error fetching pagination:', error);
-                });
-        }
+                .catch(err => console.error('Error fetching titles:', err));
+        });
     });
 });
