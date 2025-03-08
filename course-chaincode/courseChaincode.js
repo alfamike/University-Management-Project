@@ -30,7 +30,7 @@ class CourseContract extends Contract {
     }
 
     async getAllCourses(ctx) {
-        const query = { selector: { docType: "course" } };
+        const query = { selector: { docType: "course", is_deleted: false } };
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
 
         const results = [];
@@ -67,7 +67,7 @@ class CourseContract extends Contract {
         // Generate an updated course instance
         const courseData = await ctx.stub.getState(id);
         const course = JSON.parse(courseData.toString());
-        const updatedCourse = new Course(course.title_id, course.description, course.start_date, course.end_date, course.id, true);
+        const updatedCourse = new Course(course.title_id, course.name, course.id, course.description, course.start_date, course.end_date, true);
 
         // Update the ledger with the new course
         await ctx.stub.putState(id, Buffer.from(JSON.stringify(updatedCourse)));
@@ -79,29 +79,29 @@ class CourseContract extends Contract {
         return courseData && courseData.length > 0;
     }
 
-async getCoursesByTitleYear(ctx, title_id, year) {
-            let query = { selector: { docType: "course" } };
+    async getCoursesByTitleYear(ctx, title_id, year) {
+        let query = {selector: {docType: "course", is_deleted: false}};
 
-            if (title_id) {
-                query.selector.title_id = title_id;
-            }
-
-            if (year) {
-                query.selector.start_date = { "$regex": `^${year}` };
-            }
-
-            const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
-
-            const results = [];
-            let result = await iterator.next();
-            while (!result.done) {
-                const jsonRes = JSON.parse(result.value.value.toString());
-                results.push(jsonRes); // Push each result as a Course object
-                result = await iterator.next();
-            }
-
-            return JSON.stringify(results);
+        if (title_id) {
+            query.selector.title_id = title_id;
         }
+
+        if (year) {
+            query.selector.start_date = {"$regex": `^${year}`};
+        }
+
+        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
+
+        const results = [];
+        let result = await iterator.next();
+        while (!result.done) {
+            const jsonRes = JSON.parse(result.value.value.toString());
+            results.push(jsonRes); // Push each result as a Course object
+            result = await iterator.next();
+        }
+
+        return JSON.stringify(results);
+    }
 }
 
 module.exports = CourseContract;
