@@ -30,7 +30,7 @@ class TitleContract extends Contract {
     }
 
     async getAllTitles(ctx) {
-        const query = { selector: { docType: "title" } };
+        const query = { selector: { docType: "title", is_deleted: false } };
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
 
         const results = [];
