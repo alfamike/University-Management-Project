@@ -64,7 +64,13 @@ class TitleContract extends Contract {
             throw new Error(`Title with ID ${id} does not exist`);
         }
 
-        await ctx.stub.deleteState(id);
+        // Generate an updated title instance
+        const titleData = await ctx.stub.getState(id);
+        const title = JSON.parse(titleData.toString());
+        const updatedTitle = new Title(title.name, title.description, id, true);
+
+        // Update the ledger with the new title
+        await ctx.stub.putState(id, Buffer.from(JSON.stringify(updatedTitle)));
         return JSON.stringify({ success: true, message: "Title deleted successfully" });
     }
 
