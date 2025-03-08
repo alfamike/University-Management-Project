@@ -51,7 +51,9 @@ class CourseContract extends Contract {
         }
 
         // Generate an updated course instance
-        const updatedCourse = new Course(name, description, start_date, end_date);
+        const courseData = await ctx.stub.getState(id);
+        const course = JSON.parse(courseData.toString());
+        const updatedCourse = new Course(course.title_id, name, description, start_date, end_date, id, false);
 
         // Update the ledger with the new course
         await ctx.stub.putState(id, Buffer.from(JSON.stringify(updatedCourse)));
@@ -67,7 +69,7 @@ class CourseContract extends Contract {
         // Generate an updated course instance
         const courseData = await ctx.stub.getState(id);
         const course = JSON.parse(courseData.toString());
-        const updatedCourse = new Course(course.title_id, course.name, course.id, course.description, course.start_date, course.end_date, true);
+        const updatedCourse = new Course(course.title_id, course.name, course.description, course.start_date, course.end_date,course.id, true);
 
         // Update the ledger with the new course
         await ctx.stub.putState(id, Buffer.from(JSON.stringify(updatedCourse)));
