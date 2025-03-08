@@ -84,11 +84,11 @@ class CourseContract extends Contract {
     async getCoursesByTitleYear(ctx, title_id, year) {
         let query = {selector: {docType: "course", is_deleted: false}};
 
-        if (title_id) {
+        if (title_id !== "") {
             query.selector.title_id = title_id;
         }
 
-        if (year) {
+        if (year !== "") {
             query.selector.start_date = {"$regex": `^${year}`};
         }
 
