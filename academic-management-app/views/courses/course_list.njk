@@ -1,0 +1,108 @@
+{% extends "base.njk" %}
+{% block content %}
+<input type="hidden" id="csrfToken" name="_csrf" value="{{ csrfToken }}">
+<h1 class="page-title">Courses List</h1>
+
+<!-- Filters Section -->
+<div class="filters-container">
+    <form class="filters-form" id="filter-form">
+        <div class="filter">
+            <label for="title">Title:</label>
+            <select class="filter-dropdown" id="title" name="title">
+                <!-- Dropdown options for titles -->
+                {% for title in titles %}
+                <option value="{{ title.id }}">
+                {{ title.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter">
+            <label for="year">Year:</label>
+            <select class="filter-dropdown" id="year" name="year">
+                {% for year in years %}
+                <option value="{{ year }}">
+                {{ year }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button class="btn-filter" type="submit">Filter</button>
+    </form>
+</div>
+
+<!-- Table of Courses -->
+<div class="course-list">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+        </tr>
+        </thead>
+        <tbody id="course-list">
+        {% if courses and courses.length > 0 %}
+        {% for course in courses %}
+        <tr>
+            <td><a href="/course/{{ course.id }}">{{ course.name }}</a></td>
+            <td>{{ course.description }}</td>
+            <td>{{ course.start_date }}</td>
+            <td>{{ course.end_date }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="4">No courses found.</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+    <!-- Cards for Mobile View -->
+    <div class="card-list">
+        {% if courses and courses.length > 0 %}
+        {% for course in courses %}
+        <div class="card">
+            <div class="card-content">
+                <h3 class="card-title"><a href="/course/{{ course.id }}">{{ course.name }}</a></h3>
+                <p class="card-description">{{ course.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="no-records">No courses found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="pagination-container">
+    <div class="pagination">
+        {% if pagination and pagination.current_page > 1 %}
+            <a href="?page=1" data-page="1" class="btn-page">First</a>
+            <a href="?page={{ pagination.previous_page }}" data-page="{{ pagination.previous_page }}" class="btn-page">Previous</a>
+        {% endif %}
+
+        {% if pagination %}
+            <span class="current-page">
+                Page {{ pagination.current_page }} of {{ pagination.total_pages }}
+            </span>
+        {% endif %}
+
+        {% if pagination and pagination.has_next %}
+            <a href="?page={{ pagination.next_page }}" data-page="{{ pagination.next_page }}" class="btn-page">Next</a>
+            <a href="?page={{ pagination.total_pages }}" data-page="{{ pagination.total_pages }}" class="btn-page">Last</a>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/js/course_list.js"></script>
+{% endblock %}

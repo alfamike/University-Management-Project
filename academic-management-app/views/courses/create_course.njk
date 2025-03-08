@@ -1,14 +1,17 @@
-<%- include('base', { title: 'Create Course' }) %>
-
+{% extends "base.njk" %}
+{% block content %}
 <h1>Create Course</h1>
 <p>Fill out the form below to register a new course in the system.</p>
 
 <div class="form-container">
-    <form class="modern-form" id="create-course-form" action="" method="POST">
+    <form class="modern-form" id="create-course-form" action="/courses" method="POST">
         <div class="form-group">
             <label for="titles-dropdown">Title:</label>
-            <select class="filter-dropdown" id="titles-dropdown" name="title" required></select>
-            <small class="form-hint">Select the title</small>
+            <select id="titles-dropdown" name="title_id" required class="form-control">
+                {% for title in titles %}
+                <option value="{{ title.id }}">{{ title.name }}</option>
+                {% endfor %}
+            </select>
         </div>
 
         <div class="form-group">
@@ -35,11 +38,11 @@
             <small class="form-hint">Enter the course's end date.</small>
         </div>
 
+        <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrfToken }}">
+
         <div class="form-actions">
             <button class="btn btn-primary" type="submit">Create Course</button>
         </div>
     </form>
 </div>
-
-<% // Include extra JS for this page %>
-<%- include('partials/extra_js', { additionalJS: '../public/js/create_course.js' }) %>
+{% endblock %}

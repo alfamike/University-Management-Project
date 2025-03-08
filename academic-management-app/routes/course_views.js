@@ -1,118 +1,279 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
+const fabConnectService = require("../kaleido/fabConnectService");
+const paginate = require("pagination");
 
-const KALEIDO_API_URL = process.env.KALEIDO_API_URL;
-const KALEIDO_AUTH = { auth: { username: process.env.KALEIDO_USERNAME, password: process.env.KALEIDO_PASSWORD } };
-
-// Create a course
-router.post("/courses", async (req, res) => {
+router.get('/courses/create', async(req, res) => {
     try {
-        const { title, name, description = '', startdate, enddate } = req.body;
-        const response = await axios.post(`${KALEIDO_API_URL}/invoke`, {
-            chaincode: "courseContract",
-            method: "createCourse",
-            args: [title, name, description, startdate, enddate]
-        }, KALEIDO_AUTH);
+        const queryData = {
+            "headers": {
+                "signer": req.session.user?.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "title_contract"
+            },
+            "func": "getAllTitles",
+            "args": [],
+            "strongread": true
+        };
 
-        res.json(response.data);
+        const response = await fabConnectService.queryChaincode(queryData);
+        const titles = response?.result ?? [];
+        res.render('courses/create_course', { page_title: 'Create Course' , titles: titles});
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error fetching titles:', err.message);
+        res.render('courses/create_course', { page_title: 'Create Course', titles: [] });
+    }
+});
+
+// Create a new course
+router.post("/courses", async (req, res) => {
+    let transactionData;
+    try {
+        const { title_id, course_name, course_description, course_start_date, course_end_date } = req.body;
+        transactionData = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "course_contract"
+            },
+            "func": "createCourse",
+            "args": [course_name, course_description, course_start_date, course_end_date, title_id],
+            "init": false
+        }
+
+        const response = await fabConnectService.submitTransaction(transactionData);
+
+        res.redirect('/courses');
+    } catch (err) {
+        console.error('Error creating course:', err.message);
+        res.redirect('/courses');
     }
 });
 
 // Get all courses with optional filters
 router.get("/courses", async (req, res) => {
     try {
-        const { title, year } = req.query;
+        let courses;
+        // AJAX check
+        const isAjax = req.headers['x-requested-with'] === 'XMLHttpRequest';
+        if (isAjax) {
+            const { page, title, year } = req.query;
+            const queryDataCoursesWithFilters = {
+                "headers": {
+                    "signer": req.session.user?.username,
+                    "channel": process.env.KALEIDO_CHANNEL_NAME,
+                    "chaincode": "course_contract"
+                },
+                "func": "getCoursesByTitleYear",
+                "args": [title, year],
+                "strongread": true
+            };
 
-        const response = await axios.post(`${KALEIDO_API_URL}/query`, {
-            chaincode: "courseContract",
-            method: "getAllCourses",
-            args: []
-        }, KALEIDO_AUTH);
+            const responseCourse = await fabConnectService.queryChaincode(queryDataCoursesWithFilters);
+            courses = responseCourse?.result ?? [];
 
-        let courses = JSON.parse(response.data.result);
+        } else{
+            const queryDataCourses = {
+                "headers": {
+                    "signer": req.session.user?.username,
+                    "channel": process.env.KALEIDO_CHANNEL_NAME,
+                    "chaincode": "course_contract"
+                },
+                "func": "getAllCourses",
+                "args": [],
+                "strongread": true
+            };
 
-        // Apply filters if provided
-        if (title) {
-            courses = courses.filter(course => course.title === title);
+            const responseCourse = await fabConnectService.queryChaincode(queryDataCourses);
+            courses = responseCourse?.result ?? [];
         }
-        if (year) {
-            courses = courses.filter(course => new Date(course.start_date).getFullYear() === year);
+
+        const queryDataTitles = {
+            "headers": {
+                "signer": req.session.user?.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "title_contract"
+            },
+            "func": "getAllTitles",
+            "args": [],
+            "strongread": true
+        };
+
+        const responseTitle = await fabConnectService.queryChaincode(queryDataTitles);
+        const titles = responseTitle?.result ?? [];
+
+        // Pagination setup
+        const page = Math.max(1, parseInt(req.query.page) || 1);
+        const pageSize = 10;
+        const totalCourses = courses.length;
+        const totalPages = Math.ceil(totalCourses / pageSize);
+
+        // Use pagination library
+        const paginator = new paginate.SearchPaginator({
+            prelink: '/courses',
+            current: page,
+            rowsPerPage: pageSize,
+            totalResult: totalCourses
+        });
+
+        const fromIndex = (page - 1) * pageSize;
+        const toIndex = Math.min(fromIndex + pageSize, totalCourses);
+
+        const paginatedCourses = courses.slice(fromIndex, toIndex);
+
+        const years = [...new Set(courses.map(course => new Date(course.start_date).getFullYear()))];
+
+        if (isAjax) {
+            return res.json({
+                courses: paginatedCourses,
+                pagination: {
+                    current_page: page,
+                    total_pages: totalPages,
+                    has_next: page < totalPages,
+                    next_page: page < totalPages ? page + 1 : null,
+                    has_previous: page > 1,
+                    previous_page: page > 1 ? page - 1 : null
+                }
+            });
         }
 
-        res.json(courses);
+        // Render page
+        res.render('courses/course_list', {
+            page_title: 'Course List',
+            titles: titles,
+            courses: paginatedCourses,
+            years: years,
+            pagination: {
+                current_page: page,
+                total_pages: totalPages,
+                has_next: page < totalPages,
+                next_page: page < totalPages ? page + 1 : null,
+                has_previous: page > 1,
+                previous_page: page > 1 ? page - 1 : null
+            }
+        });
+
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error fetching courses:', err.message);
+        res.render('courses/course_list', { page_title: 'Course List', courses: [] });
     }
 });
 
 // Get a specific course
 router.get("/courses/:id", async (req, res) => {
+    let queryDatacourse;
     try {
-        const { id } = req.params;
-        const response = await axios.post(`${KALEIDO_API_URL}/query`, {
-            chaincode: "courseContract",
-            method: "getCourse",
-            args: [id]
-        }, KALEIDO_AUTH);
+        const {id} = req.params;
+        queryDatacourse = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "course_contract"
+            },
+            "func": "getCourse",
+            "args": [
+                id
+            ],
+            "strongread": true
+        }
 
-        res.json(JSON.parse(response.data.result));
+        const responseCourse = await fabConnectService.queryChaincode(queryDatacourse);
+
+        res.render('courses/course_record', {
+            page_title: 'Course',
+            course: responseCourse?.result ?? null
+        });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error fetching course:', err.message);
+        res.redirect('/courses');
     }
 });
 
 // Update a course
 router.put("/courses/:id", async (req, res) => {
+    let transactionData;
     try {
+        const { course_name, course_description, course_start_date, course_end_date } = req.body;
         const { id } = req.params;
-        const { name, description, start_date, end_date } = req.body;
+        transactionData = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "course_contract"
+            },
+            "func": "updateCourse",
+            "args": [
+                id, course_name, course_description, course_start_date, course_end_date
+            ],
+            "init": false
+        }
 
-        const response = await axios.post(`${KALEIDO_API_URL}/invoke`, {
-            chaincode: "courseContract",
-            method: "updateCourse",
-            args: [id, name, description, start_date, end_date]
-        }, KALEIDO_AUTH);
+        const response = await fabConnectService.submitTransaction(transactionData);
 
-        res.json(response.data);
+        res.redirect("/courses/${id}");
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error updating course:', err.message);
+        res.redirect("/courses/${id}");
     }
 });
 
 // Delete a course
-router.delete("/courses/:id", async (req, res) => {
+router.delete("/courses/${id}", async (req, res) => {
+    let transactionData;
     try {
-        const { id } = req.params;
-        const response = await axios.post(`${KALEIDO_API_URL}/invoke`, {
-            chaincode: "courseContract",
-            method: "deleteCourse",
-            args: [id]
-        }, KALEIDO_AUTH);
+        const {id} = req.params;
+        transactionData = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "course_contract"
+            },
+            "func": "deleteCourse",
+            "args": [
+                id
+            ],
+            "init": false
+        }
 
-        res.json(response.data);
+        const response = await fabConnectService.submitTransaction(transactionData);
+
+        res.redirect('/courses');
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error deleting course:', err.message);
+        res.redirect('/courses');
     }
 });
 
 // Assign a grade to a student in a course
-router.post("/courses/:course_id/grades", async (req, res) => {
+router.post("/courses/${course_id}/grades", async (req, res) => {
+    let transactionData;
     try {
         const { course_id } = req.params;
         const { student_id, grade } = req.body;
 
-        const response = await axios.post(`${KALEIDO_API_URL}/invoke`, {
-            chaincode: "studentCourseContract",
-            method: "assignGrade",
-            args: [student_id, course_id, grade]
-        }, KALEIDO_AUTH);
+        transactionData = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "student_course_contract"
+            },
+            "func": "assignGrade",
+            "args": [student_id, course_id, grade],
+            "init": false
+        }
 
-        res.json(response.data);
+        const response = await fabConnectService.submitTransaction(transactionData);
+
+        res.redirect('/courses/${course_id}');
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error creating grade to student in course:', err.message);
+        res.redirect('/courses/${course_id}');
     }
 });
 

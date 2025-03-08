@@ -72,7 +72,7 @@ router.get("/titles/${id}", async (req, res) => {
         }
         const responseCourses = await fabConnectService.queryChaincode(queryDataCourses);
 
-        res.render('titles/create_title', {
+        res.render('titles/title_record', {
             page_title: 'Title',
             title: responseTitle?.result ?? null,
             courses: responseCourses?.result ?? null
@@ -158,8 +158,8 @@ router.get("/titles", async (req, res) => {
         const titles = response?.result ?? [];
 
         // Pagination setup
-        const page = parseInt(req.query.page) || 1;
-        const pageSize = 5;
+        const page = Math.max(1, parseInt(req.query.page) || 1);
+        const pageSize = 10;
         const totalTitles = titles.length;
         const totalPages = Math.ceil(totalTitles / pageSize);
 
