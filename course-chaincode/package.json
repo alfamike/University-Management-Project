@@ -1,7 +1,7 @@
 {
-  "name": "titlecontract",
-  "version": "1.1.0",
-  "main": "titleChaincode.js",
+  "name": "coursecontract",
+  "version": "1.0.0",
+  "main": "courseChaincode.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "fabric-chaincode-node start"
