@@ -51,7 +51,7 @@ class TitleContract extends Contract {
         }
 
         // Generate an updated title instance
-        const updatedTitle = new Title(name, description, id);
+        const updatedTitle = new Title(name, description, id, false);
 
         // Update the ledger with the new title
         await ctx.stub.putState(id, Buffer.from(JSON.stringify(updatedTitle)));
@@ -67,7 +67,7 @@ class TitleContract extends Contract {
         // Generate an updated title instance
         const titleData = await ctx.stub.getState(id);
         const title = JSON.parse(titleData.toString());
-        const updatedTitle = new Title(title.name, title.description, id, true);
+        const updatedTitle = new Title(title.name, title.description, title.id, true);
 
         // Update the ledger with the new title
         await ctx.stub.putState(id, Buffer.from(JSON.stringify(updatedTitle)));
