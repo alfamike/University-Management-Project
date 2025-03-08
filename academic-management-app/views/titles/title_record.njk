@@ -1,5 +1,7 @@
 {% extends "base.njk" %}
 {% block content %}
+<input type="hidden" id="csrfToken" name="_csrf" value="{{ csrfToken }}">
+<input type="hidden" id="titleId" value="{{ title.id }}">
 <div class="title-detail-container">
     <!-- Header Section -->
     <div class="title-header">
@@ -78,8 +80,6 @@
             <input type="text" id="edit-title-name" name="title-name" value="{{ title.name }}">
             <label for="edit-title-description">Description:</label>
             <input type="text" id="edit-title-description" name="title-description" value="{{ title.description }}">
-            <label for="edit-title-publication-date">Publication Date:</label>
-            <input type="date" id="edit-title-publication-date" name="title-publication-date" value="{{ title.publication_date }}">
             <button type="submit" class="btn">Save</button>
         </form>
     </div>

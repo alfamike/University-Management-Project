@@ -1,71 +1,79 @@
-// Get CSRF token
-const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+// Get CSRF token and title ID
+const csrfToken = document.getElementById('csrfToken')?.value;
+const titleId = document.getElementById('titleId')?.value
 
-const title_id = JSON.parse(document.getElementById('data').textContent);
-
-document.getElementById('edit-title-btn').addEventListener('click', function() {
+// Open edit popup
+document.getElementById('edit-title-btn')?.addEventListener('click', () => {
     document.getElementById('edit-title-popup').style.display = 'block';
 });
 
-document.getElementById('edit-title-popup').querySelector('.close-btn').addEventListener('click', function() {
+// Close edit popup
+document.querySelector('#edit-title-popup .close-btn')?.addEventListener('click', () => {
     document.getElementById('edit-title-popup').style.display = 'none';
 });
 
-window.addEventListener('click', function(event) {
-    if (event.target === document.getElementById('edit-title-popup')) {
-        document.getElementById('edit-title-popup').style.display = 'none';
+// Close popup when clicking outside of it
+window.addEventListener('click', (event) => {
+    const popup = document.getElementById('edit-title-popup');
+    if (event.target === popup) {
+        popup.style.display = 'none';
     }
 });
 
-document.getElementById('edit-title-form').addEventListener('submit', function(event) {
+// Handle edit form submission
+document.getElementById('edit-title-form')?.addEventListener('submit', (event) => {
     event.preventDefault();
+
     const titleName = document.getElementById('edit-title-name').value;
     const titleDescription = document.getElementById('edit-title-description').value;
-    const titlePublicationDate = document.getElementById('edit-title-publication-date').value;
 
-    fetch(`/modifyTitle/`, {
-        method: 'POST',
+    fetch(`/titles/${titleId}`, {
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest',
+            'csrf-token': csrfToken,
         },
         body: JSON.stringify({
-            id: title_id,
-            name: titleName,
-            description: titleDescription,
+            title_name: titleName,
+            title_description: titleDescription,
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            location.reload();
-        } else {
-            alert('Failed to edit title information.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
-
-document.getElementById('delete-title-btn').addEventListener('click', function() {
-    if (confirm('Are you sure you want to delete this title?')) {
-        fetch(`/removeTitle/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-            body: JSON.stringify({ id: title_id })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to update title');
+            return response.json();
         })
-        .then(response => response.json())
         .then(data => {
-            if (data.status === 'success') {
-                window.location.href = '/titles/';
-            } else {
-                alert('Failed to delete the title.');
+            if (data.sent === true) {
+                document.getElementById('edit-title-popup').style.display = 'none';
+                window.location.href = `/titles/${titleId}`;
+            } else{
+                alert(data.message || 'Error updating title.');
             }
         })
         .catch(error => console.error('Error:', error));
+});
+
+// Handle delete action
+document.getElementById('delete-title-btn')?.addEventListener('click', () => {
+    if (confirm('Are you sure you want to delete this title?')) {
+        fetch(`/titles/${titleId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'csrf-token': csrfToken,
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to delete title');
+                return response.json();
+            })
+            .then(data => {
+                if (data.sent === true) {
+                    window.location.href = '/titles';
+                } else {
+                    alert(data.message || 'Error deleting title.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
     }
 });

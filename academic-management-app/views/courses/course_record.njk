@@ -1,9 +1,10 @@
-<%- include('base', { title: 'Course Detail' }) %>
-
+{% extends "base.njk" %}
+{% block content %}
+<input type="hidden" id="csrfToken" name="_csrf" value="{{ csrfToken }}">
 <div class="course-detail-container">
     <!-- Header Section -->
     <div class="course-header">
-        <h1 class="page-title"><%= course.name %></h1>
+        <h1 class="page-title">{{ course.name }}</h1>
     </div>
 
     <!-- Details Section -->
@@ -16,19 +17,19 @@
             <div class="details-content">
                 <div class="detail-item">
                     <span class="detail-label">Name:</span>
-                    <span class="detail-value"><%= course.name %></span>
+                    <span class="detail-value">{{ course.name }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Description:</span>
-                    <span class="detail-value"><%= course.description %></span>
+                    <span class="detail-value">{{ course.description }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Start Date:</span>
-                    <span class="detail-value"><%= course.start_date %></span>
+                    <span class="detail-value">{{ course.start_date }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">End Date:</span>
-                    <span class="detail-value"><%= course.end_date %></span>
+                    <span class="detail-value">{{ course.end_date }}</span>
                 </div>
             </div>
         </div>
@@ -41,7 +42,7 @@
             <button id="modify-activity-btn" class="btn">Modify Activity</button>
             <button id="delete-activity-btn" class="btn">Remove Activity</button>
         </h2>
-        <% if (activities && activities.length > 0) { %>
+        {% if activities and activities.length > 0 %}
         <table class="table">
             <thead>
             <tr>
@@ -52,28 +53,28 @@
             </tr>
             </thead>
             <tbody>
-            <% activities.forEach((activity) => { %>
+            {% for activity in activities %}
             <tr>
-                <td><input type="checkbox" class="activity-checkbox" value="<%= activity.id %>"></td>
-                <td><%= activity.name %></td>
-                <td><%= activity.description %></td>
-                <td><%= activity.due_date %></td>
+                <td><input type="checkbox" class="activity-checkbox" value="{{ activity.id }}"></td>
+                <td>{{ activity.name }}</td>
+                <td>{{ activity.description }}</td>
+                <td>{{ activity.due_date }}</td>
             </tr>
-            <% }); %>
+            {% endfor %}
             </tbody>
         </table>
         <div class="cards">
-            <% activities.forEach((activity) => { %>
+            {% for activity in activities %}
             <div class="card">
-                <h3><%= activity.name %></h3>
-                <p><%= activity.description %></p>
-                <p><strong>Due Date:</strong> <%= activity.due_date %></p>
+                <h3>{{ activity.name }}</h3>
+                <p>{{ activity.description }}</p>
+                <p><strong>Due Date:</strong> {{ activity.due_date }}</p>
             </div>
-            <% }); %>
+            {% endfor %}
         </div>
-        <% } else { %>
+        {% else %}
         <p class="no-activities">This course has not got any activity.</p>
-        <% } %>
+        {% endif %}
     </div>
 </div>
 
@@ -119,20 +120,22 @@
         <h3>Edit Course</h3>
         <form id="edit-course-form">
             <label for="edit-course-name">Name:</label>
-            <input type="text" id="edit-course-name" name="course-name" value="<%= course.name %>">
+            <input type="text" id="edit-course-name" name="course-name" value="{{ course.name }}">
             <label for="edit-course-description">Description:</label>
-            <input type="text" id="edit-course-description" name="course-description" value="<%= course.description %>">
+            <input type="text" id="edit-course-description" name="course-description" value="{{ course.description }}">
             <label for="edit-course-start-date">Start Date:</label>
-            <input type="date" id="edit-course-start-date" name="course-start-date" value="<%= course.start_date %>">
+            <input type="date" id="edit-course-start-date" name="course-start-date" value="{{ course.start_date }}">
             <label for="edit-course-end-date">End Date:</label>
-            <input type="date" id="edit-course-end-date" name="course-end-date" value="<%= course.end_date %>">
+            <input type="date" id="edit-course-end-date" name="course-end-date" value="{{ course.end_date }}">
             <button type="submit" class="btn">Save</button>
         </form>
     </div>
 </div>
 
-<% // Include extra CSS for this page %>
-<%- include('partials/extra_css', { additionalCSS: '../public/css/course_record.css' }) %>
+{% block extra_css %}
+<link rel="stylesheet" href="/css/course_record.css">
+{% endblock %}
 
-<% // Include extra JS for this page %>
-<%- include('partials/extra_js', { additionalJS: '../public/js/course_record.js' }) %>
+{% block extra_js %}
+<script src="/js/course_record.js"></script>
+{% endblock %}

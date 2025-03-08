@@ -28,7 +28,7 @@ router.post("/titles", async (req, res) => {
 
         const response = await fabConnectService.submitTransaction(transactionData);
 
-        res.redirect('/titles');
+        res.redirect(`/titles/${response.result.id}`);
     } catch (err) {
         console.error('Error creating title:', err.message);
         res.redirect('/titles');
@@ -36,7 +36,7 @@ router.post("/titles", async (req, res) => {
 });
 
 // Get a single title
-router.get("/titles/${id}", async (req, res) => {
+router.get("/titles/:id", async (req, res) => {
     let queryDataTitle;
     try {
         const {id} = req.params;
@@ -64,9 +64,9 @@ router.get("/titles/${id}", async (req, res) => {
                 "channel": process.env.KALEIDO_CHANNEL_NAME,
                 "chaincode": "course_contract"
             },
-            "func": "getTitle",
+            "func": "getCoursesByTitleYear",
             "args": [
-                id
+                id, ""
             ],
             "strongread": true
         }
@@ -74,8 +74,8 @@ router.get("/titles/${id}", async (req, res) => {
 
         res.render('titles/title_record', {
             page_title: 'Title',
-            title: responseTitle?.result ?? null,
-            courses: responseCourses?.result ?? null
+            title: responseTitle?.result ?? [],
+            courses: responseCourses?.result ?? []
         });
     } catch (err) {
         console.error('Error fetching title:', err.message);
@@ -104,16 +104,14 @@ router.put("/titles/:id", async (req, res) => {
         }
 
         const response = await fabConnectService.submitTransaction(transactionData);
-
-        res.redirect("/titles/${id}");
+        res.json(response);
     } catch (err) {
         console.error('Error updating title:', err.message);
-        res.redirect("/titles/${id}");
     }
 });
 
 // Delete a title
-router.delete("/titles/${id}", async (req, res) => {
+router.delete("/titles/:id", async (req, res) => {
     let transactionData;
     try {
         const {id} = req.params;
@@ -132,11 +130,9 @@ router.delete("/titles/${id}", async (req, res) => {
         }
 
         const response = await fabConnectService.submitTransaction(transactionData);
-
-        res.redirect('/titles');
+        res.json(response);
     } catch (err) {
         console.error('Error deleting title:', err.message);
-        res.redirect('/titles');
     }
 });
 
