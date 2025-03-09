@@ -145,40 +145,6 @@ class StudentContract extends Contract {
 
         return JSON.stringify(results);
     }
-
-    async getCoursesByStudent(ctx, student_id) {
-        const query = { selector: { docType: "enrollment", student: student_id, is_deleted: false } };
-        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
-
-        const results = [];
-        let result = await iterator.next();
-        while (!result.done) {
-            const enrollment = JSON.parse(result.value.value.toString());
-            const courseData = await ctx.stub.getState(enrollment.course);
-            if (courseData && courseData.length > 0) {
-                const course = JSON.parse(courseData.toString());
-                results.push(course);
-            }
-            result = await iterator.next();
-        }
-
-        return JSON.stringify(results);
-    }
-
-    async getStudentEnrollments(ctx, student_id) {
-        const query = { selector: { docType: "enrollment", student: student_id, is_deleted: false } };
-        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
-
-        const results = [];
-        let result = await iterator.next();
-        while (!result.done) {
-            const enrollment = JSON.parse(result.value.value.toString());
-            results.push(enrollment);
-            result = await iterator.next();
-        }
-
-        return JSON.stringify(results);
-    }
 }
 
 module.exports = StudentContract;
