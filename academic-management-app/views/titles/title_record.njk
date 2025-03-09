@@ -75,12 +75,18 @@
     <div class="popup-content">
         <span class="close-btn">&times;</span>
         <h3>Edit Title</h3>
-        <form id="edit-title-form">
+        <form id="edit-title-form" class="modern-form">
+            <div class="form-group">
             <label for="edit-title-name">Name:</label>
-            <input type="text" id="edit-title-name" name="title-name" value="{{ title.name }}">
+            <input type="text" id="edit-title-name" name="title-name" value="{{ title.name }}" class="form-control" required>
+            </div>
+            <div class="form-group">
             <label for="edit-title-description">Description:</label>
-            <input type="text" id="edit-title-description" name="title-description" value="{{ title.description }}">
+            <input type="text" id="edit-title-description" name="title-description" value="{{ title.description }}" class="form-control">
+            </div>
+            <div class="form-actions">
             <button type="submit" class="btn">Save</button>
+            </div>
         </form>
     </div>
 </div>

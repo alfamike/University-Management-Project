@@ -21,6 +21,7 @@ router.post("/activities", async (req, res) => {
         }
 
         const response = await fabConnectService.submitTransaction(transactionData);
+        res.json(response);
     } catch (err) {
         console.error('Error creating course:', err.message);
     }
@@ -56,7 +57,7 @@ router.delete("/activities/:id", async (req, res) => {
 router.put("/activities/:id", async (req, res) => {
     let transactionData;
     try {
-        const { activityName, activityDescription, activityDueDate } = req.body;
+        const { courseId, activityName, activityDescription, activityDueDate } = req.body;
         const { id } = req.params;
         transactionData = {
             "headers": {
@@ -67,7 +68,7 @@ router.put("/activities/:id", async (req, res) => {
             },
             "func": "updateActivity",
             "args": [
-                id, activityName, activityDescription, activityDueDate
+                id, courseId, activityName, activityDescription, activityDueDate
             ],
             "init": false
         }

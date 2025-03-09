@@ -2,30 +2,85 @@
 const csrfToken = document.getElementById('csrfToken')?.value;
 const courseId = document.getElementById('courseId')?.value;
 
-document.getElementById('add-activity-btn').addEventListener('click', function() {
-    document.getElementById('add-activity-popup').style.display = 'block';
-});
-
-document.getElementById('add-activity-popup').querySelector('.close-btn').addEventListener('click', function() {
-    document.getElementById('add-activity-popup').style.display = 'none';
-});
-
-document.getElementById('edit-course-btn').addEventListener('click', function() {
-    document.getElementById('edit-course-popup').style.display = 'block';
-});
-
-document.getElementById('edit-course-popup').querySelector('.close-btn').addEventListener('click', function() {
-    document.getElementById('edit-course-popup').style.display = 'none';
-});
-
-window.addEventListener('click', function(event) {
-    if (event.target === document.getElementById('add-activity-popup')) {
-        document.getElementById('add-activity-popup').style.display = 'none';
+// Function to show or hide popups
+const togglePopup = (popupId, show = true) => {
+    const popup = document.getElementById(popupId);
+    if (popup) {
+        popup.style.display = show ? 'block' : 'none';
     }
+};
 
-    if (event.target === document.getElementById('edit-course-popup')) {
-        document.getElementById('edit-course-popup').style.display = 'none';
-    }
+// Open popups
+document.getElementById('add-activity-btn')?.addEventListener('click', () => togglePopup('add-activity-popup'));
+document.getElementById('edit-course-btn')?.addEventListener('click', () => togglePopup('edit-course-popup'));
+
+// Close popups via close buttons
+document.querySelectorAll('.close-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const popup = btn.closest('.popup');
+        if (popup) popup.style.display = 'none';
+    });
+});
+
+// Close popups by clicking outside of them
+window.addEventListener('click', event => {
+    ['add-activity-popup', 'modify-activity-popup', 'edit-course-popup'].forEach(popupId => {
+        const popup = document.getElementById(popupId);
+        if (event.target === popup) togglePopup(popupId, false);
+    });
+});
+
+document.getElementById('add-activity-form')?.addEventListener('submit', event => {
+    event.preventDefault();
+    const activity_name = document.getElementById('activity-name')?.value;
+    const activity_description = document.getElementById('activity-description')?.value;
+    const activity_due_date = document.getElementById('activity-due-date')?.value;
+
+    fetch('/activities', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'csrf-token': csrfToken,
+        },
+        body: JSON.stringify({ course_id: courseId, activity_name, activity_description, activity_due_date })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.sent) {
+                togglePopup('add-activity-popup', false);
+                window.location.href = `/courses/${courseId}`;
+            } else {
+                alert('Failed to add an activity.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+});
+
+document.getElementById('modify-activity-form')?.addEventListener('submit', event => {
+    event.preventDefault();
+    const activityId = document.getElementById('modify-activity-id')?.value;
+    const activityName = document.getElementById('modify-activity-name')?.value;
+    const activityDescription = document.getElementById('modify-activity-description')?.value;
+    const activityDueDate = document.getElementById('modify-activity-due-date')?.value;
+
+    fetch(`/activities/${activityId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'csrf-token': csrfToken,
+        },
+        body: JSON.stringify({ courseId, activityName, activityDescription, activityDueDate })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.sent) {
+                togglePopup('modify-activity-popup', false);
+                window.location.href = `/courses/${courseId}`;
+            } else {
+                alert('Failed to modify the activity.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
 });
 
 document.getElementById('delete-activity-btn').addEventListener('click', function() {
@@ -34,60 +89,31 @@ document.getElementById('delete-activity-btn').addEventListener('click', functio
 
     if (selectedActivities.length > 0) {
         if (confirm('Are you sure you want to remove the selected activities?')) {
-            fetch(`/removeActivity/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'csrf-token': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: JSON.stringify({ activity_ids: selectedActivities })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Remove the selected activities from the table
-                    selectedActivities.forEach(activityId => {
-                        document.querySelector(`.course-checkbox[value="${activityId}"]`).closest('tr').remove();
-                    });
-                    location.reload();
-                } else {
-                    alert('Failed to remove activities.');
-                }
-            })
-            .catch(error => console.error('Error:', error));
+            selectedActivities.forEach((activityId) => {
+                fetch(`/activities/${activityId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'csrf-token': csrfToken,
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.sent === true) {
+                            console.log('Activity removed successfully with ID:', activityId);
+                        } else {
+                            alert(`Failed to remove activity with ID: ${activityId}`);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+
+            window.location.href = `/courses/${courseId}`;
         }
     } else {
         alert('No activities selected.');
     }
 
-});
-
-
-document.getElementById('add-activity-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const activity_name = document.getElementById('activity-name').value;
-    const activity_description = document.getElementById('activity-description').value;
-    const activity_due_date = document.getElementById('activity-due-date').value;
-
-    fetch('/activities', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'csrf-token': csrfToken,
-        },
-        body: JSON.stringify({ course_id: courseId, activity_name: activity_name, activity_description: activity_description,
-            activity_due_date: activity_due_date })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            location.reload();
-        } else {
-            alert('Failed to add an activity.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
 });
 
 document.getElementById('modify-activity-btn').addEventListener('click', function() {
@@ -109,42 +135,6 @@ document.getElementById('modify-activity-btn').addEventListener('click', functio
     document.getElementById('modify-activity-due-date').value = activityDueDate;
 
     document.getElementById('modify-activity-popup').style.display = 'block';
-});
-
-document.getElementById('modify-activity-popup').querySelector('.close-btn').addEventListener('click', function() {
-    document.getElementById('modify-activity-popup').style.display = 'none';
-});
-
-window.addEventListener('click', function(event) {
-    if (event.target === document.getElementById('modify-activity-popup')) {
-        document.getElementById('modify-activity-popup').style.display = 'none';
-    }
-});
-
-document.getElementById('modify-activity-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const activityId = document.getElementById('modify-activity-id').value;
-    const activityName = document.getElementById('modify-activity-name').value;
-    const activityDescription = document.getElementById('modify-activity-description').value;
-    const activityDueDate = document.getElementById('modify-activity-due-date').value;
-
-    fetch('/activities/:id', {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'csrf-token': csrfToken,
-        },
-        body: JSON.stringify({ activityName: activityName, activityDescription: activityDescription, activityDueDate: activityDueDate })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            location.reload();
-        } else {
-            alert('Failed to modify the activity.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
 });
 
 document.getElementById('edit-course-form').addEventListener('submit', function(event) {

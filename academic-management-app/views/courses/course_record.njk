@@ -84,14 +84,22 @@
     <div class="popup-content">
         <span class="close-btn">&times;</span>
         <h3>Add Activity to Course</h3>
-        <form id="add-activity-form">
+        <form id="add-activity-form" class="modern-form">
+            <div class="form-group">
             <label for="activity-name">Name:</label>
-            <input type="text" id="activity-name" name="activity-name">
+            <input type="text" id="activity-name" name="activity-name" class="form-control" required>
+            </div>
+            <div class="form-group">
             <label for="activity-description">Description:</label>
-            <input type="text" id="activity-description" name="activity-description">
+            <input type="text" id="activity-description" name="activity-description" class="form-control">
+            </div>
+            <div class="form-group">
             <label for="activity-due-date">Due Date:</label>
-            <input type="date" id="activity-due-date" name="activity-due-date">
+            <input type="date" id="activity-due-date" name="activity-due-date" class="form-control" required>
+            </div>
+            <div class="form-actions">
             <button type="submit" class="btn">Add</button>
+            </div>
         </form>
     </div>
 </div>
@@ -101,15 +109,23 @@
     <div class="popup-content">
         <span class="close-btn">&times;</span>
         <h3>Modify Activity</h3>
-        <form id="modify-activity-form">
+        <form id="modify-activity-form" class="modern-form">
             <input type="hidden" id="modify-activity-id" name="activity-id">
+            <div class="form-group">
             <label for="modify-activity-name">Name:</label>
-            <input type="text" id="modify-activity-name" name="activity-name">
+            <input type="text" id="modify-activity-name" name="activity-name" class="form-control" required>
+            </div>
+            <div class="form-group">
             <label for="modify-activity-description">Description:</label>
-            <input type="text" id="modify-activity-description" name="activity-description">
+            <input type="text" id="modify-activity-description" name="activity-description" class="form-control">
+            </div>
+            <div class="form-group">
             <label for="modify-activity-due-date">Due Date:</label>
-            <input type="date" id="modify-activity-due-date" name="activity-due-date">
+            <input type="date" id="modify-activity-due-date" name="activity-due-date" class="form-control" required>
+            </div>
+            <div class="form-actions">
             <button type="submit" class="btn">Modify</button>
+            </div>
         </form>
     </div>
 </div>
@@ -119,19 +135,30 @@
     <div class="popup-content">
         <span class="close-btn">&times;</span>
         <h3>Edit Course</h3>
-        <form id="edit-course-form">
+        <form id="edit-course-form" class="modern-form">
+            <div class="form-group">
             <label for="edit-course-name">Name:</label>
-            <input type="text" id="edit-course-name" name="course-name" value="{{ course.name }}">
+            <input type="text" id="edit-course-name" name="course-name" value="{{ course.name }}" class="form-control" required>
+            </div>
+            <div class="form-group">
             <label for="edit-course-description">Description:</label>
-            <input type="text" id="edit-course-description" name="course-description" value="{{ course.description }}">
+            <input type="text" id="edit-course-description" name="course-description" value="{{ course.description }}" class="form-control">
+            </div>
+            <div class="form-group">
             <label for="edit-course-start-date">Start Date:</label>
-            <input type="date" id="edit-course-start-date" name="course-start-date" value="{{ course.start_date }}">
+            <input type="date" id="edit-course-start-date" name="course-start-date" value="{{ course.start_date }}" class="form-control" required>
+            </div>
+            <div class="form-group">
             <label for="edit-course-end-date">End Date:</label>
-            <input type="date" id="edit-course-end-date" name="course-end-date" value="{{ course.end_date }}">
+            <input type="date" id="edit-course-end-date" name="course-end-date" value="{{ course.end_date }}" class="form-control" required>
+            </div>
+            <div class="form-actions">
             <button type="submit" class="btn">Save</button>
+            </div>
         </form>
     </div>
 </div>
+{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="/css/course_record.css">
