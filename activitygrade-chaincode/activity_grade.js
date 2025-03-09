@@ -1,8 +1,8 @@
 const { v4: uuidv4 } = require("uuid");
 
 class ActivityGrade {
-    constructor(course, student, grade, id = uuidv4(), is_deleted=false) {
-        this.course = course;
+    constructor(activity, student, grade, id = uuidv4(), is_deleted=false) {
+        this.activity = activity;
         this.student = student;
         this.grade = grade;
         this.id = id;
