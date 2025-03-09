@@ -1,49 +1,129 @@
 // Get CSRF token
-const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+const csrfToken = document.getElementById('csrfToken').value;
+const studentId = document.getElementById('studentId')?.value;
 
-// Get data from the data-container
-const jsonData = JSON.parse(document.getElementById('data').textContent);
-const student = JSON.parse(jsonData.student.replace(/'/g, '"'));
-const courses = JSON.parse(jsonData.courses.replace(/'/g, '"'));
-const titles = JSON.parse(jsonData.titles.replace(/'/g, '"'));
-const course_grades = JSON.parse(jsonData.course_grades.replace(/'/g, '"'));
-const activity_grades = JSON.parse(jsonData.activity_grades.replace(/'/g, '"'));
+// Function to show or hide popups
+const togglePopup = (popupId, show = true) => {
+    const popup = document.getElementById(popupId);
+    if (popup) {
+        popup.style.display = show ? 'block' : 'none';
+    }
+};
 
+// Close popups via close buttons
+document.querySelectorAll('.close-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const popup = btn.closest('.popup');
+        if (popup) popup.style.display = 'none';
+    });
+});
+
+// Close popups by clicking outside of them
+window.addEventListener('click', event => {
+    ['add-course-popup', 'manage-grade-popup', 'manage-grade-activity-popup', 'edit-student-popup'].forEach(popupId => {
+        const popup = document.getElementById(popupId);
+        if (event.target === popup) togglePopup(popupId, false);
+    });
+});
+
+// Open popups
+document.getElementById('add-course-btn')?.addEventListener('click', () => togglePopup('add-course-popup'));
+document.getElementById('manage-grade-btn')?.addEventListener('click', () => togglePopup('manage-grade-popup'));
+document.getElementById('manage-activity-btn')?.addEventListener('click', () => togglePopup('manage-grade-activity-popup'));
+document.getElementById('edit-student-btn')?.addEventListener('click', () => togglePopup('edit-student-popup'));
 
 document.addEventListener('DOMContentLoaded', function() {
     const titleSelect = document.getElementById('course-title');
     const courseSelect = document.getElementById('course-name');
     const courseSelect2 = document.getElementById('course-grade-select');
 
+    let titles = [];
+
     // Populate titles dropdown
-    titles.forEach(title => {
-        const option = document.createElement('option');
-        option.value = title.id;
-        option.textContent = title.name;
-        titleSelect.appendChild(option);
+    fetch('/titles?isFilter=true', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'csrf-token': csrfToken,
+        }
+    }).then(response => response.json())
+        .then(data => {
+            if (data.sent === true){
+                titles= data.titles;
+                titles.forEach(title => {
+                    const option = document.createElement('option');
+                    option.value = title.id;
+                    option.textContent = title.name;
+                    titleSelect.appendChild(option);
+                });
+            }
+        })
+
+    // Fetch courses based on title selection
+    titleSelect.addEventListener('change', function () {
+        const selectedTitle = titleSelect.value;
+        fetchCoursesByTitle(selectedTitle);
     });
 
-    // Event listener for title selection change
-    titleSelect.addEventListener('change', function() {
-        const titleId = parseInt(this.value);
-        courseSelect.innerHTML = ''; // Clear previous options
+    // Fetch courses for a selected title
+    function fetchCoursesByTitle(titleId) {
+        let year = "";
+        fetch(`/courses/?title=${titleId}&year=${year}&onlyFilter=true`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'csrf-token': csrfToken,
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                updateCourseDropdown(data.courses);
+            })
+            .catch(err => console.error('Error fetching courses:', err));
+    }
 
-        // Filter and populate courses based on selected title
-        courses.filter(course => course.title === titleId).forEach(course => {
+    // Update course dropdown options
+    function updateCourseDropdown(courses) {
+        // Clear the existing options
+        courseSelect.innerHTML = '<option value="">Select a course</option>';
+
+        // Add new course options
+        courses.forEach(course => {
             const option = document.createElement('option');
             option.value = course.id;
             option.textContent = course.name;
             courseSelect.appendChild(option);
         });
-    });
+    }
 
-    // Populate course dropdown for managing grades
-    courses.forEach(course => {
-        const option = document.createElement('option');
-        option.value = course.id;
-        option.textContent = course.name;
-        courseSelect2.appendChild(option);
-    });
+    // Fetch courses for a selected student
+    function fetchCoursesByStudent(studentId) {
+        fetch(`/courses/byStudent?student=${studentId}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'csrf-token': csrfToken,
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                updateCourseStudentDropdown(data.courses);
+            })
+            .catch(err => console.error('Error fetching courses:', err));
+    }
+
+    function updateCourseStudentDropdown(courses) {
+        // Clear the existing options
+        courseSelect.innerHTML = '<option value="">Select a course</option>';
+
+        // Add new course options
+        courses.forEach(course => {
+            const option = document.createElement('option');
+            option.value = course.id;
+            option.textContent = course.name;
+            courseSelect2.appendChild(option);
+        });
+    }
 
     // Event listener for "Show Activities" button
     document.getElementById('show-activities-course-btn').addEventListener('click', function() {
@@ -53,9 +133,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (selectedCheckboxes.length === 1) {
             const selectedCourseId = selectedCheckboxes[0].value;
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            fetch('/get_activities_by_course_of_activity_grades/', {
+            fetch('/activities/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -104,102 +183,64 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-document.getElementById('add-course-btn').addEventListener('click', function() {
-    document.getElementById('add-course-popup').style.display = 'block';
-});
-
-document.getElementById('manage-grade-btn').addEventListener('click', function() {
-    document.getElementById('manage-grade-popup').style.display = 'block';
-});
-
-document.getElementById('manage-activity-btn').addEventListener('click', function() {
-    document.getElementById('manage-grade-activity-popup').style.display = 'block';
-});
-
-document.getElementById('add-course-popup').querySelector('.close-btn').addEventListener('click', function() {
-    document.getElementById('add-course-popup').style.display = 'none';
-});
-
-document.getElementById('manage-grade-popup').querySelector('.close-btn').addEventListener('click', function() {
-    document.getElementById('manage-grade-popup').style.display = 'none';
-});
-
-document.getElementById('manage-grade-activity-popup').querySelector('.close-btn').addEventListener('click', function() {
-    document.getElementById('manage-grade-activity-popup').style.display = 'none';
-});
-
-window.addEventListener('click', function(event) {
-    if (event.target == document.getElementById('add-course-popup')) {
-        document.getElementById('add-course-popup').style.display = 'none';
-    }
-
-    if (event.target == document.getElementById('manage-grade-popup')) {
-        document.getElementById('manage-grade-popup').style.display = 'none';
-    }
-
-    if (event.target == document.getElementById('manage-grade-activity-popup')) {
-        document.getElementById('manage-grade-activity-popup').style.display = 'none';
-    }
-});
-
 document.getElementById('delete-course-btn').addEventListener('click', function() {
     const checkboxes = document.querySelectorAll('.course-checkbox:checked');
     const selectedCourses = Array.from(checkboxes).map(checkbox => checkbox.value);
 
     if (selectedCourses.length > 0) {
-        if (confirm('Are you sure you want to delete these courses?')) {
-            fetch(`/deEnrollCourses/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: JSON.stringify({ course_ids: selectedCourses, pk: student.id })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Remove the selected courses from the table
-                    selectedCourses.forEach(courseId => {
-                        document.querySelector(`.course-checkbox[value="${courseId}"]`).closest('tr').remove();
-                    });
-                    location.reload();
-                } else {
-                    alert('Failed to de-enroll courses.');
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        if (confirm('Are you sure you want to remove the selected courses?')) {
+            selectedCourses.forEach((courseId) => {
+                fetch(`/students/${studentId}/deenroll`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'csrf-token': csrfToken,
+                    },
+                    body: JSON.stringify({ course_id: courseId })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.sent === true) {
+                            console.log('Enrollment removed successfully related with course ID:', courseId);
+                        } else {
+                            alert(`Failed to remove enrollment for course with ID: ${courseId}`);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+
+            window.location.href = `/students/${studentId}`;
         }
     } else {
         alert('No courses selected.');
     }
-
 });
-
 
 document.getElementById('add-course-form').addEventListener('submit', function(event) {
     event.preventDefault();
     const course = document.getElementById('course-name').value;
 
-    fetch(`/enrollCourses/`, {
+    fetch(`/students/${studentId}/enroll`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest',
+            'csrf-token': csrfToken,
         },
-        body: JSON.stringify({ course_id: course , pk: student.id })
+        body: JSON.stringify({ course_id: course })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            location.reload();
-        } else {
-            alert('Failed to enroll in course.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to enroll student');
+            return response.json();
+        })
+        .then(data => {
+            if (data.sent === true) {
+                togglePopup('add-course-popup', false);
+                window.location.href = `/students/${studentId}`;
+            } else {
+                alert('Failed to enroll student.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
 });
 
 document.getElementById('manage-grade-form').addEventListener('submit', function(event) {
@@ -260,44 +301,33 @@ document.getElementById('manage-grade-activity-form').addEventListener('submit',
     .catch(error => console.error('Error:', error));
 });
 
-document.getElementById('edit-student-btn').addEventListener('click', function() {
-    document.getElementById('edit-student-popup').style.display = 'block';
-});
-
-document.getElementById('edit-student-popup').querySelector('.close-btn').addEventListener('click', function() {
-    document.getElementById('edit-student-popup').style.display = 'none';
-});
-
-window.addEventListener('click', function(event) {
-    if (event.target == document.getElementById('edit-student-popup')) {
-        document.getElementById('edit-st-student-popup').style.display = 'none';
-    }
-});
-
 document.getElementById('edit-student-form').addEventListener('submit', function(event) {
     event.preventDefault();
     const firstName = document.getElementById('edit-first-name').value;
     const lastName = document.getElementById('edit-last-name').value;
     const email = document.getElementById('edit-email').value;
 
-    fetch(`/modifyStudent/`, {
-        method: 'POST',
+    fetch(`/students/${studentId}`, {
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
+            'csrf-token': csrfToken,
             'X-Requested-With': 'XMLHttpRequest',
         },
         body: JSON.stringify({
-            id: student.id,
             first_name: firstName,
             last_name: lastName,
             email: email
         })
     })
-    .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to update student');
+            return response.json();
+        })
     .then(data => {
-        if (data.status === 'success') {
-            location.reload();
+        if (data.sent === true) {
+            togglePopup('edit-student-popup', false);
+            window.location.href = `/students/${studentId}`;
         } else {
             alert('Failed to edit student information.');
         }
@@ -307,21 +337,23 @@ document.getElementById('edit-student-form').addEventListener('submit', function
 
 document.getElementById('delete-student-btn').addEventListener('click', function() {
     if (confirm('Are you sure you want to delete this student?')) {
-        fetch(`/removeStudent/`, {
-            method: 'POST',
+        fetch(`/students/${studentId}`, {
+            method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
+                'csrf-token': csrfToken,
                 'X-Requested-With': 'XMLHttpRequest',
             },
-            body: JSON.stringify({ id: student.id })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to delete student');
+            return response.json();
+        })
         .then(data => {
-            if (data.status === 'success') {
-                window.location.href = '/students/'; // Redirect to the students list page
+            if (data.sent === true) {
+                window.location.href = '/students';
             } else {
-                alert('Failed to remove student.');
+                alert(data.message || 'Error deleting student.');
             }
         })
         .catch(error => console.error('Error:', error));

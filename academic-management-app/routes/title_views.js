@@ -42,7 +42,6 @@ router.get("/titles/:id", async (req, res) => {
         const {id} = req.params;
         queryDataTitle = {
             "headers": {
-                "type": "SendTransaction",
                 "signer": req.session.user.username,
                 "channel": process.env.KALEIDO_CHANNEL_NAME,
                 "chaincode": "title_contract"
@@ -138,7 +137,12 @@ router.delete("/titles/:id", async (req, res) => {
 
 // Get all titles
 router.get("/titles", async (req, res) => {
+    let isFilter = false;
     try {
+        const { onlyFilter } = req.query;
+        if (onlyFilter === 'true') {
+            isFilter = true;
+        }
         const queryData = {
             "headers": {
                 "signer": req.session.user?.username,
@@ -176,17 +180,21 @@ router.get("/titles", async (req, res) => {
         const isAjax = req.headers['x-requested-with'] === 'XMLHttpRequest';
 
         if (isAjax) {
-            return res.json({
-                titles: paginatedTitles,
-                pagination: {
-                    current_page: page,
-                    total_pages: totalPages,
-                    has_next: page < totalPages,
-                    next_page: page < totalPages ? page + 1 : null,
-                    has_previous: page > 1,
-                    previous_page: page > 1 ? page - 1 : null
-                }
-            });
+            if (isFilter) {
+                return res.json({ titles: titles });
+            } else{
+                return res.json({
+                    titles: paginatedTitles,
+                    pagination: {
+                        current_page: page,
+                        total_pages: totalPages,
+                        has_next: page < totalPages,
+                        next_page: page < totalPages ? page + 1 : null,
+                        has_previous: page > 1,
+                        previous_page: page > 1 ? page - 1 : null
+                    }
+                });
+            }
         }
 
         // Render page

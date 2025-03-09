@@ -59,7 +59,6 @@ router.get("/courses/:id", async (req, res) => {
         const {id} = req.params;
         queryDataCourse = {
             "headers": {
-                "type": "SendTransaction",
                 "signer": req.session.user.username,
                 "channel": process.env.KALEIDO_CHANNEL_NAME,
                 "chaincode": "course_contract"
@@ -76,7 +75,6 @@ router.get("/courses/:id", async (req, res) => {
         let queryDataActivities;
         queryDataActivities = {
             "headers": {
-                "type": "SendTransaction",
                 "signer": req.session.user.username,
                 "channel": process.env.KALEIDO_CHANNEL_NAME,
                 "chaincode": "activity_contract"
@@ -108,8 +106,12 @@ router.get("/courses", async (req, res) => {
         let courses;
         // AJAX check
         const isAjax = req.headers['x-requested-with'] === 'XMLHttpRequest';
+        let isFilter;
         if (isAjax) {
-            const { page, title, year } = req.query;
+            const { page, title, year, onlyFilter } = req.query;
+            if (onlyFilter === 'true') {
+                isFilter = true;
+            }
             const queryDataCoursesWithFilters = {
                 "headers": {
                     "signer": req.session.user?.username,
@@ -176,17 +178,23 @@ router.get("/courses", async (req, res) => {
         const years = [...new Set(courses.map(course => new Date(course.start_date).getFullYear()))];
 
         if (isAjax) {
-            return res.json({
-                courses: paginatedCourses,
-                pagination: {
-                    current_page: page,
-                    total_pages: totalPages,
-                    has_next: page < totalPages,
-                    next_page: page < totalPages ? page + 1 : null,
-                    has_previous: page > 1,
-                    previous_page: page > 1 ? page - 1 : null
-                }
-            });
+            if (isFilter) {
+                return res.json({
+                    courses: courses
+                });
+            }else {
+                return res.json({
+                    courses: paginatedCourses,
+                    pagination: {
+                        current_page: page,
+                        total_pages: totalPages,
+                        has_next: page < totalPages,
+                        next_page: page < totalPages ? page + 1 : null,
+                        has_previous: page > 1,
+                        previous_page: page > 1 ? page - 1 : null
+                    }
+                });
+            }
         }
 
         // Render page
@@ -210,6 +218,7 @@ router.get("/courses", async (req, res) => {
         res.render('courses/course_list', { page_title: 'Course List', courses: [] });
     }
 });
+
 // Update a course
 router.put("/courses/:id", async (req, res) => {
     let transactionData;
@@ -263,32 +272,28 @@ router.delete("/courses/:id", async (req, res) => {
     }
 });
 
-// Assign a grade to a student in a course
-router.post("/courses/:id/grades", async (req, res) => {
-    let transactionData;
+router.get("/courses/byStudent", async (req, res) => {
+    let queryData;
     try {
-        const { course_id } = req.params;
-        const { student_id, grade } = req.body;
-
-        transactionData = {
+        const { student } = req.query;
+        queryData = {
             "headers": {
-                "type": "SendTransaction",
                 "signer": req.session.user.username,
                 "channel": process.env.KALEIDO_CHANNEL_NAME,
-                "chaincode": "enrollment_contract"
+                "chaincode": "course_contract"
             },
-            "func": "assignGrade",
-            "args": [student_id, course_id, grade],
-            "init": false
+            "func": "getCoursesByStudent",
+            "args": [
+                student
+            ],
+            "strongread": true
         }
 
-        const response = await fabConnectService.submitTransaction(transactionData);
-
-        res.redirect('/courses/:id');
+        const response = await fabConnectService.queryChaincode(queryData);
+        res.json(response);
     } catch (err) {
-        console.error('Error creating grade to student in course:', err.message);
-        res.redirect('/courses/:id');
+        console.error('Error fetching courses for student:', err.message);
     }
-});
+})
 
 module.exports = router;

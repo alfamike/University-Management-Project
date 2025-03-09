@@ -1,0 +1,227 @@
+{% extends "base.njk" %}
+{% block content %}
+<input type="hidden" id="csrfToken" name="_csrf" value="{{ csrfToken }}">
+<input type="hidden" id="studentId" value="{{ student.id }}">
+<div class="student-detail-container">
+    <!-- Header Section -->
+    <div class="student-header">
+        <h1 class="page-title">{{ student.first_name }} {{ student.last_name }}</h1>
+        <p class="student-email">{{ student.email }}</p>
+    </div>
+
+    <!-- Details Section -->
+    <div class="student-details">
+        <div class="details-card">
+            <h2 class="details-title">Student Information
+                <button id="edit-student-btn" class="btn">Edit</button>
+                <button id="delete-student-btn" class="btn">Delete</button>
+            </h2>
+            <div class="details-content">
+                <div class="detail-item">
+                    <span class="detail-label">First Name:</span>
+                    <span class="detail-value">{{ student.first_name }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Last Name:</span>
+                    <span class="detail-value">{{ student.last_name }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">{{ student.email }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Courses Section -->
+    <div class="related-courses">
+        <h2 class="details-title">Enrolled Courses
+            <button id="add-course-btn" class="btn">Add Course</button>
+            <button id="delete-course-btn" class="btn">Remove Course</button>
+            <button id="show-activities-course-btn" class="btn">Show Activities</button>
+            <button id="manage-grade-btn" class="btn">Manage Grade</button>
+        </h2>
+        {% if courses %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Select</th>
+                <th>Course Name</th>
+                <th>Description</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Grade</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for course in courses %}
+            <tr>
+                <td><label>
+                    <input type="checkbox" class="course-checkbox" value="{{ course.id }}">
+                </label></td>
+                <td>{{ course.name }}</td>
+                <td>{{ course.description }}</td>
+                <td>{{ course.start_date }}</td>
+                <td>{{ course.end_date }}</td>
+                <td>
+                    {% for grade in course_grades %}
+                    {% if grade.course_id == course.id %}
+                    {{ grade.grade }}
+                    {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="cards">
+            {% for course in courses %}
+            <div class="card">
+                <h3>{{ course.name }}</h3>
+                <p>{{ course.description }}</p>
+                <p><strong>Start Date:</strong> {{ course.start_date }}</p>
+                <p><strong>End Date:</strong> {{ course.end_date }}</p>
+                <p><strong>Grade:</strong>
+                    {% for grade in course_grades %}
+                    {% if grade.course_id == course.id %}
+                    {{ grade.grade }}
+                    {% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-courses">This student is not enrolled in any courses.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pop-up for adding a course -->
+<div id="add-course-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h3>Add Course to student</h3>
+        <form id="add-course-form">
+            <label for="course-title">Title:</label>
+            <select id="course-title" name="course-title" class="filter-dropdown">
+                <!-- Dropdown options for titles -->
+                {% for title in titles %}
+                <option value="{{ title.id }}">
+                {{ title.name }}
+                </option>
+                {% endfor %}
+            </select>
+            <label for="course-name">Course:</label>
+            <select id="course-name" name="course-name" class="filter-dropdown">
+                <!-- Dropdown options for courses -->
+                {% for course in courses %}
+                <option value="{{ course.id }}">
+                {{ course.name }}
+                </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn">Add</button>
+        </form>
+    </div>
+</div>
+
+<!-- Pop-up for managing a grade of a course -->
+<div id="manage-grade-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h3>Add Grade to Course</h3>
+        <form id="manage-grade-form" class="modern-form">
+            <div class="form-group">
+            <label for="course-grade-select">Course:</label>
+            <select id="course-grade-select" name="course-select" required class="form-control">
+                <!-- Options for courses -->
+            </select>
+            </div>
+            <div class="form-group">
+            <label for="grade-input">Grade:</label>
+            <input type="number" id="grade-input" name="grade-input" min="0" max="100" required class="form-control">
+            </div>
+            <div class="form-actions">
+            <button type="submit" class="btn">Apply</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Pop-up for managing a grade of an activity -->
+<div id="manage-grade-activity-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h3>Add Grade to Activity</h3>
+        <form id="manage-grade-activity-form" class="modern-form">
+            <div class="form-group">
+            <label for="activity-grade-select">Activity:</label>
+            <select id="activity-grade-select" name="activity-select" class="form-control" required>
+                <!-- Options for activities -->
+            </select>
+            </div>
+            <div class="form-group">
+            <label for="activity-grade-input">Grade:</label>
+            <input type="number" id="activity-grade-input" name="grade-input" min="0" max="100" required class="form-control">
+            </div>
+            <div class="form-actions">
+            <button type="submit" class="btn">Apply</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Pop-up for editing student information -->
+<div id="edit-student-popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h3>Edit Student Information</h3>
+        <form id="edit-student-form" class="modern-form">
+            <div class="form-group">
+            <label for="edit-first-name">First Name:</label>
+            <input type="text" id="edit-first-name" name="first-name" required value="{{ student.first_name }}" class="form-control">
+            </div>
+            <div class="form-group">
+            <label for="edit-last-name">Last Name:</label>
+            <input type="text" id="edit-last-name" name="last-name" required value="{{ student.last_name }}" class="form-control">
+            </div>
+            <div class="form-group">
+            <label for="edit-email">Email:</label>
+            <input type="email" id="edit-email" name="email" value="{{ student.email }}" required class="form-control">
+            </div>
+            <div class="form-actions">
+            <button type="submit" class="btn">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Student's Activities Section -->
+<div id="activities-section" style="display: none;">
+    <h2 class="details-title">Activities
+        <button id="manage-activity-btn" class="btn">Manage Grade</button>
+    </h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Activity Name</th>
+                <th>Description</th>
+                <th>Due Date</th>
+                <th>Grade</th>
+            </tr>
+        </thead>
+        <tbody id="activities-table-body">
+            <!-- Activities will be populated here -->
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/css/student_record.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="/js/student_record.js"></script>
+{% endblock %}

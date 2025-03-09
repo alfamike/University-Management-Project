@@ -1,10 +1,10 @@
-<%- include('base', { title: 'Create Student' }) %>
-
+{% extends "base.njk" %}
+{% block content %}
 <h1>Create Student</h1>
 <p>Fill out the form below to register a new student in the system.</p>
 
 <div class="form-container">
-    <form class="modern-form" id="create-student-form" action="/students/create" method="POST">
+    <form class="modern-form" id="create-student-form" action="/students" method="POST">
         <div class="form-group">
             <label for="student_first_name">First name:</label>
             <input
@@ -38,11 +38,11 @@
             <small class="form-hint">Provide a valid email address for the student.</small>
         </div>
 
+        <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrfToken }}">
+
         <div class="form-actions">
             <button class="btn btn-primary" type="submit">Create Student</button>
         </div>
     </form>
 </div>
-
-<% // Include extra JS for this page %>
-<%- include('partials/extra_js', { additionalJS: '../public/js/create_student.js' }) %>
+{% endblock %}

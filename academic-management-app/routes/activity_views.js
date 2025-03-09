@@ -80,21 +80,27 @@ router.put("/activities/:id", async (req, res) => {
     }
 });
 
-// Manage grade for an activity
-router.post("/activities/:id/grades", async (req, res) => {
+router.get("/activities/byCourse", async (req, res) => {
+    let transactionData;
     try {
-        const { student_id, grade } = req.body;
-        const { id } = req.params;
+        const { courseId } = req.query;
+        transactionData = {
+            "headers": {
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "activity_contract"
+            },
+            "func": "getActivitiesByCourse",
+            "args": [
+                courseId
+            ],
+            "init": false
+        }
 
-        const response = await axios.post(`${KALEIDO_API_URL}/invoke`, {
-            chaincode: "activity_contract",
-            method: "assignGradeToActivity",
-            args: [student_id, id, grade]
-        }, KALEIDO_AUTH);
-
-        res.json(response.data);
+        const response = await fabConnectService.queryChaincode(transactionData);
+        res.json(response);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error getting activities by course:', err.message);
     }
 });
 

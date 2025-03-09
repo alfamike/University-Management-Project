@@ -113,7 +113,6 @@ document.getElementById('delete-activity-btn').addEventListener('click', functio
     } else {
         alert('No activities selected.');
     }
-
 });
 
 document.getElementById('modify-activity-btn').addEventListener('click', function() {
@@ -163,7 +162,7 @@ document.getElementById('edit-course-form').addEventListener('submit', function(
         })
         .then(data => {
             if (data.sent === true) {
-                document.getElementById('edit-course-popup').style.display = 'none';
+                togglePopup('edit-course-popup', false);
                 window.location.href = `/courses/${courseId}`;
             } else{
                 alert(data.message || 'Error updating course.');
