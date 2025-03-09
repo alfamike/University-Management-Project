@@ -95,6 +95,21 @@ class EnrollmentContract extends Contract {
 
         return JSON.stringify(results);
     }
+
+    async getEnrollmentsByCourse(ctx, course_id) {
+        const query = { selector: { docType: "enrollment", course: course_id, is_deleted: false } };
+        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
+
+        const results = [];
+        let result = await iterator.next();
+        while (!result.done) {
+            const jsonRes = JSON.parse(result.value.value.toString());
+            results.push(jsonRes); // Push each result as an Enrollment object
+            result = await iterator.next();
+        }
+
+        return JSON.stringify(results);
+    }
 }
 
 module.exports = EnrollmentContract;
