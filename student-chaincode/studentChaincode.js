@@ -116,6 +116,7 @@ class StudentContract extends Contract {
 
             // If the result is successful, return it
             if (resultBuffer && resultBuffer.length > 0) {
+                console.log('Result:', resultBuffer.toString());
                 const result = JSON.parse(resultBuffer.toString());
                 return result;
             } else {
