@@ -29,6 +29,18 @@ class EnrollmentContract extends Contract {
         return enrollmentData.toString();
     }
 
+    async getEnrollmentByStudentCourse(ctx, student_id, course_id) {
+        const query = { selector: { docType: "enrollment", student: student_id, course: course_id, is_deleted: false } };
+        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
+
+        let result = await iterator.next();
+        if (result.done) {
+            throw new Error(`Enrollment with Student ID ${student_id} and Course ID ${course_id} not found`);
+        }
+
+        return result.value.value.toString();
+    }
+
     async getAllEnrollments(ctx) {
         const query = { selector: { docType: "enrollment", is_deleted: false } };
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
