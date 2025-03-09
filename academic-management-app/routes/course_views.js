@@ -163,10 +163,10 @@ router.get("/courses", async (req, res) => {
 
 // Get a specific course
 router.get("/courses/:id", async (req, res) => {
-    let queryDatacourse;
+    let queryDataCourse;
     try {
         const {id} = req.params;
-        queryDatacourse = {
+        queryDataCourse = {
             "headers": {
                 "type": "SendTransaction",
                 "signer": req.session.user.username,
@@ -180,11 +180,29 @@ router.get("/courses/:id", async (req, res) => {
             "strongread": true
         }
 
-        const responseCourse = await fabConnectService.queryChaincode(queryDatacourse);
+        const responseCourse = await fabConnectService.queryChaincode(queryDataCourse);
+
+        let queryDataActivities;
+        queryDataActivities = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "activity_contract"
+            },
+            "func": "getActivitiesByCourse",
+            "args": [
+                id
+            ],
+            "strongread": true
+        }
+
+        const responseActivities = await fabConnectService.queryChaincode(queryDataActivities);
 
         res.render('courses/course_record', {
             page_title: 'Course',
-            course: responseCourse?.result ?? null
+            course: responseCourse?.result ?? [],
+            activities: responseActivities?.result ?? [],
         });
     } catch (err) {
         console.error('Error fetching course:', err.message);
@@ -213,16 +231,14 @@ router.put("/courses/:id", async (req, res) => {
         }
 
         const response = await fabConnectService.submitTransaction(transactionData);
-
-        res.redirect("/courses/${id}");
+        res.json(response);
     } catch (err) {
         console.error('Error updating course:', err.message);
-        res.redirect("/courses/${id}");
     }
 });
 
 // Delete a course
-router.delete("/courses/${id}", async (req, res) => {
+router.delete("/courses/:id", async (req, res) => {
     let transactionData;
     try {
         const {id} = req.params;
@@ -241,16 +257,14 @@ router.delete("/courses/${id}", async (req, res) => {
         }
 
         const response = await fabConnectService.submitTransaction(transactionData);
-
-        res.redirect('/courses');
+        res.json(response);
     } catch (err) {
         console.error('Error deleting course:', err.message);
-        res.redirect('/courses');
     }
 });
 
 // Assign a grade to a student in a course
-router.post("/courses/${course_id}/grades", async (req, res) => {
+router.post("/courses/:id/grades", async (req, res) => {
     let transactionData;
     try {
         const { course_id } = req.params;
@@ -261,7 +275,7 @@ router.post("/courses/${course_id}/grades", async (req, res) => {
                 "type": "SendTransaction",
                 "signer": req.session.user.username,
                 "channel": process.env.KALEIDO_CHANNEL_NAME,
-                "chaincode": "student_course_contract"
+                "chaincode": "enrollment_contract"
             },
             "func": "assignGrade",
             "args": [student_id, course_id, grade],
@@ -270,10 +284,10 @@ router.post("/courses/${course_id}/grades", async (req, res) => {
 
         const response = await fabConnectService.submitTransaction(transactionData);
 
-        res.redirect('/courses/${course_id}');
+        res.redirect('/courses/:id');
     } catch (err) {
         console.error('Error creating grade to student in course:', err.message);
-        res.redirect('/courses/${course_id}');
+        res.redirect('/courses/:id');
     }
 });
 

@@ -1,61 +1,81 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-
-const KALEIDO_API_URL = process.env.KALEIDO_API_URL;
-const KALEIDO_AUTH = { auth: { username: process.env.KALEIDO_USERNAME, password: process.env.KALEIDO_PASSWORD } };
+const fabConnectService = require("../kaleido/fabConnectService");
 
 // Create an activity
 router.post("/activities", async (req, res) => {
+    let transactionData;
     try {
-        const { name, description, due_date, course_id } = req.body;
+        const { course_id, activity_name, activity_description, activity_due_date  } = req.body;
+        transactionData = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "activity_contract"
+            },
+            "func": "createActivity",
+            "args": [ course_id, activity_name, activity_description, activity_due_date ],
+            "init": false
+        }
 
-        const response = await axios.post(`${KALEIDO_API_URL}/invoke`, {
-            chaincode: "activityContract",
-            method: "createActivity",
-            args: [name, description, due_date, course_id]
-        }, KALEIDO_AUTH);
-
-        res.json(response.data);
+        const response = await fabConnectService.submitTransaction(transactionData);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error creating course:', err.message);
     }
 });
 
-// Remove activities
-router.post("/activities/remove", async (req, res) => {
+// Remove activity
+router.delete("/activities/:id", async (req, res) => {
+    let transactionData;
     try {
-        const { activity_ids } = req.body;
-
-        for (const id of activity_ids) {
-            await axios.post(`${KALEIDO_API_URL}/invoke`, {
-                chaincode: "activityContract",
-                method: "deleteActivity",
-                args: [id]
-            }, KALEIDO_AUTH);
+        const {id} = req.params;
+        transactionData = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "activity_contract"
+            },
+            "func": "deleteActivity",
+            "args": [
+                id
+            ],
+            "init": false
         }
 
-        res.json({ status: "success" });
+        const response = await fabConnectService.submitTransaction(transactionData);
+        res.json(response);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error deleting activity:', err.message);
     }
 });
 
 // Modify an activity
 router.put("/activities/:id", async (req, res) => {
+    let transactionData;
     try {
+        const { activityName, activityDescription, activityDueDate } = req.body;
         const { id } = req.params;
-        const { name, description, due_date } = req.body;
+        transactionData = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "activity_contract"
+            },
+            "func": "updateActivity",
+            "args": [
+                id, activityName, activityDescription, activityDueDate
+            ],
+            "init": false
+        }
 
-        const response = await axios.post(`${KALEIDO_API_URL}/invoke`, {
-            chaincode: "activityContract",
-            method: "updateActivity",
-            args: [id, name, description, due_date]
-        }, KALEIDO_AUTH);
-
-        res.json(response.data);
+        const response = await fabConnectService.submitTransaction(transactionData);
+        res.json(response);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Error updating activity:', err.message);
     }
 });
 
@@ -63,12 +83,12 @@ router.put("/activities/:id", async (req, res) => {
 router.post("/activities/:id/grades", async (req, res) => {
     try {
         const { student_id, grade } = req.body;
-        const { id: activity_id } = req.params;
+        const { id } = req.params;
 
         const response = await axios.post(`${KALEIDO_API_URL}/invoke`, {
-            chaincode: "gradeContract",
+            chaincode: "activity_contract",
             method: "assignGradeToActivity",
-            args: [student_id, activity_id, grade]
+            args: [student_id, id, grade]
         }, KALEIDO_AUTH);
 
         res.json(response.data);

@@ -1,10 +1,6 @@
-// Get CSRF token
-const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-// Get data from the data-container
-const jsonData = JSON.parse(document.getElementById('data').textContent);
-const course = JSON.parse(jsonData.course.replace(/'/g, '"'));
-const activities = JSON.parse(jsonData.activities.replace(/'/g, '"'));
+// Get CSRF token and course ID
+const csrfToken = document.getElementById('csrfToken')?.value;
+const courseId = document.getElementById('courseId')?.value;
 
 document.getElementById('add-activity-btn').addEventListener('click', function() {
     document.getElementById('add-activity-popup').style.display = 'block';
@@ -23,11 +19,11 @@ document.getElementById('edit-course-popup').querySelector('.close-btn').addEven
 });
 
 window.addEventListener('click', function(event) {
-    if (event.target == document.getElementById('add-activity-popup')) {
+    if (event.target === document.getElementById('add-activity-popup')) {
         document.getElementById('add-activity-popup').style.display = 'none';
     }
 
-    if (event.target == document.getElementById('edit-course-popup')) {
+    if (event.target === document.getElementById('edit-course-popup')) {
         document.getElementById('edit-course-popup').style.display = 'none';
     }
 });
@@ -42,7 +38,7 @@ document.getElementById('delete-activity-btn').addEventListener('click', functio
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken,
+                    'csrf-token': csrfToken,
                     'X-Requested-With': 'XMLHttpRequest',
                 },
                 body: JSON.stringify({ activity_ids: selectedActivities })
@@ -74,15 +70,14 @@ document.getElementById('add-activity-form').addEventListener('submit', function
     const activity_description = document.getElementById('activity-description').value;
     const activity_due_date = document.getElementById('activity-due-date').value;
 
-    fetch(`/createActivity/`, {
+    fetch('/activities', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest',
+            'csrf-token': csrfToken,
         },
-        body: JSON.stringify({ course_id: course_id, name: activity_name, description: activity_description,
-        due_date: activity_due_date })
+        body: JSON.stringify({ course_id: courseId, activity_name: activity_name, activity_description: activity_description,
+            activity_due_date: activity_due_date })
     })
     .then(response => response.json())
     .then(data => {
@@ -121,7 +116,7 @@ document.getElementById('modify-activity-popup').querySelector('.close-btn').add
 });
 
 window.addEventListener('click', function(event) {
-    if (event.target == document.getElementById('modify-activity-popup')) {
+    if (event.target === document.getElementById('modify-activity-popup')) {
         document.getElementById('modify-activity-popup').style.display = 'none';
     }
 });
@@ -133,14 +128,13 @@ document.getElementById('modify-activity-form').addEventListener('submit', funct
     const activityDescription = document.getElementById('modify-activity-description').value;
     const activityDueDate = document.getElementById('modify-activity-due-date').value;
 
-    fetch(`/modifyActivity/`, {
-        method: 'POST',
+    fetch('/activities/:id', {
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest',
+            'csrf-token': csrfToken,
         },
-        body: JSON.stringify({ id: activityId, name: activityName, description: activityDescription, due_date: activityDueDate })
+        body: JSON.stringify({ activityName: activityName, activityDescription: activityDescription, activityDueDate: activityDueDate })
     })
     .then(response => response.json())
     .then(data => {
@@ -160,51 +154,54 @@ document.getElementById('edit-course-form').addEventListener('submit', function(
     const courseStartDate = document.getElementById('edit-course-start-date').value;
     const courseEndDate = document.getElementById('edit-course-end-date').value;
 
-    fetch(`/modifyCourse/`, {
-        method: 'POST',
+    fetch(`/courses/${courseId}`, {
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest',
+            'csrf-token': csrfToken,
         },
         body: JSON.stringify({
-            id: course.id,
-            name: courseName,
-            description: courseDescription,
-            start_date: courseStartDate,
-            end_date: courseEndDate
+            course_name: courseName,
+            course_description: courseDescription,
+            course_start_date: courseStartDate,
+            course_end_date: courseEndDate
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            location.reload();
-        } else {
-            alert('Failed to edit course information.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to update course');
+            return response.json();
+        })
+        .then(data => {
+            if (data.sent === true) {
+                document.getElementById('edit-course-popup').style.display = 'none';
+                window.location.href = `/courses/${courseId}`;
+            } else{
+                alert(data.message || 'Error updating course.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
 });
 
 document.getElementById('delete-course-btn').addEventListener('click', function() {
-if (confirm('Are you sure you want to delete this course?')) {
-    fetch(`/removeCourse/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest',
-        },
-        body: JSON.stringify({ id: course.id })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            window.location.href = '/courses/';
-        } else {
-            alert('Failed to delete the course.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
+    if (confirm('Are you sure you want to delete this course?')) {
+        fetch(`/courses/${courseId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'csrf-token': csrfToken,
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to delete course');
+                return response.json();
+            })
+            .then(data => {
+                if (data.sent === true) {
+                    window.location.href = '/courses';
+                } else {
+                    alert(data.message || 'Error deleting course.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 });

@@ -1,6 +1,7 @@
 {% extends "base.njk" %}
 {% block content %}
 <input type="hidden" id="csrfToken" name="_csrf" value="{{ csrfToken }}">
+<input type="hidden" id="courseId" value="{{ course.id }}">
 <div class="course-detail-container">
     <!-- Header Section -->
     <div class="course-header">
@@ -42,7 +43,7 @@
             <button id="modify-activity-btn" class="btn">Modify Activity</button>
             <button id="delete-activity-btn" class="btn">Remove Activity</button>
         </h2>
-        {% if activities and activities.length > 0 %}
+        {% if activities %}
         <table class="table">
             <thead>
             <tr>

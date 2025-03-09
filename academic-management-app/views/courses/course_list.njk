@@ -48,7 +48,7 @@
         {% if courses and courses.length > 0 %}
         {% for course in courses %}
         <tr>
-            <td><a href="/course/{{ course.id }}">{{ course.name }}</a></td>
+            <td><a href="/courses/{{ course.id }}">{{ course.name }}</a></td>
             <td>{{ course.description }}</td>
             <td>{{ course.start_date }}</td>
             <td>{{ course.end_date }}</td>
@@ -68,7 +68,7 @@
         {% for course in courses %}
         <div class="card">
             <div class="card-content">
-                <h3 class="card-title"><a href="/course/{{ course.id }}">{{ course.name }}</a></h3>
+                <h3 class="card-title"><a href="/courses/{{ course.id }}">{{ course.name }}</a></h3>
                 <p class="card-description">{{ course.description }}</p>
             </div>
         </div>
