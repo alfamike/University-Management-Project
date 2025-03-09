@@ -2,22 +2,30 @@
 const csrfToken = document.getElementById('csrfToken')?.value;
 const titleId = document.getElementById('titleId')?.value
 
-// Open edit popup
-document.getElementById('edit-title-btn')?.addEventListener('click', () => {
-    document.getElementById('edit-title-popup').style.display = 'block';
-});
-
-// Close edit popup
-document.querySelector('#edit-title-popup .close-btn')?.addEventListener('click', () => {
-    document.getElementById('edit-title-popup').style.display = 'none';
-});
-
-// Close popup when clicking outside of it
-window.addEventListener('click', (event) => {
-    const popup = document.getElementById('edit-title-popup');
-    if (event.target === popup) {
-        popup.style.display = 'none';
+// Function to show or hide popups
+const togglePopup = (popupId, show = true) => {
+    const popup = document.getElementById(popupId);
+    if (popup) {
+        popup.style.display = show ? 'block' : 'none';
     }
+};
+
+document.getElementById('edit-title-btn')?.addEventListener('click', () => togglePopup('edit-title-popup'));
+
+// Close popups via close buttons
+document.querySelectorAll('.close-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const popup = btn.closest('.popup');
+        if (popup) popup.style.display = 'none';
+    });
+});
+
+// Close popups by clicking outside of them
+window.addEventListener('click', event => {
+    ['edit-title-popup'].forEach(popupId => {
+        const popup = document.getElementById(popupId);
+        if (event.target === popup) togglePopup(popupId, false);
+    });
 });
 
 // Handle edit form submission
@@ -44,7 +52,7 @@ document.getElementById('edit-title-form')?.addEventListener('submit', (event) =
         })
         .then(data => {
             if (data.sent === true) {
-                document.getElementById('edit-title-popup').style.display = 'none';
+                togglePopup('edit-title-popup', false);
                 window.location.href = `/titles/${titleId}`;
             } else{
                 alert(data.message || 'Error updating title.');
