@@ -53,20 +53,6 @@ router.get("/students/:id", async (req, res) => {
 
         const responseStudent = await fabConnectService.queryChaincode(queryDataStudent);
 
-        let queryDataCourses;
-        queryDataCourses = {
-            "headers": {
-                "signer": req.session.user.username,
-                "channel": process.env.KALEIDO_CHANNEL_NAME,
-                "chaincode": "course_contract"
-            },
-            "func": "getCoursesByStudent",
-            "args": [id],
-            "strongread": true
-        }
-
-        const responseCourses = await fabConnectService.queryChaincode(queryDataCourses);
-
         let queryDataCoursesGrades;
         queryDataCoursesGrades = {
             "headers": {
@@ -81,10 +67,28 @@ router.get("/students/:id", async (req, res) => {
 
         const responseCoursesGrades = await fabConnectService.queryChaincode(queryDataCoursesGrades);
 
+        let courses = [];
+        for (let course of responseCoursesGrades.result) {
+            let queryDataCourse;
+            queryDataCourse = {
+                "headers": {
+                    "signer": req.session.user.username,
+                    "channel": process.env.KALEIDO_CHANNEL_NAME,
+                    "chaincode": "course_contract"
+                },
+                "func": "getCourse",
+                "args": [course.course],
+                "strongread": true
+            }
+
+            const responseCourse = await fabConnectService.queryChaincode(queryDataCourse);
+            courses.push(responseCourse.result);
+        }
+
         res.render('students/student_record', {
             page_title: 'Student',
             student: responseStudent?.result ?? [],
-            courses: responseCourses?.result ?? [],
+            courses: courses ?? [],
             courses_grades: responseCoursesGrades?.result ?? [],
         });
     } catch (err) {

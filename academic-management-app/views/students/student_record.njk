@@ -106,20 +106,10 @@
             <label for="course-title">Title:</label>
             <select id="course-title" name="course-title" class="filter-dropdown">
                 <!-- Dropdown options for titles -->
-                {% for title in titles %}
-                <option value="{{ title.id }}">
-                {{ title.name }}
-                </option>
-                {% endfor %}
             </select>
             <label for="course-name">Course:</label>
             <select id="course-name" name="course-name" class="filter-dropdown">
                 <!-- Dropdown options for courses -->
-                {% for course in courses %}
-                <option value="{{ course.id }}">
-                {{ course.name }}
-                </option>
-                {% endfor %}
             </select>
             <button type="submit" class="btn">Add</button>
         </form>

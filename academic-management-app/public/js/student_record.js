@@ -27,7 +27,30 @@ window.addEventListener('click', event => {
 });
 
 // Open popups
-document.getElementById('add-course-btn')?.addEventListener('click', () => togglePopup('add-course-popup'));
+document.getElementById('add-course-btn')?.addEventListener('click', () => {
+    togglePopup('add-course-popup');
+
+    // Populate course titles when opening the form
+    fetch('/titles?isFilter=true', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'csrf-token': csrfToken,
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            const titleSelect = document.getElementById('course-title');
+            titleSelect.innerHTML = '<option value="">Select a title</option>';
+            data.titles.forEach(title => {
+                const option = document.createElement('option');
+                option.value = title.id;
+                option.textContent = title.name;
+                titleSelect.appendChild(option);
+            });
+        })
+        .catch(err => console.error('Error fetching titles:', err));
+});
 document.getElementById('manage-grade-btn')?.addEventListener('click', () => togglePopup('manage-grade-popup'));
 document.getElementById('manage-activity-btn')?.addEventListener('click', () => togglePopup('manage-grade-activity-popup'));
 document.getElementById('edit-student-btn')?.addEventListener('click', () => togglePopup('edit-student-popup'));
@@ -36,28 +59,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const titleSelect = document.getElementById('course-title');
     const courseSelect = document.getElementById('course-name');
     const courseSelect2 = document.getElementById('course-grade-select');
-
-    let titles = [];
-
-    // Populate titles dropdown
-    fetch('/titles?isFilter=true', {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'csrf-token': csrfToken,
-        }
-    }).then(response => response.json())
-        .then(data => {
-            if (data.sent === true){
-                titles= data.titles;
-                titles.forEach(title => {
-                    const option = document.createElement('option');
-                    option.value = title.id;
-                    option.textContent = title.name;
-                    titleSelect.appendChild(option);
-                });
-            }
-        })
 
     // Fetch courses based on title selection
     titleSelect.addEventListener('change', function () {
@@ -134,16 +135,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedCheckboxes.length === 1) {
             const selectedCourseId = selectedCheckboxes[0].value;
 
-            fetch('/activities/', {
-                method: 'POST',
+            fetch('/activities/byCourse', {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
+                    'csrf-token': csrfToken,
                 },
                 body: JSON.stringify({
                     course_id: selectedCourseId,
-                    activities_grades: activity_grades
                 })
             })
             .then(response => response.json())
