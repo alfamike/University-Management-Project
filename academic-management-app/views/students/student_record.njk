@@ -111,14 +111,8 @@
         <h3>Add Grade to Course</h3>
         <form id="manage-grade-form" class="modern-form">
             <div class="form-group">
-            <label for="course-grade-select">Course:</label>
-            <select id="course-grade-select" name="course-select" required class="form-control">
-                <!-- Options for courses -->
-            </select>
-            </div>
-            <div class="form-group">
             <label for="grade-input">Grade:</label>
-            <input type="number" id="grade-input" name="grade-input" min="0" max="100" required class="form-control">
+            <input type="number" id="grade-input" name="grade-input" min="0" max="100" step="0.01" required class="form-control">
             </div>
             <div class="form-actions">
             <button type="submit" class="btn">Apply</button>
@@ -141,7 +135,7 @@
             </div>
             <div class="form-group">
             <label for="activity-grade-input">Grade:</label>
-            <input type="number" id="activity-grade-input" name="grade-input" min="0" max="100" required class="form-control">
+            <input type="number" id="activity-grade-input" name="grade-input" min="0" max="100" step="0.01" required class="form-control">
             </div>
             <div class="form-actions">
             <button type="submit" class="btn">Apply</button>

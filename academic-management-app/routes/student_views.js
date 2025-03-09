@@ -315,4 +315,48 @@ router.post("/students/:id/deenroll", async (req, res) => {
     }
 });
 
+router.put('/students/:id/grade', async (req, res) => {
+    let transactionGetData;
+    let transactionData;
+    try {
+        const { id } = req.params;
+        const { course_id, grade } = req.body;
+
+        transactionGetData = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "enrollment_contract"
+            },
+            "func": "getEnrollmentByStudentCourse",
+            "args": [
+                id, course_id
+            ],
+            "init": false
+        }
+
+        const responseGet = await fabConnectService.queryChaincode(transactionGetData);
+
+        transactionData = {
+            "headers": {
+                "type": "SendTransaction",
+                "signer": req.session.user.username,
+                "channel": process.env.KALEIDO_CHANNEL_NAME,
+                "chaincode": "enrollment_contract"
+            },
+            "func": "updateEnrollment",
+            "args": [
+                responseGet.result.id, id, course_id, grade
+            ],
+            "init": false
+        }
+
+        const response = await fabConnectService.submitTransaction(transactionData);
+        res.json(response);
+    } catch (err) {
+        console.error('Error updating grade:', err.message);
+    }
+})
+
 module.exports = router;

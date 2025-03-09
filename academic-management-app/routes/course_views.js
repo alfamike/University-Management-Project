@@ -272,28 +272,4 @@ router.delete("/courses/:id", async (req, res) => {
     }
 });
 
-router.get("/courses/byStudent", async (req, res) => {
-    let queryData;
-    try {
-        const { student } = req.query;
-        queryData = {
-            "headers": {
-                "signer": req.session.user.username,
-                "channel": process.env.KALEIDO_CHANNEL_NAME,
-                "chaincode": "course_contract"
-            },
-            "func": "getCoursesByStudent",
-            "args": [
-                student
-            ],
-            "strongread": true
-        }
-
-        const response = await fabConnectService.queryChaincode(queryData);
-        res.json(response);
-    } catch (err) {
-        console.error('Error fetching courses for student:', err.message);
-    }
-})
-
 module.exports = router;

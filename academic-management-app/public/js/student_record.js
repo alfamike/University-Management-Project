@@ -51,14 +51,19 @@ document.getElementById('add-course-btn')?.addEventListener('click', () => {
         })
         .catch(err => console.error('Error fetching titles:', err));
 });
-document.getElementById('manage-grade-btn')?.addEventListener('click', () => togglePopup('manage-grade-popup'));
+document.getElementById('manage-grade-btn')?.addEventListener('click', () => {
+    if (document.querySelectorAll('.course-checkbox:checked').length !== 1) {
+        alert('Please select one course to manage its grade.');
+        return;
+    }
+    togglePopup('manage-grade-popup');
+});
 document.getElementById('manage-activity-btn')?.addEventListener('click', () => togglePopup('manage-grade-activity-popup'));
 document.getElementById('edit-student-btn')?.addEventListener('click', () => togglePopup('edit-student-popup'));
 
 document.addEventListener('DOMContentLoaded', function() {
     const titleSelect = document.getElementById('course-title');
     const courseSelect = document.getElementById('course-name');
-    const courseSelect2 = document.getElementById('course-grade-select');
 
     // Fetch courses based on title selection
     titleSelect.addEventListener('change', function () {
@@ -97,35 +102,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Fetch courses for a selected student
-    function fetchCoursesByStudent(studentId) {
-        fetch(`/courses/byStudent?student=${studentId}`, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'csrf-token': csrfToken,
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                updateCourseStudentDropdown(data.courses);
-            })
-            .catch(err => console.error('Error fetching courses:', err));
-    }
-
-    function updateCourseStudentDropdown(courses) {
-        // Clear the existing options
-        courseSelect.innerHTML = '<option value="">Select a course</option>';
-
-        // Add new course options
-        courses.forEach(course => {
-            const option = document.createElement('option');
-            option.value = course.id;
-            option.textContent = course.name;
-            courseSelect2.appendChild(option);
-        });
-    }
-
     // Event listener for "Show Activities" button
     document.getElementById('show-activities-course-btn').addEventListener('click', function() {
         const selectedCheckboxes = document.querySelectorAll('.course-checkbox:checked');
@@ -135,15 +111,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedCheckboxes.length === 1) {
             const selectedCourseId = selectedCheckboxes[0].value;
 
-            fetch('/activities/byCourse', {
+            fetch(`/activities/byCourse?${selectedCourseId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'csrf-token': csrfToken,
                 },
-                body: JSON.stringify({
-                    course_id: selectedCourseId,
-                })
             })
             .then(response => response.json())
             .then(data => {
@@ -244,31 +217,32 @@ document.getElementById('add-course-form').addEventListener('submit', function(e
 
 document.getElementById('manage-grade-form').addEventListener('submit', function(event) {
     event.preventDefault();
-    const courseId = document.getElementById('course-grade-select').value;
+    const selectedCheckboxes = document.querySelectorAll('.course-checkbox:checked');
     const grade = document.getElementById('grade-input').value;
 
-    fetch(`/manageGradeToCourse/`, {
-        method: 'POST',
+    const selectedCourseId = selectedCheckboxes[0].value;
+
+    fetch(`/students/${studentId}/grade`, {
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest',
+            'csrf-token': csrfToken,
         },
         body: JSON.stringify({
-            student_id: student.id,
-            course_id: courseId,
+            course_id: selectedCourseId,
             grade: grade
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            location.reload();
-        } else {
-            alert('Failed to manage grade.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
+        .then(response => response.json())
+        .then(data => {
+            if (data.sent === true) {
+                togglePopup('manage-grade-popup', false);
+                window.location.href = `/students/${studentId}`;
+            } else {
+                alert('Failed to manage grade.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
 });
 
 document.getElementById('manage-grade-activity-form').addEventListener('submit', function(event) {
