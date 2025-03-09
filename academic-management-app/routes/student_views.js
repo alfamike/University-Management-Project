@@ -82,14 +82,16 @@ router.get("/students/:id", async (req, res) => {
             }
 
             const responseCourse = await fabConnectService.queryChaincode(queryDataCourse);
-            courses.push(responseCourse.result);
+            courses.push({
+                ...responseCourse.result,
+                grade: course.grade
+            });
         }
 
         res.render('students/student_record', {
             page_title: 'Student',
             student: responseStudent?.result ?? [],
             courses: courses ?? [],
-            courses_grades: responseCoursesGrades?.result ?? [],
         });
     } catch (err) {
         console.error('Error fetching course:', err.message);

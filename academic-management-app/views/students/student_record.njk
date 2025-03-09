@@ -63,13 +63,7 @@
                 <td>{{ course.description }}</td>
                 <td>{{ course.start_date }}</td>
                 <td>{{ course.end_date }}</td>
-                <td>
-                    {% for grade in course_grades %}
-                    {% if grade.course_id == course.id %}
-                    {{ grade.grade }}
-                    {% endif %}
-                    {% endfor %}
-                </td>
+                <td>{{ course.grade }}</td>
             </tr>
             {% endfor %}
             </tbody>
@@ -81,13 +75,7 @@
                 <p>{{ course.description }}</p>
                 <p><strong>Start Date:</strong> {{ course.start_date }}</p>
                 <p><strong>End Date:</strong> {{ course.end_date }}</p>
-                <p><strong>Grade:</strong>
-                    {% for grade in course_grades %}
-                    {% if grade.course_id == course.id %}
-                    {{ grade.grade }}
-                    {% endif %}
-                    {% endfor %}
-                </p>
+                <p><strong>Grade:</strong> {{ course.grade }} </p>
             </div>
             {% endfor %}
         </div>
