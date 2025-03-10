@@ -28,7 +28,7 @@ router.post("/titles", async (req, res) => {
 
         const response = await fabConnectService.submitTransaction(transactionData);
 
-        res.redirect(`/titles/${response.result.id}`);
+        res.redirect('/titles');
     } catch (err) {
         console.error('Error creating title:', err.message);
         res.redirect('/titles');
