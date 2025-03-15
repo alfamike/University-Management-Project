@@ -85,12 +85,15 @@ class ActivityGradeContract extends Contract {
         const query = { selector: { docType: "activity_grade", activity: activity_id, student: student_id, is_deleted: false } };
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
 
+        const results = [];
         let result = await iterator.next();
-        if (result.done) {
-            throw new Error(`ActivityGrade with Activity ID ${activity_id} and Student ID ${student_id} not found`);
+        while (!result.done) {
+            const jsonRes = JSON.parse(result.value.value.toString());
+            results.push(jsonRes); // Push each result as an ActivityGrade object
+            result = await iterator.next();
         }
 
-        return result.value.value.toString();
+        return JSON.stringify(results);
     }
 
     async getActivityGradesByStudent(ctx, student_id){
