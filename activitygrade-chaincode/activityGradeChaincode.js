@@ -107,6 +107,21 @@ class ActivityGradeContract extends Contract {
 
         return JSON.stringify({ success: true, message: "ActivityGrades deleted successfully" });
     }
+
+    async deleteActivityGradesByActivityStudent(ctx, activity_id, student_id){
+        const query = { selector: { docType: "activity_grade", activity: activity_id, student: student_id, is_deleted: false } };
+        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
+
+        let result = await iterator.next();
+        while (!result.done) {
+            const jsonRes = JSON.parse(result.value.value.toString());
+            const updatedActivityGrade = new ActivityGrade(jsonRes.activity, jsonRes.student, jsonRes.grade, jsonRes.id, true);
+            await ctx.stub.putState(jsonRes.id, Buffer.from(JSON.stringify(updatedActivityGrade)));
+            result = await iterator.next();
+        }
+
+        return JSON.stringify({ success: true, message: "ActivityGrades deleted successfully" });
+    }
 }
 
 module.exports = ActivityGradeContract;
