@@ -1,6 +1,8 @@
 // Get CSRF token
-const csrfToken = document.getElementById('csrfToken').value;
-const studentId = document.getElementById('studentId')?.value;
+const csrfTokenElement = document.getElementById('csrfToken');
+const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
+const studentIdElement = document.getElementById('studentId');
+const studentId = studentIdElement ? studentIdElement.value : '';
 
 // Function to show or hide popups
 const togglePopup = (popupId, show = true) => {
@@ -58,6 +60,13 @@ document.getElementById('manage-grade-btn')?.addEventListener('click', () => {
     }
     togglePopup('manage-grade-popup');
 });
+document.getElementById('manage-activity-btn')?.addEventListener('click', () => {
+    if (document.querySelectorAll('.activity-checkbox:checked').length !== 1) {
+        alert('Please select one activity to manage its grade.');
+        return;
+    }
+    togglePopup('manage-grade-activity-popup');
+});
 document.getElementById('manage-activity-btn')?.addEventListener('click', () => togglePopup('manage-grade-activity-popup'));
 document.getElementById('edit-student-btn')?.addEventListener('click', () => togglePopup('edit-student-popup'));
 
@@ -101,87 +110,36 @@ document.addEventListener('DOMContentLoaded', function() {
             courseSelect.appendChild(option);
         });
     }
-
-    // Event listener for "Show Activities" button
-    document.getElementById('show-activities-course-btn').addEventListener('click', function() {
-        const selectedCheckboxes = document.querySelectorAll('.course-checkbox:checked');
-        const activitiesTableBody = document.getElementById('activities-table-body');
-        const activitiesSection = document.getElementById('activities-section');
-
-        if (selectedCheckboxes.length === 1) {
-            const selectedCourseId = selectedCheckboxes[0].value;
-
-            fetch(`/activities/byCourse?${selectedCourseId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'csrf-token': csrfToken,
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                activitiesTableBody.innerHTML = ''; // Clear previous activities
-                const activityGradeSelect = document.getElementById('activity-grade-select');
-                activityGradeSelect.innerHTML = ''; // Clear previous options
-
-                data.activities.forEach(activity => {
-                    const row = `
-                        <tr>
-                            <td>${activity.name}</td>
-                            <td>${activity.description}</td>
-                            <td>${activity.due_date}</td>
-                            <td>${activity.grade}</td>
-                        </tr>
-                    `;
-                    activitiesTableBody.insertAdjacentHTML('beforeend', row);
-
-                    // Populate activities dropdown for managing grades
-
-                    const option = document.createElement('option');
-                    option.value = activity.id;
-                    option.textContent = activity.name;
-                    activityGradeSelect.appendChild(option);
-
-                });
-
-                activitiesSection.style.display = 'block';
-            })
-            .catch(error => console.error('Error:', error));
-        } else {
-            activitiesSection.style.display = 'none';
-            alert('Please select exactly one course to view activities.');
-            return;
-        }
-    });
 });
 
-document.getElementById('delete-course-btn').addEventListener('click', function() {
+document.getElementById('delete-course-btn').addEventListener('click', async function() {
     const checkboxes = document.querySelectorAll('.course-checkbox:checked');
     const selectedCourses = Array.from(checkboxes).map(checkbox => checkbox.value);
 
     if (selectedCourses.length > 0) {
         if (confirm('Are you sure you want to remove the selected courses?')) {
-            selectedCourses.forEach((courseId) => {
-                fetch(`/students/${studentId}/deenroll`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'csrf-token': csrfToken,
-                    },
-                    body: JSON.stringify({ course_id: courseId })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.sent === true) {
-                            console.log('Enrollment removed successfully related with course ID:', courseId);
-                        } else {
-                            alert(`Failed to remove enrollment for course with ID: ${courseId}`);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
+            try {
+                for (const courseId of selectedCourses) {
+                    const response = await fetch(`/students/${studentId}/deenroll`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'csrf-token': csrfToken,
+                        },
+                        body: JSON.stringify({ course_id: courseId })
+                    });
 
-            window.location.href = `/students/${studentId}`;
+                    const data = await response.json();
+                    if (data.sent === true) {
+                        console.log('Enrollment removed successfully related with course ID:', courseId);
+                    } else {
+                        alert(`Failed to remove enrollment for course with ID: ${courseId}`);
+                    }
+                }
+                window.location.href = `/students/${studentId}`;
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
     } else {
         alert('No courses selected.');
@@ -245,33 +203,85 @@ document.getElementById('manage-grade-form').addEventListener('submit', function
         .catch(error => console.error('Error:', error));
 });
 
+// Event listener for "Show Activities" button
+document.getElementById('show-activities-course-btn').addEventListener('click', function() {
+    const selectedCheckboxes = document.querySelectorAll('.course-checkbox:checked');
+    const activitiesTableBody = document.getElementById('activities-table-body');
+    const activitiesSection = document.getElementById('activities-section');
+
+    if (selectedCheckboxes.length === 1) {
+        const selectedCourseId = selectedCheckboxes[0].value;
+
+        fetch(`/activities/byCourseStudent?courseId=${selectedCourseId}&studentId=${studentId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'csrf-token': csrfToken,
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.sent === true) {
+                    activitiesTableBody.innerHTML = ''; // Clear previous activities
+
+                    data.activities.forEach(activity => {
+                        const row = `
+                            <tr>
+                                <td><label>
+                                <input type="checkbox" class="activity-checkbox" value="${activity.id}">
+                                </label></td>
+                                <td>${activity.name}</td>
+                                <td>${activity.description}</td>
+                                <td>${activity.due_date}</td>
+                                <td>${activity.grade}</td>
+                            </tr>
+                        `;
+                        activitiesTableBody.insertAdjacentHTML('beforeend', row);
+                    });
+
+                    activitiesSection.style.display = 'block';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    } else {
+        activitiesSection.style.display = 'none';
+        alert('Please select exactly one course to view activities.');
+    }
+});
+
 document.getElementById('manage-grade-activity-form').addEventListener('submit', function(event) {
     event.preventDefault();
-    const activityId = document.getElementById('activity-grade-select').value;
+    const selectedCheckboxes = document.querySelectorAll('.activity-checkbox:checked');
     const grade = document.getElementById('activity-grade-input').value;
 
-    fetch(`/manageGradeToActivity/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest',
-        },
-        body: JSON.stringify({
-            student_id: student.id,
-            activity_id: activityId,
-            grade: grade
+    if (selectedCheckboxes.length === 1) {
+        const selectedActivityId = selectedCheckboxes[0].value;
+        fetch(`/activities/${selectedActivityId}/grade`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'csrf-token': csrfToken,
+            },
+            body: JSON.stringify({
+                student_id: studentId,
+                grade: grade
+            })
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            location.reload();
-        } else {
-            alert('Failed to manage grade.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
+            .then(response => response.json())
+            .then(data => {
+                if (data.sent === true) {
+                    togglePopup('manage-grade-activity-popup', false);
+                    window.location.href = `/students/${studentId}`;
+                } else {
+                    alert('Failed to manage activity grade.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    } else{
+        alert('Please select exactly one activity to manage its grade.');
+    }
 });
 
 document.getElementById('edit-student-form').addEventListener('submit', function(event) {
@@ -324,9 +334,10 @@ document.getElementById('delete-student-btn').addEventListener('click', function
         })
         .then(data => {
             if (data.sent === true) {
+                alert(data.message);
                 window.location.href = '/students';
             } else {
-                alert(data.message || 'Error deleting student.');
+                alert('Error deleting student');
             }
         })
         .catch(error => console.error('Error:', error));

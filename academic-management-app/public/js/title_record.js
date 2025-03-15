@@ -77,9 +77,10 @@ document.getElementById('delete-title-btn')?.addEventListener('click', () => {
             })
             .then(data => {
                 if (data.sent === true) {
+                    alert(data.message)
                     window.location.href = '/titles';
                 } else {
-                    alert(data.message || 'Error deleting title.');
+                    alert('Error deleting title');
                 }
             })
             .catch(error => console.error('Error:', error));

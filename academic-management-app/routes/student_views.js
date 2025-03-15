@@ -29,7 +29,7 @@ router.post("/students", async (req, res) => {
         res.redirect('/students');
     } catch (err) {
         console.error('Error creating student:', err.message);
-        res.redirect('/students');
+        res.status(500).send('Error creating student');
     }
 });
 
@@ -67,26 +67,20 @@ router.get("/students/:id", async (req, res) => {
 
         const responseCoursesGrades = await fabConnectService.queryChaincode(queryDataCoursesGrades);
 
-        let courses = [];
-        for (let course of responseCoursesGrades.result) {
-            let queryDataCourse;
-            queryDataCourse = {
-                "headers": {
-                    "signer": req.session.user.username,
-                    "channel": process.env.KALEIDO_CHANNEL_NAME,
-                    "chaincode": "course_contract"
+        const courses = await Promise.all(responseCoursesGrades.result.map(async (course) => {
+            const queryDataCourse = {
+                headers: {
+                    signer: req.session.user.username,
+                    channel: process.env.KALEIDO_CHANNEL_NAME,
+                    chaincode: "course_contract"
                 },
-                "func": "getCourse",
-                "args": [course.course],
-                "strongread": true
-            }
-
+                func: "getCourse",
+                args: [course.course],
+                strongread: true
+            };
             const responseCourse = await fabConnectService.queryChaincode(queryDataCourse);
-            courses.push({
-                ...responseCourse.result,
-                grade: course.grade
-            });
-        }
+            return { ...responseCourse.result, grade: course.grade };
+        }));
 
         res.render('students/student_record', {
             page_title: 'Student',
@@ -94,70 +88,47 @@ router.get("/students/:id", async (req, res) => {
             courses: courses ?? [],
         });
     } catch (err) {
-        console.error('Error fetching course:', err.message);
-        res.redirect('/courses');
+        console.error('Error fetching student:', err.message);
+        res.status(500).send('Error fetching student');
     }
 });
 
 // Get all students with optional filters
 router.get("/students", async (req, res) => {
     try {
-        let students;
-        // AJAX check
+        const { page = 1, title, course } = req.query;
         const isAjax = req.headers['x-requested-with'] === 'XMLHttpRequest';
-        if (isAjax) {
-            const { page, title, course } = req.query;
-            const queryDataStudentsWithFilters = {
-                "headers": {
-                    "signer": req.session.user?.username,
-                    "channel": process.env.KALEIDO_CHANNEL_NAME,
-                    "chaincode": "student_contract"
-                },
-                "func": "getStudentsByTitle",
-                "args": [title],
-                "strongread": true
-            };
 
-            const responseStudents = await fabConnectService.queryChaincode(queryDataStudentsWithFilters);
-            students = responseStudents?.result ?? [];
-
-        } else{
-            const queryDataStudents = {
-                "headers": {
-                    "signer": req.session.user?.username,
-                    "channel": process.env.KALEIDO_CHANNEL_NAME,
-                    "chaincode": "student_contract"
-                },
-                "func": "getAllStudents",
-                "args": [],
-                "strongread": true
-            };
-
-            const responseStudents = await fabConnectService.queryChaincode(queryDataStudents);
-            students = responseStudents?.result ?? [];
-        }
+        const queryDataStudents = {
+            headers: {
+                signer: req.session.user?.username,
+                channel: process.env.KALEIDO_CHANNEL_NAME,
+                chaincode: title ? "student_contract" : "student_contract"
+            },
+            func: title ? "getStudentsByTitle" : "getAllStudents",
+            args: title ? [title] : [],
+            strongread: true
+        };
+        const responseStudents = await fabConnectService.queryChaincode(queryDataStudents);
+        const students = responseStudents?.result ?? [];
 
         const queryDataTitles = {
-            "headers": {
-                "signer": req.session.user?.username,
-                "channel": process.env.KALEIDO_CHANNEL_NAME,
-                "chaincode": "title_contract"
+            headers: {
+                signer: req.session.user?.username,
+                channel: process.env.KALEIDO_CHANNEL_NAME,
+                chaincode: "title_contract"
             },
-            "func": "getAllTitles",
-            "args": [],
-            "strongread": true
+            func: "getAllTitles",
+            args: [],
+            strongread: true
         };
-
         const responseTitle = await fabConnectService.queryChaincode(queryDataTitles);
         const titles = responseTitle?.result ?? [];
 
-        // Pagination setup
-        const page = Math.max(1, parseInt(req.query.page) || 1);
         const pageSize = 10;
         const totalStudents = students.length;
         const totalPages = Math.ceil(totalStudents / pageSize);
 
-        // Use pagination library
         const paginator = new paginate.SearchPaginator({
             prelink: '/students',
             current: page,
@@ -167,9 +138,7 @@ router.get("/students", async (req, res) => {
 
         const fromIndex = (page - 1) * pageSize;
         const toIndex = Math.min(fromIndex + pageSize, totalStudents);
-
         const paginatedStudents = students.slice(fromIndex, toIndex);
-
 
         if (isAjax) {
             return res.json({
@@ -185,7 +154,6 @@ router.get("/students", async (req, res) => {
             });
         }
 
-        // Render page
         res.render('students/student_list', {
             page_title: 'Student List',
             titles: titles,
@@ -199,10 +167,9 @@ router.get("/students", async (req, res) => {
                 previous_page: page > 1 ? page - 1 : null
             }
         });
-
     } catch (err) {
         console.error('Error fetching students:', err.message);
-        res.render('students/student_list', { page_title: 'Student List', courses: [] });
+        res.status(500).send('Error fetching students');
     }
 });
 
@@ -230,133 +197,238 @@ router.put("/students/:id", async (req, res) => {
         res.json(response);
     } catch (err) {
         console.error('Error updating student:', err.message);
+        res.status(500).send('Error updating student');
     }
 });
 
-// Delete a student
+// Delete a student and associated data
 router.delete("/students/:id", async (req, res) => {
-    let transactionData;
     try {
-        const {id} = req.params;
-        transactionData = {
-            "headers": {
-                "type": "SendTransaction",
-                "signer": req.session.user.username,
-                "channel": process.env.KALEIDO_CHANNEL_NAME,
-                "chaincode": "student_contract"
+        const { id } = req.params;
+
+        // Delete associated enrollments
+        const queryDataEnrollments = {
+            headers: {
+                signer: req.session.user.username,
+                channel: process.env.KALEIDO_CHANNEL_NAME,
+                chaincode: "enrollment_contract"
             },
-            "func": "deleteStudent",
-            "args": [
-                id
-            ],
-            "init": false
+            func: "getEnrollmentsByStudent",
+            args: [id],
+            strongread: true
+        };
+        const responseEnrollments = await fabConnectService.queryChaincode(queryDataEnrollments);
+        const enrollments = responseEnrollments?.result ?? [];
+
+        for (const enrollment of enrollments) {
+            const courseId = enrollment.course;
+
+            // Delete associated activity grades
+            const queryDataActivities = {
+                headers: {
+                    signer: req.session.user.username,
+                    channel: process.env.KALEIDO_CHANNEL_NAME,
+                    chaincode: "activity_contract"
+                },
+                func: "getActivitiesByCourse",
+                args: [courseId],
+                strongread: true
+            };
+            const responseActivities = await fabConnectService.queryChaincode(queryDataActivities);
+            const activities = responseActivities?.result ?? [];
+
+            for (const activity of activities) {
+                const activityId = activity.id;
+
+                const transactionDataGrade = {
+                    headers: {
+                        type: "SendTransaction",
+                        signer: req.session.user.username,
+                        channel: process.env.KALEIDO_CHANNEL_NAME,
+                        chaincode: "activitygrade_contract"
+                    },
+                    func: "deleteActivityGradesByActivityStudent",
+                    args: [activityId, id],
+                    init: false
+                };
+                await fabConnectService.submitTransaction(transactionDataGrade);
+            }
+
+            // Delete enrollment
+            const transactionDataEnrollment = {
+                headers: {
+                    type: "SendTransaction",
+                    signer: req.session.user.username,
+                    channel: process.env.KALEIDO_CHANNEL_NAME,
+                    chaincode: "enrollment_contract"
+                },
+                func: "deleteEnrollment",
+                args: [enrollment.id],
+                init: false
+            };
+            await fabConnectService.submitTransaction(transactionDataEnrollment);
         }
 
-        const response = await fabConnectService.submitTransaction(transactionData);
-        res.json(response);
+        // Delete student
+        const transactionDataStudent = {
+            headers: {
+                type: "SendTransaction",
+                signer: req.session.user.username,
+                channel: process.env.KALEIDO_CHANNEL_NAME,
+                chaincode: "student_contract"
+            },
+            func: "deleteStudent",
+            args: [id],
+            init: false
+        };
+        await fabConnectService.submitTransaction(transactionDataStudent);
+
+        res.json({ sent: true, message: 'Student and associated data deleted successfully' });
     } catch (err) {
-        console.error('Error deleting student:', err.message);
+        console.error('Error deleting student and associated data:', err.message);
+        res.status(500).send('Error deleting student and associated data');
     }
 });
 
 // Enroll student in course
 router.post("/students/:id/enroll", async (req, res) => {
-    let transactionData;
     try {
         const { id } = req.params;
         const { course_id } = req.body;
 
-        transactionData = {
-            "headers": {
-                "type": "SendTransaction",
-                "signer": req.session.user.username,
-                "channel": process.env.KALEIDO_CHANNEL_NAME,
-                "chaincode": "enrollment_contract"
+        const transactionData = {
+            headers: {
+                type: "SendTransaction",
+                signer: req.session.user.username,
+                channel: process.env.KALEIDO_CHANNEL_NAME,
+                chaincode: "enrollment_contract"
             },
-            "func": "createEnrollment",
-            "args": [
-                id, course_id
-            ],
-            "init": false
-        }
+            func: "createEnrollment",
+            args: [id, course_id],
+            init: false
+        };
+        await fabConnectService.submitTransaction(transactionData);
 
-        const response = await fabConnectService.submitTransaction(transactionData);
-        res.json(response);
+        const queryDataActivities = {
+            headers: {
+                signer: req.session.user.username,
+                channel: process.env.KALEIDO_CHANNEL_NAME,
+                chaincode: "activity_contract"
+            },
+            func: "getActivitiesByCourse",
+            args: [course_id],
+            strongread: true
+        };
+        const responseActivities = await fabConnectService.queryChaincode(queryDataActivities);
+
+        for (const activity of responseActivities.result) {
+            const transactionDataGrade = {
+                headers: {
+                    type: "SendTransaction",
+                    signer: req.session.user.username,
+                    channel: process.env.KALEIDO_CHANNEL_NAME,
+                    chaincode: "activitygrade_contract"
+                },
+                func: "createActivityGrade",
+                args: [activity.id, id],
+                init: false
+            };
+            await fabConnectService.submitTransaction(transactionDataGrade);
+        }
+        res.json({ message: 'Student enrolled successfully' });
     } catch (err) {
         console.error('Error enrolling student:', err.message);
+        res.status(500).send('Error enrolling student');
     }
 });
 
 // De-enroll student from course
 router.post("/students/:id/deenroll", async (req, res) => {
-    let transactionData;
     try {
         const { id } = req.params;
         const { course_id } = req.body;
 
-        transactionData = {
-            "headers": {
-                "type": "SendTransaction",
-                "signer": req.session.user.username,
-                "channel": process.env.KALEIDO_CHANNEL_NAME,
-                "chaincode": "enrollment_contract"
+        const transactionData = {
+            headers: {
+                type: "SendTransaction",
+                signer: req.session.user.username,
+                channel: process.env.KALEIDO_CHANNEL_NAME,
+                chaincode: "enrollment_contract"
             },
-            "func": "deleteEnrollmentByStudentCourse",
-            "args": [
-                id, course_id
-            ],
-            "init": false
-        }
+            func: "deleteEnrollmentByStudentCourse",
+            args: [id, course_id],
+            init: false
+        };
+        await fabConnectService.submitTransaction(transactionData);
 
-        const response = await fabConnectService.submitTransaction(transactionData);
-        res.json(response);
+        const queryDataActivities = {
+            headers: {
+                signer: req.session.user.username,
+                channel: process.env.KALEIDO_CHANNEL_NAME,
+                chaincode: "activity_contract"
+            },
+            func: "getActivitiesByCourse",
+            args: [course_id],
+            strongread: true
+        };
+        const responseActivities = await fabConnectService.queryChaincode(queryDataActivities);
+
+        for (const activity of responseActivities.result) {
+            const transactionDataGrade = {
+                headers: {
+                    type: "SendTransaction",
+                    signer: req.session.user.username,
+                    channel: process.env.KALEIDO_CHANNEL_NAME,
+                    chaincode: "activitygrade_contract"
+                },
+                func: "deleteActivityGradesByActivityStudent",
+                args: [activity.id, id],
+                init: false
+            };
+            await fabConnectService.submitTransaction(transactionDataGrade);
+        }
+        res.json({ message: 'Student de-enrolled successfully' });
     } catch (err) {
         console.error('Error de-enrolling student:', err.message);
+        res.status(500).send('Error de-enrolling student');
     }
 });
 
+// Update student grade
 router.put('/students/:id/grade', async (req, res) => {
-    let transactionGetData;
-    let transactionData;
     try {
         const { id } = req.params;
         const { course_id, grade } = req.body;
 
-        transactionGetData = {
-            "headers": {
-                "type": "SendTransaction",
-                "signer": req.session.user.username,
-                "channel": process.env.KALEIDO_CHANNEL_NAME,
-                "chaincode": "enrollment_contract"
+        const queryDataEnrollment = {
+            headers: {
+                signer: req.session.user.username,
+                channel: process.env.KALEIDO_CHANNEL_NAME,
+                chaincode: "enrollment_contract"
             },
-            "func": "getEnrollmentByStudentCourse",
-            "args": [
-                id, course_id
-            ],
-            "init": false
-        }
+            func: "getEnrollmentByStudentCourse",
+            args: [id, course_id],
+            strongread: true
+        };
+        const responseEnrollment = await fabConnectService.queryChaincode(queryDataEnrollment);
 
-        const responseGet = await fabConnectService.queryChaincode(transactionGetData);
-
-        transactionData = {
-            "headers": {
-                "type": "SendTransaction",
-                "signer": req.session.user.username,
-                "channel": process.env.KALEIDO_CHANNEL_NAME,
-                "chaincode": "enrollment_contract"
+        const transactionData = {
+            headers: {
+                type: "SendTransaction",
+                signer: req.session.user.username,
+                channel: process.env.KALEIDO_CHANNEL_NAME,
+                chaincode: "enrollment_contract"
             },
-            "func": "updateEnrollment",
-            "args": [
-                responseGet.result.id, id, course_id, grade
-            ],
-            "init": false
-        }
-
+            func: "updateEnrollment",
+            args: [responseEnrollment.result.id, id, course_id, grade],
+            init: false
+        };
         const response = await fabConnectService.submitTransaction(transactionData);
         res.json(response);
     } catch (err) {
         console.error('Error updating grade:', err.message);
+        res.status(500).send('Error updating grade');
     }
-})
+});
 
 module.exports = router;

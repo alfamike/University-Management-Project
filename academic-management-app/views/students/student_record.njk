@@ -83,6 +83,26 @@
         <p class="no-courses">This student is not enrolled in any courses.</p>
         {% endif %}
     </div>
+    <!-- Student's Activities Section -->
+    <div id="activities-section">
+        <h2 class="details-title">Activities
+            <button id="manage-activity-btn" class="btn">Manage Grade</button>
+        </h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Activity Name</th>
+                    <th>Description</th>
+                    <th>Due Date</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody id="activities-table-body">
+                <!-- Activities will be populated here -->
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Pop-up for adding a course -->
@@ -128,12 +148,6 @@
         <h3>Add Grade to Activity</h3>
         <form id="manage-grade-activity-form" class="modern-form">
             <div class="form-group">
-            <label for="activity-grade-select">Activity:</label>
-            <select id="activity-grade-select" name="activity-select" class="form-control" required>
-                <!-- Options for activities -->
-            </select>
-            </div>
-            <div class="form-group">
             <label for="activity-grade-input">Grade:</label>
             <input type="number" id="activity-grade-input" name="grade-input" min="0" max="100" step="0.01" required class="form-control">
             </div>
@@ -167,26 +181,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<!-- Student's Activities Section -->
-<div id="activities-section" style="display: none;">
-    <h2 class="details-title">Activities
-        <button id="manage-activity-btn" class="btn">Manage Grade</button>
-    </h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Activity Name</th>
-                <th>Description</th>
-                <th>Due Date</th>
-                <th>Grade</th>
-            </tr>
-        </thead>
-        <tbody id="activities-table-body">
-            <!-- Activities will be populated here -->
-        </tbody>
-    </table>
 </div>
 {% endblock %}
 

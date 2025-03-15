@@ -100,9 +100,10 @@ document.getElementById('delete-activity-btn').addEventListener('click', functio
                     .then(response => response.json())
                     .then(data => {
                         if (data.sent === true) {
+                            alert(data.message);
                             console.log('Activity removed successfully with ID:', activityId);
                         } else {
-                            alert(`Failed to remove activity with ID: ${activityId}`);
+                            alert(`Error deleting activity`);
                         }
                     })
                     .catch(error => console.error('Error:', error));
@@ -186,9 +187,10 @@ document.getElementById('delete-course-btn').addEventListener('click', function(
             })
             .then(data => {
                 if (data.sent === true) {
+                    alert(data.message);
                     window.location.href = '/courses';
                 } else {
-                    alert(data.message || 'Error deleting course.');
+                    alert('Error deleting course');
                 }
             })
             .catch(error => console.error('Error:', error));
