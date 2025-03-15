@@ -136,6 +136,20 @@ class EnrollmentContract extends Contract {
 
         return JSON.stringify({success: true, message: "Enrollment deleted successfully"});
     }
+
+    async deleteEnrollmentsByCourse(ctx, course_id) {
+        const query = {selector: {docType: "enrollment", course: course_id, is_deleted: false}};
+        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
+
+        let result = await iterator.next();
+        while (!result.done) {
+            const enrollment = JSON.parse(result.value.value.toString());
+            const updatedEnrollment = new Enrollment(enrollment.student, enrollment.course, enrollment.grade, enrollment.id, true);
+            await ctx.stub.putState(enrollment.id, Buffer.from(JSON.stringify(updatedEnrollment)));
+        }
+
+        return JSON.stringify({success: true, message: "Enrollments deleted successfully"});
+    }
 }
 
 module.exports = EnrollmentContract;
