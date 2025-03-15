@@ -109,7 +109,7 @@ document.getElementById('delete-activity-btn').addEventListener('click', functio
                     .catch(error => console.error('Error:', error));
             });
 
-            window.location.href = `/courses/${courseId}`;
+            window.location.reload();
         }
     } else {
         alert('No activities selected.');

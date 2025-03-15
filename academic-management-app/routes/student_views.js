@@ -67,7 +67,7 @@ router.get("/students/:id", async (req, res) => {
 
         const responseCoursesGrades = await fabConnectService.queryChaincode(queryDataCoursesGrades);
 
-        const courses = await Promise.all(responseCoursesGrades.result.map(async (course) => {
+        const courses = await Promise.all(responseCoursesGrades.result.map(async (enrollment) => {
             const queryDataCourse = {
                 headers: {
                     signer: req.session.user.username,
@@ -75,11 +75,12 @@ router.get("/students/:id", async (req, res) => {
                     chaincode: "course_contract"
                 },
                 func: "getCourse",
-                args: [course.course],
+                args: [enrollment.course],
                 strongread: true
             };
             const responseCourse = await fabConnectService.queryChaincode(queryDataCourse);
-            return { ...responseCourse.result, grade: course.grade };
+
+            return { ...responseCourse.result, grade: enrollment.grade };
         }));
 
         res.render('students/student_record', {
@@ -335,7 +336,7 @@ router.post("/students/:id/enroll", async (req, res) => {
             };
             await fabConnectService.submitTransaction(transactionDataGrade);
         }
-        res.json({ message: 'Student enrolled successfully' });
+        res.json({ sent: true, message: 'Student enrolled successfully' });
     } catch (err) {
         console.error('Error enrolling student:', err.message);
         res.status(500).send('Error enrolling student');
@@ -387,7 +388,7 @@ router.post("/students/:id/deenroll", async (req, res) => {
             };
             await fabConnectService.submitTransaction(transactionDataGrade);
         }
-        res.json({ message: 'Student de-enrolled successfully' });
+        res.json({ sent: true, message: 'Student de-enrolled successfully' });
     } catch (err) {
         console.error('Error de-enrolling student:', err.message);
         res.status(500).send('Error de-enrolling student');

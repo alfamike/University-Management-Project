@@ -151,7 +151,7 @@ router.get("/activities/byCourseStudent", async (req, res) => {
             };
 
             const responseActivityGrade = await fabConnectService.queryChaincode(transactionActivityGradeData);
-            return { ...activity, grade: responseActivityGrade?.result.grade };
+            return { ...activity, grade: responseActivityGrade?.result[0]?.grade };
         }));
 
         if (activities.length > 0) {
@@ -193,7 +193,7 @@ router.put('/activities/:id/grade', async (req, res) => {
                 chaincode: "activitygrade_contract"
             },
             func: "updateActivityGrade",
-            args: [responseGet.result.id, id, student_id, grade],
+            args: [responseGet.result[0].id, id, student_id, grade],
             init: false
         };
 

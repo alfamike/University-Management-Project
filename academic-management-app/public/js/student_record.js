@@ -67,7 +67,7 @@ document.getElementById('manage-activity-btn')?.addEventListener('click', () => 
     }
     togglePopup('manage-grade-activity-popup');
 });
-document.getElementById('manage-activity-btn')?.addEventListener('click', () => togglePopup('manage-grade-activity-popup'));
+
 document.getElementById('edit-student-btn')?.addEventListener('click', () => togglePopup('edit-student-popup'));
 
 document.addEventListener('DOMContentLoaded', function() {
