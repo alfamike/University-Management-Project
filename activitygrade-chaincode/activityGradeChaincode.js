@@ -4,9 +4,9 @@ const { Contract } = require("fabric-contract-api");
 const ActivityGrade = require("./activity_grade");
 
 class ActivityGradeContract extends Contract {
-    async createActivityGrade(ctx, activity, student, grade) {
+    async createActivityGrade(ctx, activity, student) {
         // Create a new ActivityGrade instance
-        const activityGrade = new ActivityGrade(activity, student, grade);
+        const activityGrade = new ActivityGrade(activity, student);
 
         // Check if the generated ID already exists (edge case)
         const exists = await this.activityGradeExists(ctx, activityGrade.id);
@@ -91,6 +91,21 @@ class ActivityGradeContract extends Contract {
         }
 
         return result.value.value.toString();
+    }
+
+    async getActivityGradesByStudent(ctx, student_id){
+        const query = { selector: { docType: "activity_grade", student: student_id, is_deleted: false } };
+        const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
+
+        const results = [];
+        let result = await iterator.next();
+        while (!result.done) {
+            const jsonRes = JSON.parse(result.value.value.toString());
+            results.push(jsonRes); // Push each result as an ActivityGrade object
+            result = await iterator.next();
+        }
+
+        return JSON.stringify(results);
     }
 
     async deleteActivityGradesByActivity(ctx, activity_id){
