@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('delete-course-btn').addEventListener('click', async function() {
     const checkboxes = document.querySelectorAll('.course-checkbox:checked');
     const selectedCourses = Array.from(checkboxes).map(checkbox => checkbox.value);
+    const selectedEnrollments = Array.from(checkboxes).map(checkbox => checkbox.getAttribute('data-enrollment-id'));
 
     if (selectedCourses.length > 0) {
         if (confirm('Are you sure you want to remove the selected courses?')) {
@@ -126,7 +127,7 @@ document.getElementById('delete-course-btn').addEventListener('click', async fun
                             'Content-Type': 'application/json',
                             'csrf-token': csrfToken,
                         },
-                        body: JSON.stringify({ course_id: courseId })
+                        body: JSON.stringify({ course_id: courseId, enrollment_id: selectedEnrollments[selectedCourses.indexOf(courseId)] })
                     });
 
                     const data = await response.json();

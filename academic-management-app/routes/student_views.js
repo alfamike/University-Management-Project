@@ -80,7 +80,7 @@ router.get("/students/:id", async (req, res) => {
             };
             const responseCourse = await fabConnectService.queryChaincode(queryDataCourse);
 
-            return { ...responseCourse.result, grade: enrollment.grade };
+            return { ...responseCourse.result, grade: enrollment.grade, enrollment: enrollment.id };
         }));
 
         res.render('students/student_record', {
@@ -347,7 +347,7 @@ router.post("/students/:id/enroll", async (req, res) => {
 router.post("/students/:id/deenroll", async (req, res) => {
     try {
         const { id } = req.params;
-        const { course_id } = req.body;
+        const { course_id, enrollment_id } = req.body;
 
         const transactionData = {
             headers: {
@@ -356,8 +356,8 @@ router.post("/students/:id/deenroll", async (req, res) => {
                 channel: process.env.KALEIDO_CHANNEL_NAME,
                 chaincode: "enrollment_contract"
             },
-            func: "deleteEnrollmentByStudentCourse",
-            args: [id, course_id],
+            func: "deleteEnrollment",
+            args: [enrollment_id],
             init: false
         };
         await fabConnectService.submitTransaction(transactionData);

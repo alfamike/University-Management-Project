@@ -57,7 +57,7 @@
             {% for course in courses %}
             <tr>
                 <td><label>
-                    <input type="checkbox" class="course-checkbox" value="{{ course.id }}">
+                    <input type="checkbox" class="course-checkbox" value="{{ course.id }}" data-enrollment-id="{{ course.enrollment }}">
                 </label></td>
                 <td>{{ course.name }}</td>
                 <td>{{ course.description }}</td>
