@@ -40,7 +40,7 @@ const fabConnectService = {
     },
 
     // Transactions
-    async submitTransaction(transactionData, sync = false) {
+    async submitTransaction(transactionData, sync = true) {
         return this.makeRequest('post', `/transactions?fly-sync=${sync}`, transactionData);
     },
 

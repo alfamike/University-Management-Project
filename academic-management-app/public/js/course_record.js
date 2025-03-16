@@ -89,27 +89,26 @@ document.getElementById('delete-activity-btn').addEventListener('click', functio
 
     if (selectedActivities.length > 0) {
         if (confirm('Are you sure you want to remove the selected activities?')) {
-            selectedActivities.forEach((activityId) => {
-                fetch(`/activities/${activityId}`, {
+            Promise.all(selectedActivities.map((activityId) => {
+                return fetch(`/activities/${activityId}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                         'csrf-token': csrfToken,
                     }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.sent === true) {
-                            alert(data.message);
-                            console.log('Activity removed successfully with ID:', activityId);
-                        } else {
-                            alert(`Error deleting activity`);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.sent === true) {
+                        console.log('Activity removed successfully with ID:', activityId);
+                    } else {
+                        alert(`Error deleting activity`);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            })).then(() => {
+                window.location.href = `/courses/${courseId}`;
             });
-
-            window.location.reload();
         }
     } else {
         alert('No activities selected.');
@@ -194,5 +193,41 @@ document.getElementById('delete-course-btn').addEventListener('click', function(
                 }
             })
             .catch(error => console.error('Error:', error));
+    }
+});
+
+document.getElementById('assign-activity-btn').addEventListener('click', function() {
+    const checkboxes = document.querySelectorAll('.activity-checkbox:checked');
+    const selectedActivities = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+    if (selectedActivities.length > 0) {
+        if (confirm('Are you sure you want to assign this activity to current enrolled students?')) {
+            Promise.all(selectedActivities.map((activityId) => {
+                return fetch(`/activities/${activityId}/assign`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'csrf-token': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        course_id: courseId
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.sent === true) {
+                            console.log('Activity assign successfully to students');
+                            alert(data.message);
+                        } else {
+                            alert(`Error assigning activity`);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            })).then(() => {
+                window.location.href = `/courses/${courseId}`;
+            });
+        }
+    } else {
+        alert('No activities selected.');
     }
 });

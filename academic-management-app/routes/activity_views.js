@@ -20,6 +20,19 @@ router.post("/activities", async (req, res) => {
 
         const response = await fabConnectService.submitTransaction(transactionData);
 
+        res.json({ sent: true, message: 'Activity created successfully' });
+    } catch (err) {
+        console.error('Error creating activity:', err.message);
+        res.status(500).send('Error creating activity');
+    }
+});
+
+// Assign an activity
+router.post("/activities/:id/assign", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { course_id } = req.body;
+
         const transactionDataStudentsByCourse = {
             headers: {
                 signer: req.session.user.username,
@@ -28,7 +41,8 @@ router.post("/activities", async (req, res) => {
             },
             func: "getEnrollmentsByCourse",
             args: [course_id],
-            init: false
+            init: false,
+            strongread: true
         };
 
         const responseStudents = await fabConnectService.queryChaincode(transactionDataStudentsByCourse);
@@ -42,14 +56,14 @@ router.post("/activities", async (req, res) => {
                     chaincode: "activitygrade_contract"
                 },
                 func: "createActivityGrade",
-                args: [response.id, enrollment.student],
+                args: [id, enrollment.student],
                 init: false
             };
 
-            await fabConnectService.submitTransaction(transactionDataGrade);
+            const activityGradeResponse = await fabConnectService.submitTransaction(transactionDataGrade);
         }
 
-        res.json(response);
+        res.json({ sent: true, message: 'Activity assigned successfully' });
     } catch (err) {
         console.error('Error creating activity:', err.message);
         res.status(500).send('Error creating activity');
@@ -133,7 +147,8 @@ router.get("/activities/byCourseStudent", async (req, res) => {
             },
             func: "getActivitiesByCourse",
             args: [courseId],
-            init: false
+            init: false,
+            strongread: true
         };
 
         const responseActivities = await fabConnectService.queryChaincode(transactionActivityData);
@@ -147,7 +162,8 @@ router.get("/activities/byCourseStudent", async (req, res) => {
                 },
                 func: "getActivityGradesByActivityStudent",
                 args: [activity.id, studentId],
-                init: false
+                init: false,
+                strongread: true
             };
 
             const responseActivityGrade = await fabConnectService.queryChaincode(transactionActivityGradeData);
