@@ -81,67 +81,22 @@ class StudentContract extends Contract {
         return studentData && studentData.length > 0;
     }
 
-    async getStudentsByTitle(ctx, title_id) {
-        const courses = await this.getCoursesByTitle(ctx, title_id);
-
-        const results = [];
-        for (const course of courses) {
-            const query = { selector: { docType: "enrollment", course: course.id, is_deleted: false } };
-            const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
-
-            let result = await iterator.next();
-            while (!result.done) {
-                const enrollment = JSON.parse(result.value.value.toString());
-                const studentData = await ctx.stub.getState(enrollment.student);
-                if (studentData && studentData.length > 0) {
-                    const student = JSON.parse(studentData.toString());
-                    results.push(student);
-                }
-                result = await iterator.next();
-            }
-        }
-
-        return JSON.stringify(results);
-    }
-
-    async getCoursesByTitle(ctx, title_id) {
-        try {
-            const channel = ctx.channelId;
-            const chaincodeName = "course_contract";
-            const functionName = "getCoursesByTitleYear";
-            const args = [title_id, ""];
-
-            // Invoke the chaincode
-            const resultBuffer = await ctx.stub.invokeChaincode(chaincodeName, [functionName, ...args], channel);
-
-            // If the result is successful, return it
-            if (resultBuffer && resultBuffer.length > 0) {
-                console.log('Result:', resultBuffer.toString());
-                const result = JSON.parse(resultBuffer.toString());
-                return result;
-            } else {
-                new Error(`No data returned from chaincode ${chaincodeName}`);
-            }
-        } catch (error) {
-            console.error('Error querying other chaincode:', error);
-            throw new Error(`Error querying courses by title: ${error.message}`);
-        }
-    }
-
     async getStudentsByCourse(ctx, course_id) {
         const query = { selector: { docType: "enrollment", course: course_id, is_deleted: false } };
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
 
         const results = [];
-        let result = await iterator.next();
-        while (!result.done) {
+        while (true) {
+            const result = await iterator.next();
+            if (result.done) {
+                break;
+            }
             const enrollment = JSON.parse(result.value.value.toString());
             const studentData = await ctx.stub.getState(enrollment.student);
             if (studentData && studentData.length > 0) {
                 const student = JSON.parse(studentData.toString());
                 results.push(student);
             }
-            result = await iterator.next();
         }
 
         return JSON.stringify(results);
