@@ -21,6 +21,7 @@
         <div class="filter">
             <label for="year">Year:</label>
             <select class="filter-dropdown" id="year" name="year">
+                <option value="">All</option>
                 {% for year in years %}
                 <option value="{{ year }}">
                 {{ year }}
