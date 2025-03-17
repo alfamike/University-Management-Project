@@ -86,20 +86,20 @@ class StudentContract extends Contract {
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
 
         const results = [];
-        while (true) {
-            const result = await iterator.next();
-            if (result.done) {
-                break;
-            }
-            const enrollment = JSON.parse(result.value.value.toString());
-            const studentData = await ctx.stub.getState(enrollment.student);
-            if (studentData && studentData.length > 0) {
-                const student = JSON.parse(studentData.toString());
-                results.push(student);
-            }
+        let result = await iterator.next();
+        while (!result.done) {
+            const jsonRes = JSON.parse(result.value.value.toString());
+            results.push(jsonRes); // Push each result as an Enrollment object
+            result = await iterator.next();
         }
 
-        return JSON.stringify(results);
+        const resultstudents = [];
+        for (const enrollment of results) {
+            const studentData = await ctx.stub.getState(enrollment.student);
+            resultstudents.push(JSON.parse(studentData.toString()));
+        }
+
+        return JSON.stringify(resultstudents);
     }
 }
 
