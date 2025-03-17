@@ -96,7 +96,7 @@ class StudentContract extends Contract {
         const resultstudents = [];
         for (const enrollment of results) {
             const studentData = await ctx.stub.getState(enrollment.student);
-            resultstudents.push(JSON.parse(studentData.toString()));
+            resultstudents.push(studentData.toString());
         }
 
         return JSON.stringify(resultstudents);
