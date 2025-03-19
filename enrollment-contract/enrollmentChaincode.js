@@ -3,7 +3,18 @@
 const { Contract } = require("fabric-contract-api");
 const Enrollment = require("./enrollment");
 
+/**
+ * EnrollmentContract provides the logic for managing enrollments in the blockchain ledger.
+ */
 class EnrollmentContract extends Contract {
+    /**
+     * Creates a new enrollment and saves it to the ledger.
+     *
+     * @param {Context} ctx - The transaction context.
+     * @param {string} student_id - The ID of the student.
+     * @param {string} course_id - The ID of the course.
+     * @returns {Promise<string>} A success message with the enrollment ID.
+     */
     async createEnrollment(ctx, student_id, course_id) {
         // Create a new Enrollment instance
         const enrollment = new Enrollment(student_id, course_id);
@@ -19,6 +30,13 @@ class EnrollmentContract extends Contract {
         return JSON.stringify({ success: true, id: enrollment.id, message: "Enrollment created successfully" });
     }
 
+    /**
+     * Retrieves an enrollment from the ledger by its ID.
+     *
+     * @param {Context} ctx - The transaction context.
+     * @param {string} id - The ID of the enrollment.
+     * @returns {Promise<string>} The enrollment data as a JSON string.
+     */
     async getEnrollment(ctx, id) {
         const enrollmentData = await ctx.stub.getState(id);
         if (!enrollmentData || enrollmentData.length === 0) {
@@ -29,6 +47,14 @@ class EnrollmentContract extends Contract {
         return enrollmentData.toString();
     }
 
+    /**
+     * Retrieves an enrollment by student ID and course ID.
+     *
+     * @param {Context} ctx - The transaction context.
+     * @param {string} student_id - The ID of the student.
+     * @param {string} course_id - The ID of the course.
+     * @returns {Promise<string>} The enrollment data as a JSON string.
+     */
     async getEnrollmentByStudentCourse(ctx, student_id, course_id) {
         const query = { selector: { docType: "enrollment", student: student_id, course: course_id, is_deleted: false } };
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
@@ -41,6 +67,12 @@ class EnrollmentContract extends Contract {
         return result.value.value.toString();
     }
 
+    /**
+     * Retrieves all enrollments from the ledger.
+     *
+     * @param {Context} ctx - The transaction context.
+     * @returns {Promise<string>} A JSON string of all enrollments.
+     */
     async getAllEnrollments(ctx) {
         const query = { selector: { docType: "enrollment", is_deleted: false } };
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
@@ -56,6 +88,16 @@ class EnrollmentContract extends Contract {
         return JSON.stringify(results);
     }
 
+    /**
+     * Updates an existing enrollment in the ledger.
+     *
+     * @param {Context} ctx - The transaction context.
+     * @param {string} id - The ID of the enrollment.
+     * @param {string} student_id - The ID of the student.
+     * @param {string} course_id - The ID of the course.
+     * @param {number} grade - The grade of the student in the course.
+     * @returns {Promise<string>} A success message.
+     */
     async updateEnrollment(ctx, id, student_id, course_id, grade) {
         const exists = await this.enrollmentExists(ctx, id);
         if (!exists) {
@@ -72,6 +114,13 @@ class EnrollmentContract extends Contract {
         return JSON.stringify({ success: true, message: "Enrollment updated successfully" });
     }
 
+    /**
+     * Marks an enrollment as deleted in the ledger.
+     *
+     * @param {Context} ctx - The transaction context.
+     * @param {string} id - The ID of the enrollment.
+     * @returns {Promise<string>} A success message.
+     */
     async deleteEnrollment(ctx, id) {
         const exists = await this.enrollmentExists(ctx, id);
         if (!exists) {
@@ -88,11 +137,25 @@ class EnrollmentContract extends Contract {
         return JSON.stringify({ success: true, message: "Enrollment deleted successfully" });
     }
 
+    /**
+     * Checks if an enrollment exists in the ledger.
+     *
+     * @param {Context} ctx - The transaction context.
+     * @param {string} id - The ID of the enrollment.
+     * @returns {Promise<boolean>} True if the enrollment exists, false otherwise.
+     */
     async enrollmentExists(ctx, id) {
         const enrollmentData = await ctx.stub.getState(id);
         return enrollmentData && enrollmentData.length > 0;
     }
 
+    /**
+     * Retrieves all enrollments for a specific student.
+     *
+     * @param {Context} ctx - The transaction context.
+     * @param {string} student_id - The ID of the student.
+     * @returns {Promise<string>} A JSON string of all enrollments for the student.
+     */
     async getEnrollmentsByStudent(ctx, student_id) {
         const query = { selector: { docType: "enrollment", student: student_id, is_deleted: false } };
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
@@ -108,6 +171,13 @@ class EnrollmentContract extends Contract {
         return JSON.stringify(results);
     }
 
+    /**
+     * Retrieves all enrollments for a specific course.
+     *
+     * @param {Context} ctx - The transaction context.
+     * @param {string} course_id - The ID of the course.
+     * @returns {Promise<string>} A JSON string of all enrollments for the course.
+     */
     async getEnrollmentsByCourse(ctx, course_id) {
         const query = { selector: { docType: "enrollment", course: course_id, is_deleted: false } };
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
@@ -123,6 +193,14 @@ class EnrollmentContract extends Contract {
         return JSON.stringify(results);
     }
 
+    /**
+     * Marks all enrollments for a specific student and course as deleted.
+     *
+     * @param {Context} ctx - The transaction context.
+     * @param {string} student_id - The ID of the student.
+     * @param {string} course_id - The ID of the course.
+     * @returns {Promise<string>} A success message.
+     */
     async deleteEnrollmentByStudentCourse(ctx, student_id, course_id) {
         const query = {selector: {docType: "enrollment", student: student_id, course: course_id, is_deleted: false}};
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
@@ -137,6 +215,13 @@ class EnrollmentContract extends Contract {
         return JSON.stringify({success: true, message: "Enrollment deleted successfully"});
     }
 
+    /**
+     * Marks all enrollments for a specific course as deleted.
+     *
+     * @param {Context} ctx - The transaction context.
+     * @param {string} course_id - The ID of the course.
+     * @returns {Promise<string>} A success message.
+     */
     async deleteEnrollmentsByCourse(ctx, course_id) {
         const query = {selector: {docType: "enrollment", course: course_id, is_deleted: false}};
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
