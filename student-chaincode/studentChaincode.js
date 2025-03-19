@@ -92,13 +92,17 @@ class StudentContract extends Contract {
             results.push(jsonRes); // Push each result as an Enrollment object
             result = await iterator.next();
         }
+        console.log(results)
 
         const resultstudents = [];
         for (const enrollment of results) {
             const studentData = await this.getStudent(enrollment.student)
+            console.log(JSON.stringify(studentData));
+            console.log(studentData.toString())
             resultstudents.push(studentData.toString());
         }
-
+        console.log(resultstudents);
+        console.log(JSON.stringify(resultstudents));
         return JSON.stringify(resultstudents);
     }
 }
