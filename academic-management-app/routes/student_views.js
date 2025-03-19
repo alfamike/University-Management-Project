@@ -97,21 +97,55 @@ router.get("/students/:id", async (req, res) => {
 // Get all students with optional filters
 router.get("/students", async (req, res) => {
     try {
-        const { page = 1, title, course } = req.query;
+        const { page = 1, course } = req.query;
         const isAjax = req.headers['x-requested-with'] === 'XMLHttpRequest';
+        let responseStudents;
+        let students = [];
 
-        const queryDataStudents = {
-            headers: {
-                signer: req.session.user?.username,
-                channel: process.env.KALEIDO_CHANNEL_NAME,
-                chaincode: title ? "student_contract" : "student_contract"
-            },
-            func: title ? "getStudentsByTitle" : "getAllStudents",
-            args: title ? [title] : [],
-            strongread: true
-        };
-        const responseStudents = await fabConnectService.queryChaincode(queryDataStudents);
-        const students = responseStudents?.result ?? [];
+        if (course){
+            const queryEnrollments = {
+                headers: {
+                    signer: req.session.user?.username,
+                    channel: process.env.KALEIDO_CHANNEL_NAME,
+                    chaincode: "enrollment_contract"
+                },
+                func: "getEnrollmentsByCourse",
+                args: [course],
+                strongread: true
+            };
+
+            const responseEnrollments = await fabConnectService.queryChaincode(queryEnrollments);
+
+            for (const enrollment of responseEnrollments?.result) {
+                const queryStudent = {
+                    headers: {
+                        signer: req.session.user?.username,
+                        channel: process.env.KALEIDO_CHANNEL_NAME,
+                        chaincode: "student_contract"
+                    },
+                    func: "getStudent",
+                    args: [enrollment.student],
+                    strongread: true
+                };
+                const responseStudent = await fabConnectService.queryChaincode(queryStudent);
+                students.push(responseStudent?.result);
+            }
+
+        } else{
+            const queryDataStudents = {
+                headers: {
+                    signer: req.session.user?.username,
+                    channel: process.env.KALEIDO_CHANNEL_NAME,
+                    chaincode: "student_contract"
+                },
+                func: "getAllStudents",
+                args: [],
+                strongread: true
+            };
+            responseStudents = await fabConnectService.queryChaincode(queryDataStudents);
+
+            students = responseStudents?.result ?? [];
+        }
 
         const queryDataTitles = {
             headers: {

@@ -65,10 +65,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Main fetch function
     function fetchStudents(page = 1) {
-        const titleFilter = document.getElementById('title').value;
         const courseFilter = document.getElementById('course').value;
 
-        fetch(`/students?title=${titleFilter}&course=${courseFilter}`, {
+        fetch(`/students?course=${courseFilter}`, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
