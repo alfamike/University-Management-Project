@@ -7,7 +7,7 @@
     "start": "fabric-chaincode-node start"
   },
   "keywords": [],
-  "author": "",
+  "author": "Álvaro Menacho Rodríguez",
   "license": "GPL-3.0-or-later",
   "description": "",
   "dependencies": {
