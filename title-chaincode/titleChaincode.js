@@ -3,7 +3,18 @@
 const { Contract } = require("fabric-contract-api");
 const Title = require("./title");
 
+/**
+ * TitleContract class for handling Title-related transactions.
+ * @extends Contract
+ */
 class TitleContract extends Contract {
+    /**
+     * Create a new Title.
+     * @param {Context} ctx - The transaction context.
+     * @param {string} name - The name of the title.
+     * @param {string} description - The description of the title.
+     * @returns {Promise<string>} The result of the creation operation.
+     */
     async createTitle(ctx, name, description) {
         // Create a new Title instance
         const title = new Title(name, description);
@@ -19,6 +30,12 @@ class TitleContract extends Contract {
         return JSON.stringify({ success: true, id: title.id, message: "Title created successfully" });
     }
 
+    /**
+     * Retrieve a Title by ID.
+     * @param {Context} ctx - The transaction context.
+     * @param {string} id - The ID of the title.
+     * @returns {Promise<string>} The title data as a JSON string.
+     */
     async getTitle(ctx, id) {
         const titleData = await ctx.stub.getState(id);
         if (!titleData || titleData.length === 0) {
@@ -29,6 +46,11 @@ class TitleContract extends Contract {
         return titleData.toString();
     }
 
+    /**
+     * Retrieve all Titles.
+     * @param {Context} ctx - The transaction context.
+     * @returns {Promise<string>} The list of all titles as a JSON string.
+     */
     async getAllTitles(ctx) {
         const query = { selector: { docType: "title", is_deleted: false } };
         const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
@@ -44,6 +66,14 @@ class TitleContract extends Contract {
         return JSON.stringify(results);
     }
 
+    /**
+     * Update an existing Title.
+     * @param {Context} ctx - The transaction context.
+     * @param {string} id - The ID of the title.
+     * @param {string} name - The new name of the title.
+     * @param {string} description - The new description of the title.
+     * @returns {Promise<string>} The result of the update operation.
+     */
     async updateTitle(ctx, id, name, description) {
         const exists = await this.titleExists(ctx, id);
         if (!exists) {
@@ -58,6 +88,12 @@ class TitleContract extends Contract {
         return JSON.stringify({ success: true, message: "Title updated successfully" });
     }
 
+    /**
+     * Delete a Title by marking it as deleted.
+     * @param {Context} ctx - The transaction context.
+     * @param {string} id - The ID of the title.
+     * @returns {Promise<string>} The result of the deletion operation.
+     */
     async deleteTitle(ctx, id) {
         const exists = await this.titleExists(ctx, id);
         if (!exists) {
@@ -74,6 +110,12 @@ class TitleContract extends Contract {
         return JSON.stringify({ success: true, message: "Title deleted successfully" });
     }
 
+    /**
+     * Check if a Title exists by ID.
+     * @param {Context} ctx - The transaction context.
+     * @param {string} id - The ID of the title.
+     * @returns {Promise<boolean>} True if the title exists, false otherwise.
+     */
     async titleExists(ctx, id) {
         const titleData = await ctx.stub.getState(id);
         return titleData && titleData.length > 0;
