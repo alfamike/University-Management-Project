@@ -1,18 +1,13 @@
 # Academic Management App
 
-## Introduction
+## Overview
 
-This academic project
+`Academic Management App` is a Node.js Express web application design for the management of an education system based on titles, courses, students and activities.
+It uses a Hyperledge Fabric blockchain network as data storage and also for business logic with chaincodes.
+The connection is established through Hyperledge FireFly FabConnect, a connector that uses a Rest API to interact with the blockchain network.
 
-Kaleido simplifies the deployment and management of blockchain networks, offering enterprise-grade infrastructure with minimal complexity. Using FabConnect, you can easily connect to Fabric nodes and interact with the blockchain through REST APIs.
-
-## Features
-
-- **A:** 
-- **B:** 
-- **C:**
-- **D:**
-- **E:**
+The application interacts with the Platform-as-a-Service Kaleido, that simplifies the deployment and management of blockchain networks, like Hyperledge Fabric, offering enterprise-grade infrastructure with
+minimal complexity.
 
 ## Prerequisites
 
@@ -20,34 +15,9 @@ Ensure you have the following set up:
 
 1. Kaleido Account
 2. Postman
-   2.1. Kaleido API Console
-   2.2. Kaleido REST API GATEWAY
-
-1. Create consortia and environment in Kaleido via API with Postman
-2. Create orderer and peer nodes in Kaleido via interface
-3. Create an app credential in Kaleido via interface
-4. Create a channel in Kaleido via API with Postman
-5. Create an identity in Kaleido via API with Postman and enroll the identity
-5. Deploy chaincodes in Kaleido via interface
-- Environment variables configured in a `.env` file:
-
-```
-PORT : Port number for the application
-NODE_ENV : Environment mode (development, production, etc.)
-SECRET : Secret key for Session token
-KALEIDO_NODE_URL : Kaleido Node Rest API Gateway URL
-KALEIDO_NODE_CREDENTIAL_ID : Kaleido APP CREDENTIAL ID
-KALEIDO_NODE_PASSWORD : Kaleido APP CREDENTIAL Password
-```
-**How to get the variables:**
-```
-PORT : Choose a port number (e.g. 3000)
-NODE_ENV : Set the environment mode (e.g. development)
-SECRET : Set a secret key for the session token (e.g. mysecret)
-KALEIDO_NODE_URL : Go to Kaleido Console -> Select a node -> Node Overview -> Connect your node -> Copy the Rest API Gateway URL without the last '/'
-KALEIDO_NODE_CREDENTIAL_ID : Go to Kaleido Console -> Security -> App Creds -> New App Cred -> Copy the App Cred ID
-KALEIDO_NODE_PASSWORD : After an app credential is created -> Copy the password
-```
+3. Node.js (version 12.x or later)
+4. npm (version 6.x or later)
+5. Your favorite web development IDE
 
 ## Installation
 
@@ -64,28 +34,40 @@ cd <project-directory>
 npm install
 ```
 
-3. Create a `.env` file with your FabConnect API details (see Prerequisites section).
-
-## Usage
-
-### Import the Service
-
-You can use the `fabConnectService` in your Node.js application like this:
-
-```javascript
-const fabConnectService = require('./fabConnectService');
-
-(async () => {
-  try {
-    const identities = await fabConnectService.listIdentities();
-    console.log('Identities:', identities);
-  } catch (error) {
-    console.error('Error fetching identities:', error.message);
-  }
-})();
+3. Create a `.env` file with your app secrets and Kaleido connection details.
+```
+PORT : Port number for the application
+NODE_ENV : Environment mode (development, production, etc.)
+SECRET : Secret key for Session token
+KALEIDO_NODE_URL : Kaleido Node Rest API Gateway URL
+KALEIDO_NODE_CREDENTIAL_ID : Kaleido APP CREDENTIAL ID
+KALEIDO_NODE_PASSWORD : Kaleido APP CREDENTIAL Password
 ```
 
-### Available Methods
+**How to get the variables:**
+
+```
+PORT : Choose a port number (e.g. 3000)
+NODE_ENV : Set the environment mode (e.g. development)
+SECRET : Set a secret key for the session token (e.g. mysecret)
+KALEIDO_NODE_URL : Go to Kaleido Console -> Select a node -> Node Overview -> Connect your node -> Copy the Rest API Gateway URL without the last '/'
+KALEIDO_NODE_CREDENTIAL_ID : Go to Kaleido Console -> Security -> App Creds -> New App Cred -> Copy the App Cred ID
+KALEIDO_NODE_PASSWORD : After an app credential is created -> Copy the password
+```
+4. Run the application
+```bash
+npm start
+```
+
+## Features
+- Auth using identities provided by the Fabric CA deployed in Kaleido
+- CSRF and session middlewares to add auth security to API calls and users signing transactions for the blockchain ledger.
+- Home page with a lateral menu navigation and a chat for future use of a LLM AI agent.
+- Titles list and title management
+- Course list and course management. Including related activities management.
+- Student list and student management. Including managing grades for courses and activities.
+
+### Available Methods with FireFly Fabconnect Rest API
 
 The following methods are available in the `fabConnectService`:
 
@@ -134,5 +116,5 @@ The following methods are available in the `fabConnectService`:
 
 ## License
 
-This project is private and confidential.
+This project is licensed under the GPL-3.0-or-later License. See the `LICENSE` file for details.
 
