@@ -1,0 +1,1907 @@
+{
+	"info": {
+		"_postman_id": "d5ec3820-7278-4c9e-8ecd-523550c427b5",
+		"name": "API Reference for Hyperledger FireFly FabConnect",
+		"description": "Hyperledger FireFly FabConnect is a connector that provides a RESTful API to submit requests to Fabric networks and an event stream to listen for Fabric events over websocket or webhook based channels.\n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41969070"
+	},
+	"item": [
+		{
+			"name": "identities",
+			"item": [
+				{
+					"name": "{username}",
+					"item": [
+						{
+							"name": "enroll",
+							"item": [
+								{
+									"name": "Enroll the registered signing identity with the Fabric CA",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"secret\": \"VQrajfodsvbE\",\n  \"attributes\": {}\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/identities/:username/enroll",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"identities",
+												":username",
+												"enroll"
+											],
+											"variable": [
+												{
+													"key": "username",
+													"value": "test",
+													"description": "(Required) "
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Signing identity enrolled",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "Authorization",
+														"value": "Basic <credentials>",
+														"description": "Added as a part of security scheme: basic"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"secret\": \"<string>\",\n  \"attributes\": {}\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/identities/:username/enroll",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"identities",
+														":username",
+														"enroll"
+													],
+													"variable": [
+														{
+															"key": "username"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"success\": \"<boolean>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "reenroll",
+							"item": [
+								{
+									"name": "Re-enroll the registered signing identity with the Fabric CA",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"attributes\": {}\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/identities/:username/reenroll",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"identities",
+												":username",
+												"reenroll"
+											],
+											"variable": [
+												{
+													"key": "username",
+													"value": "<string>",
+													"description": "(Required) "
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Signing identity re-enrolled",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "Authorization",
+														"value": "Basic <credentials>",
+														"description": "Added as a part of security scheme: basic"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"attributes\": {}\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/identities/:username/reenroll",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"identities",
+														":username",
+														"reenroll"
+													],
+													"variable": [
+														{
+															"key": "username"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"success\": \"<boolean>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "revoke",
+							"item": [
+								{
+									"name": "Revoke the existing enrollment certificates for the registered signing identity with the Fabric CA",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"reason\": \"<string>\",\n  \"generateCRL\": \"<boolean>\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/identities/:username/revoke",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"identities",
+												":username",
+												"revoke"
+											],
+											"variable": [
+												{
+													"key": "username",
+													"value": "<string>",
+													"description": "(Required) "
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Signing identity certificates revoked",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "Authorization",
+														"value": "Basic <credentials>",
+														"description": "Added as a part of security scheme: basic"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"reason\": \"<string>\",\n  \"generateCRL\": \"<boolean>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/identities/:username/revoke",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"identities",
+														":username",
+														"revoke"
+													],
+													"variable": [
+														{
+															"key": "username"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"revokedCerts\": [\n    {\n      \"aki\": \"<string>\",\n      \"serial\": \"<string>\"\n    },\n    {\n      \"aki\": \"<string>\",\n      \"serial\": \"<string>\"\n    }\n  ],\n  \"CRL\": \"<string>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "Get the signing identity registered with the Fabric CA",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/identities/:username",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"identities",
+										":username"
+									],
+									"variable": [
+										{
+											"key": "username",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Signing identity returned",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Basic <credentials>",
+												"description": "Added as a part of security scheme: basic"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/identities/:username",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"identities",
+												":username"
+											],
+											"variable": [
+												{
+													"key": "username"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"name\": \"<string>\",\n  \"type\": \"client\",\n  \"maxEnrollments\": \"<integer>\",\n  \"attributes\": {},\n  \"affiliation\": \"<string>\",\n  \"caname\": \"<string>\",\n  \"organization\": \"<string>\",\n  \"mspId\": \"<string>\",\n  \"enrollmentCert\": \"<string>\",\n  \"caCert\": \"<string>\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Modify the existing signing identity",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"<string>\",\n  \"type\": \"client\",\n  \"maxEnrollments\": \"<integer>\",\n  \"attributes\": {}\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/identities/:username",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"identities",
+										":username"
+									],
+									"variable": [
+										{
+											"key": "username",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Signing identity modified",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Basic <credentials>",
+												"description": "Added as a part of security scheme: basic"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"name\": \"<string>\",\n  \"type\": \"client\",\n  \"maxEnrollments\": \"<integer>\",\n  \"attributes\": {}\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/identities/:username",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"identities",
+												":username"
+											],
+											"variable": [
+												{
+													"key": "username"
+												}
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"name\": \"<string>\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "List all signing identities registered with the Fabric CA",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/identities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"identities"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Signing identities returned",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Basic <credentials>",
+										"description": "Added as a part of security scheme: basic"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/identities",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"identities"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"name\": \"<string>\",\n    \"type\": \"client\",\n    \"maxEnrollments\": \"<integer>\",\n    \"attributes\": {},\n    \"affiliation\": \"<string>\",\n    \"caname\": \"<string>\"\n  },\n  {\n    \"name\": \"<string>\",\n    \"type\": \"client\",\n    \"maxEnrollments\": \"<integer>\",\n    \"attributes\": {},\n    \"affiliation\": \"<string>\",\n    \"caname\": \"<string>\"\n  }\n]"
+						}
+					]
+				},
+				{
+					"name": "Registers a new signing account with the Fabric CA",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"<string>\",\n  \"type\": \"client\",\n  \"maxEnrollments\": -1,\n  \"attributes\": {}\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/identities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"identities"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Signing identity registered",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Basic <credentials>",
+										"description": "Added as a part of security scheme: basic"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"<string>\",\n  \"type\": \"client\",\n  \"maxEnrollments\": \"<integer>\",\n  \"attributes\": {}\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/identities",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"identities"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"name\": \"<string>\",\n  \"secret\": \"<string>\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "chaininfo",
+			"item": [
+				{
+					"name": "Return information of the ledger for a specified channel",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/chaininfo?fly-channel=<string>&fly-signer=<string>",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chaininfo"
+							],
+							"query": [
+								{
+									"key": "fly-channel",
+									"value": "<string>"
+								},
+								{
+									"key": "fly-signer",
+									"value": "<string>"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Chain info retrieved",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Basic <credentials>",
+										"description": "Added as a part of security scheme: basic"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/chaininfo?fly-channel=<string>&fly-signer=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"chaininfo"
+									],
+									"query": [
+										{
+											"key": "fly-channel",
+											"value": "<string>"
+										},
+										{
+											"key": "fly-signer",
+											"value": "<string>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"height\": \"<integer>\",\n  \"current_block_hash\": \"<string>\",\n  \"previous_block_hash\": \"<string>\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "blocks",
+			"item": [
+				{
+					"name": "{blockNumberOrHash}",
+					"item": [
+						{
+							"name": "Query the block by number",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/blocks/:blockNumberOrHash?fly-channel=<string>&fly-signer=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"blocks",
+										":blockNumberOrHash"
+									],
+									"query": [
+										{
+											"key": "fly-channel",
+											"value": "<string>"
+										},
+										{
+											"key": "fly-signer",
+											"value": "<string>"
+										}
+									],
+									"variable": [
+										{
+											"key": "blockNumberOrHash",
+											"value": "<string>",
+											"description": "(Required) block number or block hash"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Block retrieved",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Basic <credentials>",
+												"description": "Added as a part of security scheme: basic"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/blocks/:blockNumberOrHash?fly-channel=<string>&fly-signer=<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"blocks",
+												":blockNumberOrHash"
+											],
+											"query": [
+												{
+													"key": "fly-channel",
+													"value": "<string>"
+												},
+												{
+													"key": "fly-signer",
+													"value": "<string>"
+												}
+											],
+											"variable": [
+												{
+													"key": "blockNumberOrHash"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"block\": {\n    \"block_numer\": \"<integer>\",\n    \"data_hash\": \"<string>\",\n    \"previous_hash\": \"<string>\",\n    \"transactions\": [\n      {\n        \"type\": \"<string>\",\n        \"tx_id\": \"<string>\",\n        \"nonce\": \"<string>\",\n        \"creator\": {\n          \"msp_id\": \"<string>\",\n          \"cert\": \"<string>\"\n        },\n        \"status\": \"<string>\",\n        \"signature\": \"<string>\",\n        \"timestamp\": \"<integer>\",\n        \"actions\": [\n          {\n            \"nonce\": \"<string>\",\n            \"creator\": {\n              \"msp_id\": \"<string>\",\n              \"cert\": \"<string>\"\n            },\n            \"transient_map\": {},\n            \"chaincode_id\": {\n              \"name\": \"<string>\",\n              \"version\": \"<string>\"\n            },\n            \"input\": {\n              \"args\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"is_init\": \"<boolean>\"\n            },\n            \"proposal_hash\": \"<string>\",\n            \"event\": {\n              \"chaincodeId\": \"<string>\",\n              \"transactionId\": \"<string>\",\n              \"timestamp\": \"<string>\",\n              \"eventName\": \"<string>\",\n              \"payload\": \"<string>\"\n            }\n          },\n          {\n            \"nonce\": \"<string>\",\n            \"creator\": {\n              \"msp_id\": \"<string>\",\n              \"cert\": \"<string>\"\n            },\n            \"transient_map\": {},\n            \"chaincode_id\": {\n              \"name\": \"<string>\",\n              \"version\": \"<string>\"\n            },\n            \"input\": {\n              \"args\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"is_init\": \"<boolean>\"\n            },\n            \"proposal_hash\": \"<string>\",\n            \"event\": {\n              \"chaincodeId\": \"<string>\",\n              \"transactionId\": \"<string>\",\n              \"timestamp\": \"<string>\",\n              \"eventName\": \"<string>\",\n              \"payload\": \"<string>\"\n            }\n          }\n        ]\n      },\n      {\n        \"type\": \"<string>\",\n        \"tx_id\": \"<string>\",\n        \"nonce\": \"<string>\",\n        \"creator\": {\n          \"msp_id\": \"<string>\",\n          \"cert\": \"<string>\"\n        },\n        \"status\": \"<string>\",\n        \"signature\": \"<string>\",\n        \"timestamp\": \"<integer>\",\n        \"actions\": [\n          {\n            \"nonce\": \"<string>\",\n            \"creator\": {\n              \"msp_id\": \"<string>\",\n              \"cert\": \"<string>\"\n            },\n            \"transient_map\": {},\n            \"chaincode_id\": {\n              \"name\": \"<string>\",\n              \"version\": \"<string>\"\n            },\n            \"input\": {\n              \"args\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"is_init\": \"<boolean>\"\n            },\n            \"proposal_hash\": \"<string>\",\n            \"event\": {\n              \"chaincodeId\": \"<string>\",\n              \"transactionId\": \"<string>\",\n              \"timestamp\": \"<string>\",\n              \"eventName\": \"<string>\",\n              \"payload\": \"<string>\"\n            }\n          },\n          {\n            \"nonce\": \"<string>\",\n            \"creator\": {\n              \"msp_id\": \"<string>\",\n              \"cert\": \"<string>\"\n            },\n            \"transient_map\": {},\n            \"chaincode_id\": {\n              \"name\": \"<string>\",\n              \"version\": \"<string>\"\n            },\n            \"input\": {\n              \"args\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"is_init\": \"<boolean>\"\n            },\n            \"proposal_hash\": \"<string>\",\n            \"event\": {\n              \"chaincodeId\": \"<string>\",\n              \"transactionId\": \"<string>\",\n              \"timestamp\": \"<string>\",\n              \"eventName\": \"<string>\",\n              \"payload\": \"<string>\"\n            }\n          }\n        ]\n      }\n    ],\n    \"config\": {\n      \"type\": \"<string>\",\n      \"signature\": \"<string>\",\n      \"timestamp\": \"<integer>\",\n      \"nonce\": \"<string>\",\n      \"creator\": {\n        \"msp_id\": \"<string>\",\n        \"cert\": \"<string>\"\n      },\n      \"config\": {}\n    }\n  },\n  \"raw\": {\n    \"data\": {\n      \"data\": [\n        {\n          \"payload\": {\n            \"data\": {\n              \"actions\": [\n                {\n                  \"header\": {\n                    \"creator\": {\n                      \"mspid\": \"<string>\",\n                      \"id_bytes\": \"<string>\"\n                    },\n                    \"nonce\": \"<string>\"\n                  },\n                  \"payload\": {\n                    \"action\": {\n                      \"proposal_response_payload\": {\n                        \"extension\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"events\": {\n                            \"chaincodeId\": \"<string>\",\n                            \"transactionId\": \"<string>\",\n                            \"timestamp\": \"<string>\",\n                            \"eventName\": \"<string>\",\n                            \"payload\": \"<string>\"\n                          }\n                        },\n                        \"proposal_hash\": \"<string>\"\n                      }\n                    },\n                    \"chaincode_proposal_payload\": {\n                      \"TransientMap\": {},\n                      \"input\": {\n                        \"chaincode_spec\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"input\": {\n                            \"args\": [\n                              \"<string>\",\n                              \"<string>\"\n                            ],\n                            \"is_init\": \"<boolean>\"\n                          }\n                        }\n                      }\n                    }\n                  }\n                },\n                {\n                  \"header\": {\n                    \"creator\": {\n                      \"mspid\": \"<string>\",\n                      \"id_bytes\": \"<string>\"\n                    },\n                    \"nonce\": \"<string>\"\n                  },\n                  \"payload\": {\n                    \"action\": {\n                      \"proposal_response_payload\": {\n                        \"extension\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"events\": {\n                            \"chaincodeId\": \"<string>\",\n                            \"transactionId\": \"<string>\",\n                            \"timestamp\": \"<string>\",\n                            \"eventName\": \"<string>\",\n                            \"payload\": \"<string>\"\n                          }\n                        },\n                        \"proposal_hash\": \"<string>\"\n                      }\n                    },\n                    \"chaincode_proposal_payload\": {\n                      \"TransientMap\": {},\n                      \"input\": {\n                        \"chaincode_spec\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"input\": {\n                            \"args\": [\n                              \"<string>\",\n                              \"<string>\"\n                            ],\n                            \"is_init\": \"<boolean>\"\n                          }\n                        }\n                      }\n                    }\n                  }\n                }\n              ]\n            },\n            \"header\": {\n              \"channel_header\": {\n                \"channel_id\": \"<string>\",\n                \"epoch\": \"<string>\",\n                \"timestamp\": \"<integer>\",\n                \"tx_id\": \"<string>\",\n                \"type\": \"<string>\",\n                \"version\": \"<integer>\"\n              },\n              \"signature_header\": {\n                \"creator\": {\n                  \"mspid\": \"<string>\",\n                  \"id_bytes\": \"<string>\"\n                },\n                \"nonce\": \"<string>\"\n              }\n            }\n          },\n          \"siganture\": \"<string>\"\n        },\n        {\n          \"payload\": {\n            \"data\": {\n              \"actions\": [\n                {\n                  \"header\": {\n                    \"creator\": {\n                      \"mspid\": \"<string>\",\n                      \"id_bytes\": \"<string>\"\n                    },\n                    \"nonce\": \"<string>\"\n                  },\n                  \"payload\": {\n                    \"action\": {\n                      \"proposal_response_payload\": {\n                        \"extension\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"events\": {\n                            \"chaincodeId\": \"<string>\",\n                            \"transactionId\": \"<string>\",\n                            \"timestamp\": \"<string>\",\n                            \"eventName\": \"<string>\",\n                            \"payload\": \"<string>\"\n                          }\n                        },\n                        \"proposal_hash\": \"<string>\"\n                      }\n                    },\n                    \"chaincode_proposal_payload\": {\n                      \"TransientMap\": {},\n                      \"input\": {\n                        \"chaincode_spec\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"input\": {\n                            \"args\": [\n                              \"<string>\",\n                              \"<string>\"\n                            ],\n                            \"is_init\": \"<boolean>\"\n                          }\n                        }\n                      }\n                    }\n                  }\n                },\n                {\n                  \"header\": {\n                    \"creator\": {\n                      \"mspid\": \"<string>\",\n                      \"id_bytes\": \"<string>\"\n                    },\n                    \"nonce\": \"<string>\"\n                  },\n                  \"payload\": {\n                    \"action\": {\n                      \"proposal_response_payload\": {\n                        \"extension\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"events\": {\n                            \"chaincodeId\": \"<string>\",\n                            \"transactionId\": \"<string>\",\n                            \"timestamp\": \"<string>\",\n                            \"eventName\": \"<string>\",\n                            \"payload\": \"<string>\"\n                          }\n                        },\n                        \"proposal_hash\": \"<string>\"\n                      }\n                    },\n                    \"chaincode_proposal_payload\": {\n                      \"TransientMap\": {},\n                      \"input\": {\n                        \"chaincode_spec\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"input\": {\n                            \"args\": [\n                              \"<string>\",\n                              \"<string>\"\n                            ],\n                            \"is_init\": \"<boolean>\"\n                          }\n                        }\n                      }\n                    }\n                  }\n                }\n              ]\n            },\n            \"header\": {\n              \"channel_header\": {\n                \"channel_id\": \"<string>\",\n                \"epoch\": \"<string>\",\n                \"timestamp\": \"<integer>\",\n                \"tx_id\": \"<string>\",\n                \"type\": \"<string>\",\n                \"version\": \"<integer>\"\n              },\n              \"signature_header\": {\n                \"creator\": {\n                  \"mspid\": \"<string>\",\n                  \"id_bytes\": \"<string>\"\n                },\n                \"nonce\": \"<string>\"\n              }\n            }\n          },\n          \"siganture\": \"<string>\"\n        }\n      ]\n    },\n    \"header\": {\n      \"number\": \"<integer>\",\n      \"data_hash\": \"<string>\",\n      \"previous_hash\": \"<string>\"\n    },\n    \"metadata\": {\n      \"metadata\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  }\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "blockByTxId",
+			"item": [
+				{
+					"name": "{txId}",
+					"item": [
+						{
+							"name": "Query the block by a transaction Id included in the block",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/blockByTxId/:txId?fly-channel=<string>&fly-signer=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"blockByTxId",
+										":txId"
+									],
+									"query": [
+										{
+											"key": "fly-channel",
+											"value": "<string>"
+										},
+										{
+											"key": "fly-signer",
+											"value": "<string>"
+										}
+									],
+									"variable": [
+										{
+											"key": "txId",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Block retrieved",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Basic <credentials>",
+												"description": "Added as a part of security scheme: basic"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/blockByTxId/:txId?fly-channel=<string>&fly-signer=<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"blockByTxId",
+												":txId"
+											],
+											"query": [
+												{
+													"key": "fly-channel",
+													"value": "<string>"
+												},
+												{
+													"key": "fly-signer",
+													"value": "<string>"
+												}
+											],
+											"variable": [
+												{
+													"key": "txId"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"block\": {\n    \"block_numer\": \"<integer>\",\n    \"data_hash\": \"<string>\",\n    \"previous_hash\": \"<string>\",\n    \"transactions\": [\n      {\n        \"type\": \"<string>\",\n        \"tx_id\": \"<string>\",\n        \"nonce\": \"<string>\",\n        \"creator\": {\n          \"msp_id\": \"<string>\",\n          \"cert\": \"<string>\"\n        },\n        \"status\": \"<string>\",\n        \"signature\": \"<string>\",\n        \"timestamp\": \"<integer>\",\n        \"actions\": [\n          {\n            \"nonce\": \"<string>\",\n            \"creator\": {\n              \"msp_id\": \"<string>\",\n              \"cert\": \"<string>\"\n            },\n            \"transient_map\": {},\n            \"chaincode_id\": {\n              \"name\": \"<string>\",\n              \"version\": \"<string>\"\n            },\n            \"input\": {\n              \"args\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"is_init\": \"<boolean>\"\n            },\n            \"proposal_hash\": \"<string>\",\n            \"event\": {\n              \"chaincodeId\": \"<string>\",\n              \"transactionId\": \"<string>\",\n              \"timestamp\": \"<string>\",\n              \"eventName\": \"<string>\",\n              \"payload\": \"<string>\"\n            }\n          },\n          {\n            \"nonce\": \"<string>\",\n            \"creator\": {\n              \"msp_id\": \"<string>\",\n              \"cert\": \"<string>\"\n            },\n            \"transient_map\": {},\n            \"chaincode_id\": {\n              \"name\": \"<string>\",\n              \"version\": \"<string>\"\n            },\n            \"input\": {\n              \"args\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"is_init\": \"<boolean>\"\n            },\n            \"proposal_hash\": \"<string>\",\n            \"event\": {\n              \"chaincodeId\": \"<string>\",\n              \"transactionId\": \"<string>\",\n              \"timestamp\": \"<string>\",\n              \"eventName\": \"<string>\",\n              \"payload\": \"<string>\"\n            }\n          }\n        ]\n      },\n      {\n        \"type\": \"<string>\",\n        \"tx_id\": \"<string>\",\n        \"nonce\": \"<string>\",\n        \"creator\": {\n          \"msp_id\": \"<string>\",\n          \"cert\": \"<string>\"\n        },\n        \"status\": \"<string>\",\n        \"signature\": \"<string>\",\n        \"timestamp\": \"<integer>\",\n        \"actions\": [\n          {\n            \"nonce\": \"<string>\",\n            \"creator\": {\n              \"msp_id\": \"<string>\",\n              \"cert\": \"<string>\"\n            },\n            \"transient_map\": {},\n            \"chaincode_id\": {\n              \"name\": \"<string>\",\n              \"version\": \"<string>\"\n            },\n            \"input\": {\n              \"args\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"is_init\": \"<boolean>\"\n            },\n            \"proposal_hash\": \"<string>\",\n            \"event\": {\n              \"chaincodeId\": \"<string>\",\n              \"transactionId\": \"<string>\",\n              \"timestamp\": \"<string>\",\n              \"eventName\": \"<string>\",\n              \"payload\": \"<string>\"\n            }\n          },\n          {\n            \"nonce\": \"<string>\",\n            \"creator\": {\n              \"msp_id\": \"<string>\",\n              \"cert\": \"<string>\"\n            },\n            \"transient_map\": {},\n            \"chaincode_id\": {\n              \"name\": \"<string>\",\n              \"version\": \"<string>\"\n            },\n            \"input\": {\n              \"args\": [\n                \"<string>\",\n                \"<string>\"\n              ],\n              \"is_init\": \"<boolean>\"\n            },\n            \"proposal_hash\": \"<string>\",\n            \"event\": {\n              \"chaincodeId\": \"<string>\",\n              \"transactionId\": \"<string>\",\n              \"timestamp\": \"<string>\",\n              \"eventName\": \"<string>\",\n              \"payload\": \"<string>\"\n            }\n          }\n        ]\n      }\n    ],\n    \"config\": {\n      \"type\": \"<string>\",\n      \"signature\": \"<string>\",\n      \"timestamp\": \"<integer>\",\n      \"nonce\": \"<string>\",\n      \"creator\": {\n        \"msp_id\": \"<string>\",\n        \"cert\": \"<string>\"\n      },\n      \"config\": {}\n    }\n  },\n  \"raw\": {\n    \"data\": {\n      \"data\": [\n        {\n          \"payload\": {\n            \"data\": {\n              \"actions\": [\n                {\n                  \"header\": {\n                    \"creator\": {\n                      \"mspid\": \"<string>\",\n                      \"id_bytes\": \"<string>\"\n                    },\n                    \"nonce\": \"<string>\"\n                  },\n                  \"payload\": {\n                    \"action\": {\n                      \"proposal_response_payload\": {\n                        \"extension\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"events\": {\n                            \"chaincodeId\": \"<string>\",\n                            \"transactionId\": \"<string>\",\n                            \"timestamp\": \"<string>\",\n                            \"eventName\": \"<string>\",\n                            \"payload\": \"<string>\"\n                          }\n                        },\n                        \"proposal_hash\": \"<string>\"\n                      }\n                    },\n                    \"chaincode_proposal_payload\": {\n                      \"TransientMap\": {},\n                      \"input\": {\n                        \"chaincode_spec\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"input\": {\n                            \"args\": [\n                              \"<string>\",\n                              \"<string>\"\n                            ],\n                            \"is_init\": \"<boolean>\"\n                          }\n                        }\n                      }\n                    }\n                  }\n                },\n                {\n                  \"header\": {\n                    \"creator\": {\n                      \"mspid\": \"<string>\",\n                      \"id_bytes\": \"<string>\"\n                    },\n                    \"nonce\": \"<string>\"\n                  },\n                  \"payload\": {\n                    \"action\": {\n                      \"proposal_response_payload\": {\n                        \"extension\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"events\": {\n                            \"chaincodeId\": \"<string>\",\n                            \"transactionId\": \"<string>\",\n                            \"timestamp\": \"<string>\",\n                            \"eventName\": \"<string>\",\n                            \"payload\": \"<string>\"\n                          }\n                        },\n                        \"proposal_hash\": \"<string>\"\n                      }\n                    },\n                    \"chaincode_proposal_payload\": {\n                      \"TransientMap\": {},\n                      \"input\": {\n                        \"chaincode_spec\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"input\": {\n                            \"args\": [\n                              \"<string>\",\n                              \"<string>\"\n                            ],\n                            \"is_init\": \"<boolean>\"\n                          }\n                        }\n                      }\n                    }\n                  }\n                }\n              ]\n            },\n            \"header\": {\n              \"channel_header\": {\n                \"channel_id\": \"<string>\",\n                \"epoch\": \"<string>\",\n                \"timestamp\": \"<integer>\",\n                \"tx_id\": \"<string>\",\n                \"type\": \"<string>\",\n                \"version\": \"<integer>\"\n              },\n              \"signature_header\": {\n                \"creator\": {\n                  \"mspid\": \"<string>\",\n                  \"id_bytes\": \"<string>\"\n                },\n                \"nonce\": \"<string>\"\n              }\n            }\n          },\n          \"siganture\": \"<string>\"\n        },\n        {\n          \"payload\": {\n            \"data\": {\n              \"actions\": [\n                {\n                  \"header\": {\n                    \"creator\": {\n                      \"mspid\": \"<string>\",\n                      \"id_bytes\": \"<string>\"\n                    },\n                    \"nonce\": \"<string>\"\n                  },\n                  \"payload\": {\n                    \"action\": {\n                      \"proposal_response_payload\": {\n                        \"extension\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"events\": {\n                            \"chaincodeId\": \"<string>\",\n                            \"transactionId\": \"<string>\",\n                            \"timestamp\": \"<string>\",\n                            \"eventName\": \"<string>\",\n                            \"payload\": \"<string>\"\n                          }\n                        },\n                        \"proposal_hash\": \"<string>\"\n                      }\n                    },\n                    \"chaincode_proposal_payload\": {\n                      \"TransientMap\": {},\n                      \"input\": {\n                        \"chaincode_spec\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"input\": {\n                            \"args\": [\n                              \"<string>\",\n                              \"<string>\"\n                            ],\n                            \"is_init\": \"<boolean>\"\n                          }\n                        }\n                      }\n                    }\n                  }\n                },\n                {\n                  \"header\": {\n                    \"creator\": {\n                      \"mspid\": \"<string>\",\n                      \"id_bytes\": \"<string>\"\n                    },\n                    \"nonce\": \"<string>\"\n                  },\n                  \"payload\": {\n                    \"action\": {\n                      \"proposal_response_payload\": {\n                        \"extension\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"events\": {\n                            \"chaincodeId\": \"<string>\",\n                            \"transactionId\": \"<string>\",\n                            \"timestamp\": \"<string>\",\n                            \"eventName\": \"<string>\",\n                            \"payload\": \"<string>\"\n                          }\n                        },\n                        \"proposal_hash\": \"<string>\"\n                      }\n                    },\n                    \"chaincode_proposal_payload\": {\n                      \"TransientMap\": {},\n                      \"input\": {\n                        \"chaincode_spec\": {\n                          \"chaincode_id\": {\n                            \"name\": \"<string>\",\n                            \"version\": \"<string>\"\n                          },\n                          \"input\": {\n                            \"args\": [\n                              \"<string>\",\n                              \"<string>\"\n                            ],\n                            \"is_init\": \"<boolean>\"\n                          }\n                        }\n                      }\n                    }\n                  }\n                }\n              ]\n            },\n            \"header\": {\n              \"channel_header\": {\n                \"channel_id\": \"<string>\",\n                \"epoch\": \"<string>\",\n                \"timestamp\": \"<integer>\",\n                \"tx_id\": \"<string>\",\n                \"type\": \"<string>\",\n                \"version\": \"<integer>\"\n              },\n              \"signature_header\": {\n                \"creator\": {\n                  \"mspid\": \"<string>\",\n                  \"id_bytes\": \"<string>\"\n                },\n                \"nonce\": \"<string>\"\n              }\n            }\n          },\n          \"siganture\": \"<string>\"\n        }\n      ]\n    },\n    \"header\": {\n      \"number\": \"<integer>\",\n      \"data_hash\": \"<string>\",\n      \"previous_hash\": \"<string>\"\n    },\n    \"metadata\": {\n      \"metadata\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  }\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "transactions",
+			"item": [
+				{
+					"name": "{txId}",
+					"item": [
+						{
+							"name": "Query the channel for a transaction by ID (hash)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/transactions/:txId?fly-channel=<string>&fly-signer=<string>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"transactions",
+										":txId"
+									],
+									"query": [
+										{
+											"key": "fly-channel",
+											"value": "<string>"
+										},
+										{
+											"key": "fly-signer",
+											"value": "<string>"
+										}
+									],
+									"variable": [
+										{
+											"key": "txId",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Transaction retrieved",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Basic <credentials>",
+												"description": "Added as a part of security scheme: basic"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/transactions/:txId?fly-channel=<string>&fly-signer=<string>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"transactions",
+												":txId"
+											],
+											"query": [
+												{
+													"key": "fly-channel",
+													"value": "<string>"
+												},
+												{
+													"key": "fly-signer",
+													"value": "<string>"
+												}
+											],
+											"variable": [
+												{
+													"key": "txId"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"raw\": {\n    \"payload\": {\n      \"data\": {\n        \"actions\": [\n          {\n            \"header\": {\n              \"creator\": {\n                \"mspid\": \"<string>\",\n                \"id_bytes\": \"<string>\"\n              },\n              \"nonce\": \"<string>\"\n            },\n            \"payload\": {\n              \"action\": {\n                \"proposal_response_payload\": {\n                  \"extension\": {\n                    \"chaincode_id\": {\n                      \"name\": \"<string>\",\n                      \"version\": \"<string>\"\n                    },\n                    \"events\": {\n                      \"chaincodeId\": \"<string>\",\n                      \"transactionId\": \"<string>\",\n                      \"timestamp\": \"<string>\",\n                      \"eventName\": \"<string>\",\n                      \"payload\": \"<string>\"\n                    }\n                  },\n                  \"proposal_hash\": \"<string>\"\n                }\n              },\n              \"chaincode_proposal_payload\": {\n                \"TransientMap\": {},\n                \"input\": {\n                  \"chaincode_spec\": {\n                    \"chaincode_id\": {\n                      \"name\": \"<string>\",\n                      \"version\": \"<string>\"\n                    },\n                    \"input\": {\n                      \"args\": [\n                        \"<string>\",\n                        \"<string>\"\n                      ],\n                      \"is_init\": \"<boolean>\"\n                    }\n                  }\n                }\n              }\n            }\n          },\n          {\n            \"header\": {\n              \"creator\": {\n                \"mspid\": \"<string>\",\n                \"id_bytes\": \"<string>\"\n              },\n              \"nonce\": \"<string>\"\n            },\n            \"payload\": {\n              \"action\": {\n                \"proposal_response_payload\": {\n                  \"extension\": {\n                    \"chaincode_id\": {\n                      \"name\": \"<string>\",\n                      \"version\": \"<string>\"\n                    },\n                    \"events\": {\n                      \"chaincodeId\": \"<string>\",\n                      \"transactionId\": \"<string>\",\n                      \"timestamp\": \"<string>\",\n                      \"eventName\": \"<string>\",\n                      \"payload\": \"<string>\"\n                    }\n                  },\n                  \"proposal_hash\": \"<string>\"\n                }\n              },\n              \"chaincode_proposal_payload\": {\n                \"TransientMap\": {},\n                \"input\": {\n                  \"chaincode_spec\": {\n                    \"chaincode_id\": {\n                      \"name\": \"<string>\",\n                      \"version\": \"<string>\"\n                    },\n                    \"input\": {\n                      \"args\": [\n                        \"<string>\",\n                        \"<string>\"\n                      ],\n                      \"is_init\": \"<boolean>\"\n                    }\n                  }\n                }\n              }\n            }\n          }\n        ]\n      },\n      \"header\": {\n        \"channel_header\": {\n          \"channel_id\": \"<string>\",\n          \"epoch\": \"<string>\",\n          \"timestamp\": \"<integer>\",\n          \"tx_id\": \"<string>\",\n          \"type\": \"<string>\",\n          \"version\": \"<integer>\"\n        },\n        \"signature_header\": {\n          \"creator\": {\n            \"mspid\": \"<string>\",\n            \"id_bytes\": \"<string>\"\n          },\n          \"nonce\": \"<string>\"\n        }\n      }\n    },\n    \"siganture\": \"<string>\"\n  },\n  \"transaction\": {\n    \"type\": \"<string>\",\n    \"tx_id\": \"<string>\",\n    \"nonce\": \"<string>\",\n    \"creator\": {\n      \"msp_id\": \"<string>\",\n      \"cert\": \"<string>\"\n    },\n    \"status\": \"<string>\",\n    \"signature\": \"<string>\",\n    \"timestamp\": \"<integer>\",\n    \"actions\": [\n      {\n        \"nonce\": \"<string>\",\n        \"creator\": {\n          \"msp_id\": \"<string>\",\n          \"cert\": \"<string>\"\n        },\n        \"transient_map\": {},\n        \"chaincode_id\": {\n          \"name\": \"<string>\",\n          \"version\": \"<string>\"\n        },\n        \"input\": {\n          \"args\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"is_init\": \"<boolean>\"\n        },\n        \"proposal_hash\": \"<string>\",\n        \"event\": {\n          \"chaincodeId\": \"<string>\",\n          \"transactionId\": \"<string>\",\n          \"timestamp\": \"<string>\",\n          \"eventName\": \"<string>\",\n          \"payload\": \"<string>\"\n        }\n      },\n      {\n        \"nonce\": \"<string>\",\n        \"creator\": {\n          \"msp_id\": \"<string>\",\n          \"cert\": \"<string>\"\n        },\n        \"transient_map\": {},\n        \"chaincode_id\": {\n          \"name\": \"<string>\",\n          \"version\": \"<string>\"\n        },\n        \"input\": {\n          \"args\": [\n            \"<string>\",\n            \"<string>\"\n          ],\n          \"is_init\": \"<boolean>\"\n        },\n        \"proposal_hash\": \"<string>\",\n        \"event\": {\n          \"chaincodeId\": \"<string>\",\n          \"transactionId\": \"<string>\",\n          \"timestamp\": \"<string>\",\n          \"eventName\": \"<string>\",\n          \"payload\": \"<string>\"\n        }\n      }\n    ]\n  }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Send proposal to peers then send the transaction with the endorsements to the orderer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"headers\": {\n    \"type\": \"SendTransaction\",\n    \"signer\": \"<string>\",\n    \"channel\": \"<string>\",\n    \"chaincode\": \"<string>\"\n  },\n  \"func\": \"<string>\",\n  \"args\": [\n    \"<string>\", \"<string>\"\n  ],\n  \"transientMap\": {},\n  \"init\": false\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/transactions?fly-sync=<boolean>",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "fly-sync",
+									"value": "<boolean>"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Transaction submitted (fly-sync=false) or committed (fly-sync-true)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Basic <credentials>",
+										"description": "Added as a part of security scheme: basic"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"headers\": {\n    \"type\": \"SendTransaction\",\n    \"signer\": \"<string>\",\n    \"channel\": \"<string>\",\n    \"chaincode\": \"<string>\"\n  },\n  \"func\": \"<string>\",\n  \"args\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"transientMap\": {},\n  \"init\": false\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/transactions?fly-sync=<boolean>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"transactions"
+									],
+									"query": [
+										{
+											"key": "fly-sync",
+											"value": "<boolean>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "query",
+			"item": [
+				{
+					"name": "Send query request to the target chaincode",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"headers\": {\n    \"signer\": \"<string>\",\n    \"channel\": \"<string>\",\n    \"chaincode\": \"<string>\"\n  },\n  \"func\": \"<string>\",\n  \"args\": [\n    \"<string>\"\n  ],\n  \"strongread\": true\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/query",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"query"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Transaction submitted (fly-sync=false) or committed (fly-sync-true)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Basic <credentials>",
+										"description": "Added as a part of security scheme: basic"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"headers\": {\n    \"signer\": \"<string>\",\n    \"channel\": \"<string>\",\n    \"chaincode\": \"<string>\"\n  },\n  \"func\": \"<string>\",\n  \"args\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"strongread\": \"<boolean>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/query",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"query"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "receipts",
+			"item": [
+				{
+					"name": "{receiptId}",
+					"item": [
+						{
+							"name": "Retrieve transaction receipt by the receipt Id. Only applicable to transactions submitted with 'fly-sync=false'",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/receipts/:receiptId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"receipts",
+										":receiptId"
+									],
+									"variable": [
+										{
+											"key": "receiptId",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Receipt returned",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Basic <credentials>",
+												"description": "Added as a part of security scheme: basic"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/receipts/:receiptId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"receipts",
+												":receiptId"
+											],
+											"variable": [
+												{
+													"key": "receiptId"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Retrieve transaction receipts from the receipts store. Only applicable to transactions submitted with 'fly-sync=false'",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/receipts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"receipts"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Receipts returned",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Basic <credentials>",
+										"description": "Added as a part of security scheme: basic"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/receipts",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"receipts"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "eventstreams",
+			"item": [
+				{
+					"name": "{eventstreamId}",
+					"item": [
+						{
+							"name": "Get event stream by id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/eventstreams/:eventstreamId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"eventstreams",
+										":eventstreamId"
+									],
+									"variable": [
+										{
+											"key": "eventstreamId",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Event stream retrieved",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Basic <credentials>",
+												"description": "Added as a part of security scheme: basic"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/eventstreams/:eventstreamId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"eventstreams",
+												":eventstreamId"
+											],
+											"variable": [
+												{
+													"key": "eventstreamId"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Delete the event stream by id",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/eventstreams/:eventstreamId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"eventstreams",
+										":eventstreamId"
+									],
+									"variable": [
+										{
+											"key": "eventstreamId",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Event stream deleted",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Basic <credentials>",
+												"description": "Added as a part of security scheme: basic"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/eventstreams/:eventstreamId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"eventstreams",
+												":eventstreamId"
+											],
+											"variable": [
+												{
+													"key": "eventstreamId"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "List all event streams",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/eventstreams",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"eventstreams"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Event streams returned",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Basic <credentials>",
+										"description": "Added as a part of security scheme: basic"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/eventstreams",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"eventstreams"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Create a new event stream",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"<string>\",\n  \"type\": \"websocket\",\n  \"websocket\": {\n    \"topic\": \"<string>\",\n    \"distributionMode\": \"\"\n  },\n  \"suspended\": false,\n  \"batchSize\": 1,\n  \"batchTimeoutMS\": 5000,\n  \"errorHandling\": \"skip\",\n  \"retryTimeoutSec\": \"<integer>\",\n  \"blockedRetryDelaySec\": \"<integer>\",\n  \"timestamps\": false,\n  \"timestampCacheSize\": 1000\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/eventstreams",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"eventstreams"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Event stream created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Basic <credentials>",
+										"description": "Added as a part of security scheme: basic"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"<string>\",\n  \"type\": \"websocket\",\n  \"websocket\": {\n    \"topic\": \"<string>\",\n    \"distributionMode\": \"\"\n  },\n  \"suspended\": false,\n  \"batchSize\": 1,\n  \"batchTimeoutMS\": 5000,\n  \"errorHandling\": \"skip\",\n  \"retryTimeoutSec\": \"<integer>\",\n  \"blockedRetryDelaySec\": \"<integer>\",\n  \"timestamps\": false,\n  \"timestampCacheSize\": 1000\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/eventstreams",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"eventstreams"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "subscriptions",
+			"item": [
+				{
+					"name": "{subscriptionId}",
+					"item": [
+						{
+							"name": "Get subscription by id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/subscriptions/:subscriptionId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"subscriptions",
+										":subscriptionId"
+									],
+									"variable": [
+										{
+											"key": "subscriptionId",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Subscription retrieved",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Basic <credentials>",
+												"description": "Added as a part of security scheme: basic"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/subscriptions/:subscriptionId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"subscriptions",
+												":subscriptionId"
+											],
+											"variable": [
+												{
+													"key": "subscriptionId"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						},
+						{
+							"name": "Delete the subscription by id",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/subscriptions/:subscriptionId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"subscriptions",
+										":subscriptionId"
+									],
+									"variable": [
+										{
+											"key": "subscriptionId",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Subscription deleted",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Basic <credentials>",
+												"description": "Added as a part of security scheme: basic"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/subscriptions/:subscriptionId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"subscriptions",
+												":subscriptionId"
+											],
+											"variable": [
+												{
+													"key": "subscriptionId"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": ""
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "List all subscriptions under the specified event stream",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscriptions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Subscriptions returned",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Basic <credentials>",
+										"description": "Added as a part of security scheme: basic"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/subscriptions",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"subscriptions"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Create a new subscription under the specified event stream",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"<string>\",\n  \"stream\": \"<string>\",\n  \"channel\": \"<string>\",\n  \"signer\": \"<string>\",\n  \"fromBlock\": \"<string>\",\n  \"payloadType\": \"string\",\n  \"filter\": {\n    \"blockType\": \"tx\",\n    \"chaincodeId\": \"\",\n    \"eventFilter\": \"\"\n  }\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/subscriptions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Subscription created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Basic <credentials>",
+										"description": "Added as a part of security scheme: basic"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"<string>\",\n  \"stream\": \"<string>\",\n  \"channel\": \"<string>\",\n  \"signer\": \"<string>\",\n  \"fromBlock\": \"<string>\",\n  \"payloadType\": \"string\",\n  \"filter\": {\n    \"blockType\": \"tx\",\n    \"chaincodeId\": \"\",\n    \"eventFilter\": \"\"\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/subscriptions",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"subscriptions"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "{{basicAuthUsername}}",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "{{basicAuthPassword}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "/"
+		},
+		{
+			"key": "basicAuthUsername",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "basicAuthPassword",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
