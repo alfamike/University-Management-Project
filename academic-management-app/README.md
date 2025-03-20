@@ -3,8 +3,7 @@
 ## Overview
 
 `Academic Management App` is a Node.js Express web application design for the management of an education system based on titles, courses, students and activities.
-It uses a Hyperledge Fabric blockchain network as data storage and also for business logic with chaincodes.
-The connection is established through Hyperledge FireFly FabConnect, a connector that uses a Rest API to interact with the blockchain network.
+It uses a Hyperledge Fabric blockchain network as data storage and the connection is established through Hyperledge FireFly FabConnect, a connector that uses a Rest API to interact with the blockchain network.
 
 The application interacts with the Platform-as-a-Service Kaleido, that simplifies the deployment and management of blockchain networks, like Hyperledge Fabric, offering enterprise-grade infrastructure with
 minimal complexity.
