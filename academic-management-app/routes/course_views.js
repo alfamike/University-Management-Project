@@ -3,6 +3,12 @@ const router = express.Router();
 const fabConnectService = require("../kaleido/fabConnectService");
 const paginate = require("pagination");
 
+/**
+ * Render the create course page.
+ * @route GET /courses/create
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.get('/courses/create', async (req, res) => {
     try {
         const queryData = {
@@ -18,17 +24,22 @@ router.get('/courses/create', async (req, res) => {
 
         const response = await fabConnectService.queryChaincode(queryData);
         const titles = response?.result ?? [];
-        res.render('courses/create_course', { page_title: 'Create Course', titles: titles });
+        res.render('courses/create_course', {page_title: 'Create Course', titles: titles});
     } catch (err) {
         console.error('Error fetching titles:', err.message);
         res.status(500).send('Error fetching titles');
     }
 });
 
-// Create a new course
+/**
+ * Create a new course.
+ * @route POST /courses
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.post("/courses", async (req, res) => {
     try {
-        const { title_id, course_name, course_description, course_start_date, course_end_date } = req.body;
+        const {title_id, course_name, course_description, course_start_date, course_end_date} = req.body;
         const transactionData = {
             headers: {
                 type: "SendTransaction",
@@ -49,10 +60,15 @@ router.post("/courses", async (req, res) => {
     }
 });
 
-// Get a specific course
+/**
+ * Get a specific course.
+ * @route GET /courses/:id
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.get("/courses/:id", async (req, res) => {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
         const queryDataCourse = {
             headers: {
                 signer: req.session.user.username,
@@ -90,10 +106,15 @@ router.get("/courses/:id", async (req, res) => {
     }
 });
 
-// Get all courses with optional filters
+/**
+ * Get all courses with optional filters.
+ * @route GET /courses
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.get("/courses", async (req, res) => {
     try {
-        const { page = 1, title, year, onlyFilter } = req.query;
+        const {page = 1, title, year, onlyFilter} = req.query;
         const isAjax = req.headers['x-requested-with'] === 'XMLHttpRequest';
         const isFilter = onlyFilter === 'true';
 
@@ -146,7 +167,7 @@ router.get("/courses", async (req, res) => {
 
         if (isAjax) {
             if (isFilter) {
-                return res.json({ courses: courses });
+                return res.json({courses: courses});
             } else {
                 return res.json({
                     courses: paginatedCourses,
@@ -184,11 +205,16 @@ router.get("/courses", async (req, res) => {
     }
 });
 
-// Update a course
+/**
+ * Update a course.
+ * @route PUT /courses/:id
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.put("/courses/:id", async (req, res) => {
     try {
-        const { course_name, course_description, course_start_date, course_end_date } = req.body;
-        const { id } = req.params;
+        const {course_name, course_description, course_start_date, course_end_date} = req.body;
+        const {id} = req.params;
         const transactionData = {
             headers: {
                 type: "SendTransaction",
@@ -209,10 +235,15 @@ router.put("/courses/:id", async (req, res) => {
     }
 });
 
-// Delete a course and associated data
+/**
+ * Delete a course and associated data.
+ * @route DELETE /courses/:id
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.delete("/courses/:id", async (req, res) => {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
 
         // Delete associated activities
         const queryDataActivities = {
@@ -288,7 +319,7 @@ router.delete("/courses/:id", async (req, res) => {
         };
         await fabConnectService.submitTransaction(transactionDataCourse);
 
-        res.json({ sent: true, message: 'Course and associated data deleted successfully' });
+        res.json({sent: true, message: 'Course and associated data deleted successfully'});
     } catch (err) {
         console.error('Error deleting course and associated data:', err.message);
         res.status(500).send('Error deleting course and associated data');

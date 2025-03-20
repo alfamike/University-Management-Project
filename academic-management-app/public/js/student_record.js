@@ -1,10 +1,23 @@
 // Get CSRF token
+/**
+ * CSRF token value extracted from the DOM element with ID 'csrfToken'.
+ * @type {string}
+ */
 const csrfTokenElement = document.getElementById('csrfToken');
 const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
+
+/**
+ * Student ID value extracted from the DOM element with ID 'studentId'.
+ * @type {string}
+ */
 const studentIdElement = document.getElementById('studentId');
 const studentId = studentIdElement ? studentIdElement.value : '';
 
-// Function to show or hide popups
+/**
+ * Function to show or hide popups.
+ * @param {string} popupId - The ID of the popup element.
+ * @param {boolean} [show=true] - Whether to show or hide the popup.
+ */
 const togglePopup = (popupId, show = true) => {
     const popup = document.getElementById(popupId);
     if (popup) {
@@ -53,6 +66,11 @@ document.getElementById('add-course-btn')?.addEventListener('click', () => {
         })
         .catch(err => console.error('Error fetching titles:', err));
 });
+
+/**
+ * Event listener for the "Manage Grade" button.
+ * Shows the manage grade popup if exactly one course is selected.
+ */
 document.getElementById('manage-grade-btn')?.addEventListener('click', () => {
     if (document.querySelectorAll('.course-checkbox:checked').length !== 1) {
         alert('Please select one course to manage its grade.');
@@ -60,6 +78,11 @@ document.getElementById('manage-grade-btn')?.addEventListener('click', () => {
     }
     togglePopup('manage-grade-popup');
 });
+
+/**
+ * Event listener for the "Manage Activity" button.
+ * Shows the manage grade activity popup if exactly one activity is selected.
+ */
 document.getElementById('manage-activity-btn')?.addEventListener('click', () => {
     if (document.querySelectorAll('.activity-checkbox:checked').length !== 1) {
         alert('Please select one activity to manage its grade.');
@@ -68,9 +91,17 @@ document.getElementById('manage-activity-btn')?.addEventListener('click', () => 
     togglePopup('manage-grade-activity-popup');
 });
 
+/**
+ * Event listener for the "Edit Student" button.
+ * Shows the edit student popup.
+ */
 document.getElementById('edit-student-btn')?.addEventListener('click', () => togglePopup('edit-student-popup'));
 
-document.addEventListener('DOMContentLoaded', function() {
+/**
+ * Event listener for the "DOMContentLoaded" event.
+ * Initializes event listeners for title and course selection.
+ */
+document.addEventListener('DOMContentLoaded', function () {
     const titleSelect = document.getElementById('course-title');
     const courseSelect = document.getElementById('course-name');
 
@@ -80,7 +111,10 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchCoursesByTitle(selectedTitle);
     });
 
-    // Fetch courses for a selected title
+    /**
+     * Fetch courses for a selected title.
+     * @param {string} titleId - The ID of the selected title.
+     */
     function fetchCoursesByTitle(titleId) {
         let year = "";
         fetch(`/courses/?title=${titleId}&year=${year}&onlyFilter=true`, {
@@ -97,7 +131,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(err => console.error('Error fetching courses:', err));
     }
 
-    // Update course dropdown options
+    /**
+     * Update course dropdown options.
+     * @param {Array<Object>} courses - The list of courses to display.
+     */
     function updateCourseDropdown(courses) {
         // Clear the existing options
         courseSelect.innerHTML = '<option value="">Select a course</option>';
@@ -112,7 +149,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-document.getElementById('delete-course-btn').addEventListener('click', async function() {
+/**
+ * Event listener for the "Delete Course" button.
+ * Handles the deletion of selected courses.
+ */
+document.getElementById('delete-course-btn').addEventListener('click', async function () {
     const checkboxes = document.querySelectorAll('.course-checkbox:checked');
     const selectedCourses = Array.from(checkboxes).map(checkbox => checkbox.value);
     const selectedEnrollments = Array.from(checkboxes).map(checkbox => checkbox.getAttribute('data-enrollment-id'));
@@ -127,7 +168,10 @@ document.getElementById('delete-course-btn').addEventListener('click', async fun
                             'Content-Type': 'application/json',
                             'csrf-token': csrfToken,
                         },
-                        body: JSON.stringify({ course_id: courseId, enrollment_id: selectedEnrollments[selectedCourses.indexOf(courseId)] })
+                        body: JSON.stringify({
+                            course_id: courseId,
+                            enrollment_id: selectedEnrollments[selectedCourses.indexOf(courseId)]
+                        })
                     });
 
                     const data = await response.json();
@@ -147,7 +191,12 @@ document.getElementById('delete-course-btn').addEventListener('click', async fun
     }
 });
 
-document.getElementById('add-course-form').addEventListener('submit', function(event) {
+/**
+ * Event listener for the "Add Course" form submission.
+ * Handles the enrollment of a student in a course.
+ * @param {Event} event - The event object.
+ */
+document.getElementById('add-course-form').addEventListener('submit', function (event) {
     event.preventDefault();
     const course = document.getElementById('course-name').value;
 
@@ -157,7 +206,7 @@ document.getElementById('add-course-form').addEventListener('submit', function(e
             'Content-Type': 'application/json',
             'csrf-token': csrfToken,
         },
-        body: JSON.stringify({ course_id: course })
+        body: JSON.stringify({course_id: course})
     })
         .then(response => {
             if (!response.ok) throw new Error('Failed to enroll student');
@@ -174,7 +223,12 @@ document.getElementById('add-course-form').addEventListener('submit', function(e
         .catch(error => console.error('Error:', error));
 });
 
-document.getElementById('manage-grade-form').addEventListener('submit', function(event) {
+/**
+ * Event listener for the "Manage Grade" form submission.
+ * Handles the management of a student's grade for a course.
+ * @param {Event} event - The event object.
+ */
+document.getElementById('manage-grade-form').addEventListener('submit', function (event) {
     event.preventDefault();
     const selectedCheckboxes = document.querySelectorAll('.course-checkbox:checked');
     const grade = document.getElementById('grade-input').value;
@@ -204,8 +258,11 @@ document.getElementById('manage-grade-form').addEventListener('submit', function
         .catch(error => console.error('Error:', error));
 });
 
-// Event listener for "Show Activities" button
-document.getElementById('show-activities-course-btn').addEventListener('click', function() {
+/**
+ * Event listener for the "Show Activities" button.
+ * Fetches and displays activities for a selected course.
+ */
+document.getElementById('show-activities-course-btn').addEventListener('click', function () {
     const selectedCheckboxes = document.querySelectorAll('.course-checkbox:checked');
     const activitiesTableBody = document.getElementById('activities-table-body');
     const activitiesSection = document.getElementById('activities-section');
@@ -252,7 +309,12 @@ document.getElementById('show-activities-course-btn').addEventListener('click', 
     }
 });
 
-document.getElementById('manage-grade-activity-form').addEventListener('submit', function(event) {
+/**
+ * Event listener for the "Manage Grade Activity" form submission.
+ * Handles the management of a student's grade for an activity.
+ * @param {Event} event - The event object.
+ */
+document.getElementById('manage-grade-activity-form').addEventListener('submit', function (event) {
     event.preventDefault();
     const selectedCheckboxes = document.querySelectorAll('.activity-checkbox:checked');
     const grade = document.getElementById('activity-grade-input').value;
@@ -280,12 +342,17 @@ document.getElementById('manage-grade-activity-form').addEventListener('submit',
                 }
             })
             .catch(error => console.error('Error:', error));
-    } else{
+    } else {
         alert('Please select exactly one activity to manage its grade.');
     }
 });
 
-document.getElementById('edit-student-form').addEventListener('submit', function(event) {
+/**
+ * Event listener for the "Edit Student" form submission.
+ * Handles the editing of a student's information.
+ * @param {Event} event - The event object.
+ */
+document.getElementById('edit-student-form').addEventListener('submit', function (event) {
     event.preventDefault();
     const firstName = document.getElementById('edit-first-name').value;
     const lastName = document.getElementById('edit-last-name').value;
@@ -308,18 +375,22 @@ document.getElementById('edit-student-form').addEventListener('submit', function
             if (!response.ok) throw new Error('Failed to update student');
             return response.json();
         })
-    .then(data => {
-        if (data.sent === true) {
-            togglePopup('edit-student-popup', false);
-            window.location.href = `/students/${studentId}`;
-        } else {
-            alert('Failed to edit student information.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
+        .then(data => {
+            if (data.sent === true) {
+                togglePopup('edit-student-popup', false);
+                window.location.href = `/students/${studentId}`;
+            } else {
+                alert('Failed to edit student information.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
 });
 
-document.getElementById('delete-student-btn').addEventListener('click', function() {
+/**
+ * Event listener for the "Delete Student" button.
+ * Handles the deletion of a student.
+ */
+document.getElementById('delete-student-btn').addEventListener('click', function () {
     if (confirm('Are you sure you want to delete this student?')) {
         fetch(`/students/${studentId}`, {
             method: 'DELETE',
@@ -329,18 +400,18 @@ document.getElementById('delete-student-btn').addEventListener('click', function
                 'X-Requested-With': 'XMLHttpRequest',
             },
         })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to delete student');
-            return response.json();
-        })
-        .then(data => {
-            if (data.sent === true) {
-                alert(data.message);
-                window.location.href = '/students';
-            } else {
-                alert('Error deleting student');
-            }
-        })
-        .catch(error => console.error('Error:', error));
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to delete student');
+                return response.json();
+            })
+            .then(data => {
+                if (data.sent === true) {
+                    alert(data.message);
+                    window.location.href = '/students';
+                } else {
+                    alert('Error deleting student');
+                }
+            })
+            .catch(error => console.error('Error:', error));
     }
 });

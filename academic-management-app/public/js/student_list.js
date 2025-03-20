@@ -1,5 +1,14 @@
 document.addEventListener('DOMContentLoaded', function () {
+    /**
+     * The form element used for filtering students.
+     * @type {HTMLFormElement}
+     */
     const filterForm = document.getElementById('filter-form');
+
+    /**
+     * CSRF token value extracted from the DOM element with ID 'csrfToken'.
+     * @type {string}
+     */
     const csrfToken = document.getElementById('csrfToken').value;
 
     // Filter form submit
@@ -17,7 +26,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    /**
+     * The select element for titles.
+     * @type {HTMLSelectElement}
+     */
     const titleSelect = document.getElementById('title');
+
+    /**
+     * The select element for courses.
+     * @type {HTMLSelectElement}
+     */
     const courseSelect = document.getElementById('course');
 
     // Fetch courses when the page loads
@@ -32,7 +50,10 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchCoursesByTitle(selectedTitle);
     });
 
-    // Fetch courses for a selected title
+    /**
+     * Fetch courses for a selected title.
+     * @param {string} titleId - The ID of the selected title.
+     */
     function fetchCoursesByTitle(titleId) {
         let year = "";
         fetch(`/courses/?title=${titleId}&year=${year}&onlyFilter=true`, {
@@ -49,7 +70,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => console.error('Error fetching courses:', err));
     }
 
-    // Update course dropdown options
+    /**
+     * Update course dropdown options.
+     * @param {Array<Object>} courses - The list of courses to display.
+     */
     function updateCourseDropdown(courses) {
         // Clear the existing options
         courseSelect.innerHTML = '<option value="">Select a course</option>';
@@ -63,7 +87,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Main fetch function
+    /**
+     * Fetch students based on the current filter and page.
+     * @param {number} [page=1] - The page number to fetch.
+     */
     function fetchStudents(page = 1) {
         const courseFilter = document.getElementById('course').value;
 
@@ -82,7 +109,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => console.error('Error fetching students:', err));
     }
 
-    // Update student table
+    /**
+     * Update the student list in the DOM.
+     * @param {Array<Object>} students - The list of students to display.
+     */
     function updateStudentList(students) {
         const studentList = document.getElementById('student-list');
         studentList.innerHTML = students.length
@@ -95,7 +125,16 @@ document.addEventListener('DOMContentLoaded', function () {
             : `<tr><td colspan="4">No students found.</td></tr>`;
     }
 
-    // Update pagination buttons
+    /**
+     * Update the pagination buttons in the DOM.
+     * @param {Object} pagination - The pagination data.
+     * @param {boolean} pagination.has_previous - Indicates if there is a previous page.
+     * @param {number} pagination.previous_page - The previous page number.
+     * @param {number} pagination.current_page - The current page number.
+     * @param {number} pagination.total_pages - The total number of pages.
+     * @param {boolean} pagination.has_next - Indicates if there is a next page.
+     * @param {number} pagination.next_page - The next page number.
+     */
     function updatePagination(pagination) {
         const paginationContainer = document.querySelector('.pagination');
         paginationContainer.innerHTML = `

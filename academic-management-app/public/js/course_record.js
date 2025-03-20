@@ -1,8 +1,21 @@
 // Get CSRF token and course ID
+/**
+ * CSRF token value extracted from the DOM element with ID 'csrfToken'.
+ * @type {string}
+ */
 const csrfToken = document.getElementById('csrfToken')?.value;
+
+/**
+ * Course ID value extracted from the DOM element with ID 'courseId'.
+ * @type {string}
+ */
 const courseId = document.getElementById('courseId')?.value;
 
-// Function to show or hide popups
+/**
+ * Function to show or hide popups.
+ * @param {string} popupId - The ID of the popup element.
+ * @param {boolean} [show=true] - Whether to show or hide the popup.
+ */
 const togglePopup = (popupId, show = true) => {
     const popup = document.getElementById(popupId);
     if (popup) {
@@ -30,6 +43,11 @@ window.addEventListener('click', event => {
     });
 });
 
+/**
+ * Event listener for the "Add Activity" form submission.
+ * Handles the addition of a new activity.
+ * @param {Event} event - The event object.
+ */
 document.getElementById('add-activity-form')?.addEventListener('submit', event => {
     event.preventDefault();
     const activity_name = document.getElementById('activity-name')?.value;
@@ -42,7 +60,7 @@ document.getElementById('add-activity-form')?.addEventListener('submit', event =
             'Content-Type': 'application/json',
             'csrf-token': csrfToken,
         },
-        body: JSON.stringify({ course_id: courseId, activity_name, activity_description, activity_due_date })
+        body: JSON.stringify({course_id: courseId, activity_name, activity_description, activity_due_date})
     })
         .then(response => response.json())
         .then(data => {
@@ -56,6 +74,11 @@ document.getElementById('add-activity-form')?.addEventListener('submit', event =
         .catch(error => console.error('Error:', error));
 });
 
+/**
+ * Event listener for the "Modify Activity" form submission.
+ * Handles the modification of an existing activity.
+ * @param {Event} event - The event object.
+ */
 document.getElementById('modify-activity-form')?.addEventListener('submit', event => {
     event.preventDefault();
     const activityId = document.getElementById('modify-activity-id')?.value;
@@ -69,7 +92,7 @@ document.getElementById('modify-activity-form')?.addEventListener('submit', even
             'Content-Type': 'application/json',
             'csrf-token': csrfToken,
         },
-        body: JSON.stringify({ courseId, activityName, activityDescription, activityDueDate })
+        body: JSON.stringify({courseId, activityName, activityDescription, activityDueDate})
     })
         .then(response => response.json())
         .then(data => {
@@ -83,7 +106,11 @@ document.getElementById('modify-activity-form')?.addEventListener('submit', even
         .catch(error => console.error('Error:', error));
 });
 
-document.getElementById('delete-activity-btn').addEventListener('click', function() {
+/**
+ * Event listener for the "Delete Activity" button.
+ * Handles the deletion of selected activities.
+ */
+document.getElementById('delete-activity-btn').addEventListener('click', function () {
     const checkboxes = document.querySelectorAll('.activity-checkbox:checked');
     const selectedActivities = Array.from(checkboxes).map(checkbox => checkbox.value);
 
@@ -97,15 +124,15 @@ document.getElementById('delete-activity-btn').addEventListener('click', functio
                         'csrf-token': csrfToken,
                     }
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.sent === true) {
-                        console.log('Activity removed successfully with ID:', activityId);
-                    } else {
-                        alert(`Error deleting activity`);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.sent === true) {
+                            console.log('Activity removed successfully with ID:', activityId);
+                        } else {
+                            alert(`Error deleting activity`);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
             })).then(() => {
                 window.location.href = `/courses/${courseId}`;
             });
@@ -115,7 +142,11 @@ document.getElementById('delete-activity-btn').addEventListener('click', functio
     }
 });
 
-document.getElementById('modify-activity-btn').addEventListener('click', function() {
+/**
+ * Event listener for the "Modify Activity" button.
+ * Prepares the form for modifying an activity.
+ */
+document.getElementById('modify-activity-btn').addEventListener('click', function () {
     const checkboxes = document.querySelectorAll('.activity-checkbox:checked');
     if (checkboxes.length !== 1) {
         alert('Please select exactly one activity to modify.');
@@ -136,7 +167,12 @@ document.getElementById('modify-activity-btn').addEventListener('click', functio
     document.getElementById('modify-activity-popup').style.display = 'block';
 });
 
-document.getElementById('edit-course-form').addEventListener('submit', function(event) {
+/**
+ * Event listener for the "Edit Course" form submission.
+ * Handles the editing of course details.
+ * @param {Event} event - The event object.
+ */
+document.getElementById('edit-course-form').addEventListener('submit', function (event) {
     event.preventDefault();
     const courseName = document.getElementById('edit-course-name').value;
     const courseDescription = document.getElementById('edit-course-description').value;
@@ -164,14 +200,18 @@ document.getElementById('edit-course-form').addEventListener('submit', function(
             if (data.sent === true) {
                 togglePopup('edit-course-popup', false);
                 window.location.href = `/courses/${courseId}`;
-            } else{
+            } else {
                 alert(data.message || 'Error updating course.');
             }
         })
         .catch(error => console.error('Error:', error));
 });
 
-document.getElementById('delete-course-btn').addEventListener('click', function() {
+/**
+ * Event listener for the "Delete Course" button.
+ * Handles the deletion of the course.
+ */
+document.getElementById('delete-course-btn').addEventListener('click', function () {
     if (confirm('Are you sure you want to delete this course?')) {
         fetch(`/courses/${courseId}`, {
             method: 'DELETE',
@@ -196,7 +236,11 @@ document.getElementById('delete-course-btn').addEventListener('click', function(
     }
 });
 
-document.getElementById('assign-activity-btn').addEventListener('click', function() {
+/**
+ * Event listener for the "Assign Activity" button.
+ * Handles the assignment of selected activities to enrolled students.
+ */
+document.getElementById('assign-activity-btn').addEventListener('click', function () {
     const checkboxes = document.querySelectorAll('.activity-checkbox:checked');
     const selectedActivities = Array.from(checkboxes).map(checkbox => checkbox.value);
 

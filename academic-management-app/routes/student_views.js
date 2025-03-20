@@ -1,18 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const axios = require("axios");
 const fabConnectService = require("../kaleido/fabConnectService");
 const paginate = require("pagination");
 
+/**
+ * Render the create student page.
+ * @route GET /students/create
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.get('/students/create', (req, res) => {
-    res.render('students/create_student', { page_title: 'Create Student' });
+    res.render('students/create_student', {page_title: 'Create Student'});
 });
 
-// Create a student
+/**
+ * Create a new student.
+ * @route POST /students
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.post("/students", async (req, res) => {
     let transactionData;
     try {
-        const { student_first_name, student_last_name, student_email } = req.body;
+        const {student_first_name, student_last_name, student_email} = req.body;
         transactionData = {
             "headers": {
                 "type": "SendTransaction",
@@ -33,7 +43,12 @@ router.post("/students", async (req, res) => {
     }
 });
 
-// Get a specific student
+/**
+ * Get a specific student.
+ * @route GET /students/:id
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.get("/students/:id", async (req, res) => {
     let queryDataStudent;
     try {
@@ -80,7 +95,7 @@ router.get("/students/:id", async (req, res) => {
             };
             const responseCourse = await fabConnectService.queryChaincode(queryDataCourse);
 
-            return { ...responseCourse.result, grade: enrollment.grade, enrollment: enrollment.id };
+            return {...responseCourse.result, grade: enrollment.grade, enrollment: enrollment.id};
         }));
 
         res.render('students/student_record', {
@@ -94,15 +109,20 @@ router.get("/students/:id", async (req, res) => {
     }
 });
 
-// Get all students with optional filters
+/**
+ * Get all students with optional filters.
+ * @route GET /students
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.get("/students", async (req, res) => {
     try {
-        const { page = 1, course } = req.query;
+        const {page = 1, course} = req.query;
         const isAjax = req.headers['x-requested-with'] === 'XMLHttpRequest';
         let responseStudents;
         let students = [];
 
-        if (course){
+        if (course) {
             const queryEnrollments = {
                 headers: {
                     signer: req.session.user?.username,
@@ -131,7 +151,7 @@ router.get("/students", async (req, res) => {
                 students.push(responseStudent?.result);
             }
 
-        } else{
+        } else {
             const queryDataStudents = {
                 headers: {
                     signer: req.session.user?.username,
@@ -208,12 +228,17 @@ router.get("/students", async (req, res) => {
     }
 });
 
-// Update student details
+/**
+ * Update student details.
+ * @route PUT /students/:id
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.put("/students/:id", async (req, res) => {
     let transactionData;
     try {
-        const { first_name, last_name, email } = req.body;
-        const { id } = req.params;
+        const {first_name, last_name, email} = req.body;
+        const {id} = req.params;
         transactionData = {
             "headers": {
                 "type": "SendTransaction",
@@ -236,10 +261,15 @@ router.put("/students/:id", async (req, res) => {
     }
 });
 
-// Delete a student and associated data
+/**
+ * Delete a student and associated data.
+ * @route DELETE /students/:id
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.delete("/students/:id", async (req, res) => {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
 
         // Delete associated enrollments
         const queryDataEnrollments = {
@@ -318,18 +348,23 @@ router.delete("/students/:id", async (req, res) => {
         };
         await fabConnectService.submitTransaction(transactionDataStudent);
 
-        res.json({ sent: true, message: 'Student and associated data deleted successfully' });
+        res.json({sent: true, message: 'Student and associated data deleted successfully'});
     } catch (err) {
         console.error('Error deleting student and associated data:', err.message);
         res.status(500).send('Error deleting student and associated data');
     }
 });
 
-// Enroll student in course
+/**
+ * Enroll student in course.
+ * @route POST /students/:id/enroll
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.post("/students/:id/enroll", async (req, res) => {
     try {
-        const { id } = req.params;
-        const { course_id } = req.body;
+        const {id} = req.params;
+        const {course_id} = req.body;
 
         const transactionData = {
             headers: {
@@ -370,18 +405,23 @@ router.post("/students/:id/enroll", async (req, res) => {
             };
             await fabConnectService.submitTransaction(transactionDataGrade);
         }
-        res.json({ sent: true, message: 'Student enrolled successfully' });
+        res.json({sent: true, message: 'Student enrolled successfully'});
     } catch (err) {
         console.error('Error enrolling student:', err.message);
         res.status(500).send('Error enrolling student');
     }
 });
 
-// De-enroll student from course
+/**
+ * De-enroll student from course.
+ * @route POST /students/:id/deenroll
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.post("/students/:id/deenroll", async (req, res) => {
     try {
-        const { id } = req.params;
-        const { course_id, enrollment_id } = req.body;
+        const {id} = req.params;
+        const {course_id, enrollment_id} = req.body;
 
         const transactionData = {
             headers: {
@@ -422,18 +462,23 @@ router.post("/students/:id/deenroll", async (req, res) => {
             };
             await fabConnectService.submitTransaction(transactionDataGrade);
         }
-        res.json({ sent: true, message: 'Student de-enrolled successfully' });
+        res.json({sent: true, message: 'Student de-enrolled successfully'});
     } catch (err) {
         console.error('Error de-enrolling student:', err.message);
         res.status(500).send('Error de-enrolling student');
     }
 });
 
-// Update student grade
+/**
+ * Update student grade.
+ * @route PUT /students/:id/grade
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.put('/students/:id/grade', async (req, res) => {
     try {
-        const { id } = req.params;
-        const { course_id, grade } = req.body;
+        const {id} = req.params;
+        const {course_id, grade} = req.body;
 
         const queryDataEnrollment = {
             headers: {

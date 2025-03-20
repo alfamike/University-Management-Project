@@ -1,5 +1,14 @@
 document.addEventListener('DOMContentLoaded', function () {
+    /**
+     * The form element used for filtering courses.
+     * @type {HTMLFormElement}
+     */
     const filterForm = document.getElementById('filter-form');
+
+    /**
+     * CSRF token value extracted from the DOM element with ID 'csrfToken'.
+     * @type {string}
+     */
     const csrfToken = document.getElementById('csrfToken').value;
 
     // Filter form submit
@@ -17,7 +26,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Main fetch function
+    /**
+     * Fetches courses based on the current filter and page.
+     * @param {number} [page=1] - The page number to fetch.
+     */
     function fetchCourses(page = 1) {
         const titleFilter = document.getElementById('title').value;
         const yearFilter = document.getElementById('year').value;
@@ -37,7 +49,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => console.error('Error fetching courses:', err));
     }
 
-    // Update course table
+    /**
+     * Updates the course list in the DOM.
+     * @param {Array<Object>} courses - The list of courses to display.
+     */
     function updateCourseList(courses) {
         const courseList = document.getElementById('course-list');
         courseList.innerHTML = courses.length
@@ -52,7 +67,16 @@ document.addEventListener('DOMContentLoaded', function () {
             : `<tr><td colspan="4">No courses found.</td></tr>`;
     }
 
-    // Update pagination buttons
+    /**
+     * Updates the pagination buttons in the DOM.
+     * @param {Object} pagination - The pagination data.
+     * @param {boolean} pagination.has_previous - Indicates if there is a previous page.
+     * @param {number} pagination.previous_page - The previous page number.
+     * @param {number} pagination.current_page - The current page number.
+     * @param {number} pagination.total_pages - The total number of pages.
+     * @param {boolean} pagination.has_next - Indicates if there is a next page.
+     * @param {number} pagination.next_page - The next page number.
+     */
     function updatePagination(pagination) {
         const paginationContainer = document.querySelector('.pagination');
         paginationContainer.innerHTML = `

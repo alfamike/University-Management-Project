@@ -2,7 +2,11 @@
 const csrfToken = document.getElementById('csrfToken')?.value;
 const titleId = document.getElementById('titleId')?.value
 
-// Function to show or hide popups
+/**
+ * Function to show or hide popups.
+ * @param {string} popupId - The ID of the popup element.
+ * @param {boolean} [show=true] - Whether to show or hide the popup.
+ */
 const togglePopup = (popupId, show = true) => {
     const popup = document.getElementById(popupId);
     if (popup) {
@@ -10,6 +14,7 @@ const togglePopup = (popupId, show = true) => {
     }
 };
 
+// Add event listener to the edit title button to show the edit popup
 document.getElementById('edit-title-btn')?.addEventListener('click', () => togglePopup('edit-title-popup'));
 
 // Close popups via close buttons
@@ -54,7 +59,7 @@ document.getElementById('edit-title-form')?.addEventListener('submit', (event) =
             if (data.sent === true) {
                 togglePopup('edit-title-popup', false);
                 window.location.href = `/titles/${titleId}`;
-            } else{
+            } else {
                 alert(data.message || 'Error updating title.');
             }
         })

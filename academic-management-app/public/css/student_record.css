@@ -101,6 +101,7 @@
 .related-courses .table {
     display: table;
 }
+
 .related-courses .cards {
     display: none;
 }
@@ -115,6 +116,7 @@
         flex-wrap: wrap;
         gap: 16px;
     }
+
     .related-courses .card {
         border: 1px solid #ccc;
         padding: 16px;

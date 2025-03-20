@@ -1,8 +1,21 @@
 // Get DOM elements
+/**
+ * The input element where the user types their message.
+ * @type {HTMLInputElement}
+ */
 const userInput = document.getElementById('user-input');
+
+/**
+ * The container element where chat messages are displayed.
+ * @type {HTMLElement}
+ */
 const chatContainer = document.getElementById('chat-container');
 
-// Function to send the user message to the server
+/**
+ * Sends the user message to the server.
+ * Appends the user message to the chat container, clears the input box,
+ * and sends the message to the server using AJAX (fetch API).
+ */
 function sendMessage() {
     const message = userInput.value;
     if (!message) return; // Don't send empty messages
@@ -23,29 +36,34 @@ function sendMessage() {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrfToken,
         },
-        body: JSON.stringify({ message: message }),
+        body: JSON.stringify({message: message}),
     })
-    .then(response => response.json())
-    .then(data => {
-        // Append server response to chat container
-        chatContainer.innerHTML += `<div class="bot-message">${data.response}</div>`;
-        scrollToBottom();
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        chatContainer.innerHTML += `<div class="bot-message">Sorry, there was an issue processing your message. Please try again later.</div>`;
-        scrollToBottom();
-    });
+        .then(response => response.json())
+        .then(data => {
+            // Append server response to chat container
+            chatContainer.innerHTML += `<div class="bot-message">${data.response}</div>`;
+            scrollToBottom();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            chatContainer.innerHTML += `<div class="bot-message">Sorry, there was an issue processing your message. Please try again later.</div>`;
+            scrollToBottom();
+        });
 }
 
-// Handle Enter key press to send message
+/**
+ * Handles the Enter key press to send the message.
+ * @param {KeyboardEvent} event - The keyboard event object.
+ */
 function handleKeyPress(event) {
     if (event.key === 'Enter') {
         sendMessage();
     }
 }
 
-// Scroll to the bottom of the chat container
+/**
+ * Scrolls to the bottom of the chat container.
+ */
 function scrollToBottom() {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }

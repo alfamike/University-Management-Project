@@ -1,86 +1,86 @@
-require('dotenv').config();
+require('dotenv').config(); // Load environment variables from .env file
 
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const cors = require('cors');
-const {join} = require("path");
-const session = require("express-session");
-const nunjucks = require('nunjucks');
-const csurf = require('csurf');
-const app = express();
+const createError = require('http-errors'); // Module to create HTTP errors
+const express = require('express'); // Express framework
+const path = require('path'); // Path module for handling file paths
+const cookieParser = require('cookie-parser'); // Middleware to parse cookies
+const logger = require('morgan'); // HTTP request logger middleware
+const cors = require('cors'); // Middleware to enable CORS
+const {join} = require("path"); // Destructure join method from path module
+const session = require("express-session"); // Middleware to handle sessions
+const nunjucks = require('nunjucks'); // Templating engine
+const csurf = require('csurf'); // Middleware to handle CSRF protection
+const app = express(); // Create an Express application
 
-// Router
-const loginRouter = require('./routes/login_views');
-const indexRouter = require('./routes/index');
-const generalViewsRouter = require('./routes/general_views');
-const titleViewsRouter = require('./routes/title_views');
-const courseViewsRouter = require('./routes/course_views');
-const studentViewsRouter = require('./routes/student_views');
-const activityViewsRouter = require('./routes/activity_views');
+// Routers
+const loginRouter = require('./routes/login_views'); // Router for login views
+const indexRouter = require('./routes/index'); // Router for index views
+const generalViewsRouter = require('./routes/general_views'); // Router for general views
+const titleViewsRouter = require('./routes/title_views'); // Router for title views
+const courseViewsRouter = require('./routes/course_views'); // Router for course views
+const studentViewsRouter = require('./routes/student_views'); // Router for student views
+const activityViewsRouter = require('./routes/activity_views'); // Router for activity views
 
-// view engine setup
+// Configure view engine
 nunjucks.configure('views', {
-  autoescape: true,
-  express: app
+    autoescape: true, // Enable auto-escaping
+    express: app // Bind Nunjucks to the Express app
 });
-app.set('view engine', 'njk');
+app.set('view engine', 'njk'); // Set Nunjucks as the view engine
 
-// CORS
-app.use(cors());
-// Logger
-app.use(logger('dev'));
+// Middleware setup
+app.use(cors()); // Enable CORS
+app.use(logger('dev')); // Use morgan logger in development mode
 
 // Parsers
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({extended: true})); // Parse URL-encoded bodies
+app.use(cookieParser()); // Parse cookies
 
-// Static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static files from the 'public' directory
 
 // CSRF middleware
-app.use(csurf({ cookie: true }));
+app.use(csurf({cookie: true})); // Enable CSRF protection using cookies
 
 // Session middleware
 app.use(session({
-  secret: process.env.SECRET,
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: process.env.NODE_ENV === 'production', maxAge: null }
+    secret: process.env.SECRET, // Secret key for session
+    resave: false, // Do not resave session if unmodified
+    saveUninitialized: true, // Save uninitialized sessions
+    cookie: {secure: process.env.NODE_ENV === 'production', maxAge: null} // Set secure cookie in production
 }));
 
 // Pass CSRF token to views
 app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
-  next();
+    res.locals.csrfToken = req.csrfToken(); // Add CSRF token to response locals
+    next(); // Proceed to the next middleware
 });
 
-app.use('/', indexRouter);
-app.use('/', loginRouter);
-app.use('/', generalViewsRouter);
-app.use('/', titleViewsRouter);
-app.use('/', courseViewsRouter);
-app.use('/', studentViewsRouter);
-app.use('/', activityViewsRouter);
+// Use routers
+app.use('/', indexRouter); // Use index router
+app.use('/', loginRouter); // Use login router
+app.use('/', generalViewsRouter); // Use general views router
+app.use('/', titleViewsRouter); // Use title views router
+app.use('/', courseViewsRouter); // Use course views router
+app.use('/', studentViewsRouter); // Use student views router
+app.use('/', activityViewsRouter); // Use activity views router
 
 // Handle 404 errors
 const handle404Error = (req, res, next) => {
-  next(createError(404));
+    next(createError(404)); // Forward 404 error to error handler
 };
 
 // General error handler
 const handleErrors = (err, req, res, next) => {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500);
-  res.render('error');
+    res.locals.message = err.message; // Set error message
+    res.locals.error = req.app.get('env') === 'development' ? err : {}; // Show error details in development
+    res.status(err.status || 500); // Set response status
+    res.render('error'); // Render error view
 };
 
 // Attach middleware
-app.use(handle404Error);
-app.use(handleErrors);
+app.use(handle404Error); // Use 404 error handler
+app.use(handleErrors); // Use general error handler
 
-module.exports = app;
+module.exports = app; // Export the Express app

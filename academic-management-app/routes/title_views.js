@@ -3,14 +3,25 @@ const router = express.Router();
 const fabConnectService = require('../kaleido/fabConnectService');
 const paginate = require('pagination');
 
+/**
+ * Render the create title page.
+ * @route GET /titles/create
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.get('/titles/create', (req, res) => {
-    res.render('titles/create_title', { page_title: 'Create Title' });
+    res.render('titles/create_title', {page_title: 'Create Title'});
 });
 
-// Create a new title
+/**
+ * Create a new title.
+ * @route POST /titles
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.post("/titles", async (req, res) => {
     try {
-        const { title_name, title_description } = req.body;
+        const {title_name, title_description} = req.body;
         const transactionData = {
             headers: {
                 type: "SendTransaction",
@@ -30,10 +41,15 @@ router.post("/titles", async (req, res) => {
     }
 });
 
-// Get a single title
+/**
+ * Get a single title.
+ * @route GET /titles/:id
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.get("/titles/:id", async (req, res) => {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
         const queryDataTitle = {
             headers: {
                 signer: req.session.user.username,
@@ -69,11 +85,16 @@ router.get("/titles/:id", async (req, res) => {
     }
 });
 
-// Update a title
+/**
+ * Update a title.
+ * @route PUT /titles/:id
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.put("/titles/:id", async (req, res) => {
     try {
-        const { title_name, title_description } = req.body;
-        const { id } = req.params;
+        const {title_name, title_description} = req.body;
+        const {id} = req.params;
         const transactionData = {
             headers: {
                 type: "SendTransaction",
@@ -93,10 +114,15 @@ router.put("/titles/:id", async (req, res) => {
     }
 });
 
-// Delete a title and associated data
+/**
+ * Delete a title and associated data.
+ * @route DELETE /titles/:id
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.delete("/titles/:id", async (req, res) => {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
 
         // Delete associated courses
         const queryDataCourses = {
@@ -204,17 +230,22 @@ router.delete("/titles/:id", async (req, res) => {
         };
         await fabConnectService.submitTransaction(transactionDataTitle);
 
-        res.json({ sent: true, message: 'Title and associated data deleted successfully' });
+        res.json({sent: true, message: 'Title and associated data deleted successfully'});
     } catch (err) {
         console.error('Error deleting title and associated data:', err.message);
         res.status(500).send('Error deleting title and associated data');
     }
 });
 
-// Get all titles
+/**
+ * Get all titles with pagination.
+ * @route GET /titles
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.get("/titles", async (req, res) => {
     try {
-        const { onlyFilter, page = 1 } = req.query;
+        const {onlyFilter, page = 1} = req.query;
         const isFilter = onlyFilter === 'true';
 
         const queryData = {
@@ -252,7 +283,7 @@ router.get("/titles", async (req, res) => {
 
         if (isAjax) {
             if (isFilter) {
-                return res.json({ titles: titles });
+                return res.json({titles: titles});
             } else {
                 return res.json({
                     titles: paginatedTitles,

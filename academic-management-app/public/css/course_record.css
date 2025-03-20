@@ -98,6 +98,7 @@
 .related-activities .table {
     display: table;
 }
+
 .related-activities .cards {
     display: none;
 }
@@ -112,6 +113,7 @@
         flex-wrap: wrap;
         gap: 16px;
     }
+
     .related-activities .card {
         border: 1px solid #ccc;
         padding: 16px;

@@ -2,10 +2,15 @@ const express = require("express");
 const router = express.Router();
 const fabConnectService = require("../kaleido/fabConnectService");
 
-// Create an activity
+/**
+ * Create an activity.
+ * @route POST /activities
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.post("/activities", async (req, res) => {
     try {
-        const { course_id, activity_name, activity_description, activity_due_date } = req.body;
+        const {course_id, activity_name, activity_description, activity_due_date} = req.body;
         const transactionData = {
             headers: {
                 type: "SendTransaction",
@@ -20,18 +25,23 @@ router.post("/activities", async (req, res) => {
 
         const response = await fabConnectService.submitTransaction(transactionData);
 
-        res.json({ sent: true, message: 'Activity created successfully' });
+        res.json({sent: true, message: 'Activity created successfully'});
     } catch (err) {
         console.error('Error creating activity:', err.message);
         res.status(500).send('Error creating activity');
     }
 });
 
-// Assign an activity
+/**
+ * Assign an activity.
+ * @route POST /activities/:id/assign
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.post("/activities/:id/assign", async (req, res) => {
     try {
-        const { id } = req.params;
-        const { course_id } = req.body;
+        const {id} = req.params;
+        const {course_id} = req.body;
 
         const transactionDataStudentsByCourse = {
             headers: {
@@ -63,17 +73,22 @@ router.post("/activities/:id/assign", async (req, res) => {
             const activityGradeResponse = await fabConnectService.submitTransaction(transactionDataGrade);
         }
 
-        res.json({ sent: true, message: 'Activity assigned successfully' });
+        res.json({sent: true, message: 'Activity assigned successfully'});
     } catch (err) {
         console.error('Error creating activity:', err.message);
         res.status(500).send('Error creating activity');
     }
 });
 
-// Remove activity and associated data
+/**
+ * Remove activity and associated data.
+ * @route DELETE /activities/:id
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.delete("/activities/:id", async (req, res) => {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
 
         // Delete associated activity grades
         const transactionDataGrades = {
@@ -103,18 +118,23 @@ router.delete("/activities/:id", async (req, res) => {
         };
         await fabConnectService.submitTransaction(transactionDataActivity);
 
-        res.json({ sent: true, message: 'Activity and associated data deleted successfully' });
+        res.json({sent: true, message: 'Activity and associated data deleted successfully'});
     } catch (err) {
         console.error('Error deleting activity and associated data:', err.message);
         res.status(500).send('Error deleting activity and associated data');
     }
 });
 
-// Modify an activity
+/**
+ * Modify an activity.
+ * @route PUT /activities/:id
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.put("/activities/:id", async (req, res) => {
     try {
-        const { courseId, activityName, activityDescription, activityDueDate } = req.body;
-        const { id } = req.params;
+        const {courseId, activityName, activityDescription, activityDueDate} = req.body;
+        const {id} = req.params;
         const transactionData = {
             headers: {
                 type: "SendTransaction",
@@ -135,10 +155,15 @@ router.put("/activities/:id", async (req, res) => {
     }
 });
 
-// Get activities by course and student
+/**
+ * Get activities by course and student.
+ * @route GET /activities/byCourseStudent
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.get("/activities/byCourseStudent", async (req, res) => {
     try {
-        const { courseId, studentId } = req.query;
+        const {courseId, studentId} = req.query;
         const transactionActivityData = {
             headers: {
                 signer: req.session.user.username,
@@ -167,13 +192,13 @@ router.get("/activities/byCourseStudent", async (req, res) => {
             };
 
             const responseActivityGrade = await fabConnectService.queryChaincode(transactionActivityGradeData);
-            return { ...activity, grade: responseActivityGrade?.result[0]?.grade };
+            return {...activity, grade: responseActivityGrade?.result[0]?.grade};
         }));
 
         if (activities.length > 0) {
-            res.json({ sent: true, activities });
+            res.json({sent: true, activities});
         } else {
-            res.json({ sent: false, message: "No activities found" });
+            res.json({sent: false, message: "No activities found"});
         }
     } catch (err) {
         console.error('Error getting activities by course:', err.message);
@@ -181,11 +206,16 @@ router.get("/activities/byCourseStudent", async (req, res) => {
     }
 });
 
-// Update activity grade
+/**
+ * Update activity grade.
+ * @route PUT /activities/:id/grade
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 router.put('/activities/:id/grade', async (req, res) => {
     try {
-        const { id } = req.params;
-        const { student_id, grade } = req.body;
+        const {id} = req.params;
+        const {student_id, grade} = req.body;
 
         const transactionGetData = {
             headers: {
