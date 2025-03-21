@@ -6,8 +6,7 @@ const path = require('path'); // Path module for handling file paths
 const cookieParser = require('cookie-parser'); // Middleware to parse cookies
 const logger = require('morgan'); // HTTP request logger middleware
 const cors = require('cors'); // Middleware to enable CORS
-const {join} = require("path"); // Destructure join method from path module
-const session = require("express-session"); // Middleware to handle sessions
+const cookieSession = require("cookie-session"); // Middleware to handle sessions
 const nunjucks = require('nunjucks'); // Templating engine
 const csurf = require('csurf'); // Middleware to handle CSRF protection
 const app = express(); // Create an Express application
@@ -44,12 +43,12 @@ app.use(express.static(path.join(__dirname, 'public'))); // Serve static files f
 app.use(csurf({cookie: true})); // Enable CSRF protection using cookies
 
 // Session middleware
-app.use(session({
-    secret: process.env.SECRET, // Secret key for session
-    resave: false, // Do not resave session if unmodified
-    saveUninitialized: true, // Save uninitialized sessions
-    cookie: {secure: process.env.NODE_ENV === 'production', maxAge: null} // Set secure cookie in production
-}));
+app.use(cookieSession({
+    secret: process.env.SECRET,
+    secure: process.env.NODE_ENV === 'production', // Set secure cookie in production
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 // Pass CSRF token to views
 app.use((req, res, next) => {

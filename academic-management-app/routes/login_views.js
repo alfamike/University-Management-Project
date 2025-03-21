@@ -20,7 +20,7 @@ router.post('/login', async (req, res) => {
         } else {
             // Save user session
             req.session.user = {
-                username: username,
+                username,
             };
 
             // Redirect to home
@@ -39,15 +39,8 @@ router.post('/login', async (req, res) => {
  * @param {Object} res - Express response object
  */
 router.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.log(err);
-            return res.redirect('/home'); // Redirect to home if there's an error
-        }
-
-        res.clearCookie('connect.sid');
-        res.redirect('/');
-    });
+    req.session = null;
+    res.redirect('/');
 });
 
 module.exports = router;
