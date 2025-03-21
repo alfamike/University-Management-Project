@@ -5,7 +5,6 @@ const express = require('express'); // Express framework
 const path = require('path'); // Path module for handling file paths
 const cookieParser = require('cookie-parser'); // Middleware to parse cookies
 const logger = require('morgan'); // HTTP request logger middleware
-const cors = require('cors'); // Middleware to enable CORS
 const cookieSession = require("cookie-session"); // Middleware to handle sessions
 const nunjucks = require('nunjucks'); // Templating engine
 const csurf = require('csurf'); // Middleware to handle CSRF protection
@@ -28,7 +27,6 @@ nunjucks.configure('views', {
 app.set('view engine', 'njk'); // Set Nunjucks as the view engine
 
 // Middleware setup
-app.use(cors()); // Enable CORS
 app.use(logger('dev')); // Use morgan logger in development mode
 
 // Parsers
