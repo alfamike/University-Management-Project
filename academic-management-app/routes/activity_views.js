@@ -244,7 +244,7 @@ router.put('/activities/:id/grade', async (req, res) => {
         };
 
         const response = await fabConnectService.submitTransaction(transactionData);
-        res.json(response);
+        res.json({sent: true, message: 'Grade updated successfully'});
     } catch (err) {
         console.error('Error updating grade:', err.message);
         res.status(500).send('Error updating grade');
