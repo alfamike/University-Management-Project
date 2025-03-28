@@ -131,6 +131,10 @@
         display: none;
     }
 
+    #manage-grade-btn {
+        display: none;
+    }
+
     #show-activities-course-btn {
         display: none;
     }
