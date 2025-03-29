@@ -117,7 +117,8 @@ router.get("/students/:id", async (req, res) => {
  */
 router.get("/students", async (req, res) => {
     try {
-        const {page = 1, course} = req.query;
+        let page = parseInt(req.query.page, 10) || 1;
+        const {course} = req.query;
         const isAjax = req.headers['x-requested-with'] === 'XMLHttpRequest';
         let responseStudents;
         let students = [];
@@ -183,6 +184,7 @@ router.get("/students", async (req, res) => {
         const pageSize = 10;
         const totalStudents = students.length;
         const totalPages = Math.ceil(totalStudents / pageSize);
+        page = Math.max(1, Math.min(page, totalPages));
 
         const paginator = new paginate.SearchPaginator({
             prelink: '/students',
@@ -190,6 +192,7 @@ router.get("/students", async (req, res) => {
             rowsPerPage: pageSize,
             totalResult: totalStudents
         });
+
 
         const fromIndex = (page - 1) * pageSize;
         const toIndex = Math.min(fromIndex + pageSize, totalStudents);

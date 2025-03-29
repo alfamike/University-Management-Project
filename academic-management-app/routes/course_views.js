@@ -114,7 +114,8 @@ router.get("/courses/:id", async (req, res) => {
  */
 router.get("/courses", async (req, res) => {
     try {
-        const {page = 1, title, year, onlyFilter} = req.query;
+        let page = parseInt(req.query.page, 10) || 1;
+        const {title, year, onlyFilter} = req.query;
         const isAjax = req.headers['x-requested-with'] === 'XMLHttpRequest';
         const isFilter = onlyFilter === 'true';
 
@@ -150,6 +151,8 @@ router.get("/courses", async (req, res) => {
         const pageSize = 10;
         const totalCourses = courses.length;
         const totalPages = Math.ceil(totalCourses / pageSize);
+
+        page = Math.max(1, Math.min(page, totalPages));
 
         // Use pagination library
         const paginator = new paginate.SearchPaginator({

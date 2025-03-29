@@ -245,7 +245,8 @@ router.delete("/titles/:id", async (req, res) => {
  */
 router.get("/titles", async (req, res) => {
     try {
-        const {onlyFilter, page = 1} = req.query;
+        let page = parseInt(req.query.page, 10) || 1;
+        const {onlyFilter} = req.query;
         const isFilter = onlyFilter === 'true';
 
         const queryData = {
@@ -265,6 +266,8 @@ router.get("/titles", async (req, res) => {
         const pageSize = 10;
         const totalTitles = titles.length;
         const totalPages = Math.ceil(totalTitles / pageSize);
+
+        page = Math.max(1, Math.min(page, totalPages));
 
         // Use pagination library
         const paginator = new paginate.SearchPaginator({
