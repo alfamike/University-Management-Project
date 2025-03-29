@@ -43,7 +43,6 @@ app.use(csurf({cookie: true})); // Enable CSRF protection using cookies
 // Session middleware
 app.use(cookieSession({
     secret: process.env.SECRET,
-    secure: process.env.NODE_ENV === 'production', // Set secure cookie in production
     // Cookie Options
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
